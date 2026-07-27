@@ -55,12 +55,12 @@ onload = function(){
 							<section>
 								<h2 class="alt"><a name=""></a>Data required</h2>
 									<p>
-										For this section, you want to continue on from your imaging tutorial folder and you should have the following files,
+										For this section, you want to continue from your imaging tutorial folder, and you should have the following files.
 										<ol>
 											<li><code class="language-bash">1252+5634.ms</code> - measurement set containing just the 3C277.1 visibilities.</li>
 											<li><code class="language-bash">3C277.1_imaging_outline2026.py</code> - imaging script.</li>
-											<li><code class="language-bash">3C277.1_imaging_all2026.py</code> - cheat script containing the answers</li>
-											<li><code class="language-bash">1252+5634_1.clean.*</code> - images, models, residuals made during the imaging tutorial</li>
+											<li><code class="language-bash">3C277.1_imaging_all2026.py</code> - cheat script containing the answers.</li>
+											<li><code class="language-bash">1252+5634_1.clean.*</code> - images, models, residuals (etc.) made during the imaging tutorial.</li>
 										</ol>
 									</p>
 							</section>
@@ -84,17 +84,17 @@ onload = function(){
 								<h2 class="alt"><a name="inspect_self_cal_p"></a>1. Inspect to choose interval for initial phase self-calibration (steps 4-5)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									In this tutorial, we are going to explore the concept of self-calibration. The premise for self-calibration is simple. Instead of using a compact phase reference source (which we assume to be point-like) i.e., flat in amplitude and zero in phase, we instead assume that the calibrator is resolved. We then derive solutions assuming a model for the true sky brightness. It is called self-calibration as the source we use is often our target source which is used to calibrate itself. See the lectures for all the gory details on how this works. 
+									In this tutorial, we are going to explore the concept of self-calibration. The premise of self-calibration is simple. Instead of using a compact phase reference source (which we assume to be point-like), i.e., flat in amplitude and zero in phase, we assume that the calibrator is resolved. We then derive solutions assuming a model for the true sky brightness. It is called self-calibration because the source we use is often our target source, which calibrates itself. See the lectures for all the gory details on how this works. 
 								</p>
 								<p>
-									As you may have guessed, we require a model of the true sky brightness distribution for us to do self-calibration. We have done that already (maybe without you noticing). When we performed our first <code class="language-python">tclean</code> imaging run, we had set <code class="language-python">savemodel='modelcolumn'</code>. This meant that our model image (our 'best guess' of the real sky), was Fourier transformed to create model visibilities (stored in the MODEL column of our measurement set). It is this model that we shall use to compare our visibilities to and correct for residual errors.
+									As you may have guessed, we require a model of the true sky brightness distribution to perform self-calibration. We have already done this (maybe without you noticing). When we performed our first <code class="language-python">tclean</code> imaging run, we set <code class="language-python">savemodel='modelcolumn'</code>. This meant that our model image (our 'best guess' of the real sky) was Fourier-transformed to create model visibilities (stored in the MODEL column of our measurement set). We shall use this model to compare our visibilities against and correct for residual errors.
 								</p>
 								<p>
-									Let us inspect our model use <code class="language-bash">plotms</code> as we had done in step 1 to plot the model against $uv$ distance.
+									Let us inspect our model using <code class="language-bash">plotms</code>, as we did in step 1, to plot the model against $uv$ distance.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 4. The parameters have already been set so execute the step. You can try over-plotting the data and model columns on the same GUI window interactively or look at the difference between data and model columns.<pre class="line-numbers" data-start="149"><code class="language-python">	plotms(vis=target+'.ms',
+										<li>Take a look at step 4. The parameters have already been set, so execute the step. You can try overplotting the data and model columns in the same GUI window interactively, or look at the difference between the data and model columns.<pre class="line-numbers" data-start="149"><code class="language-python">	plotms(vis=target+'.ms',
 		   xaxis='uvdist',
 		   yaxis='amp',
 		   ydatacolumn='model',
@@ -106,16 +106,18 @@ onload = function(){
 		   							</ul>
 		   						</p>
 		   						<p>
-		   							Below we have overplotted these for convenience in python. The top panel shows the visibilities (data column) with the model visibilities overlaid. You can see that our model from imaging is a pretty good approximation to the visibilities. In the bottom panel, the scalar differences are shown illustrating that the model is slightly underestimating the flux density of the source across a large $uv$ distance. These discrepancies are due to the antenna amplitude errors and will be corrected by self-calibration
+		   							Below, we have overplotted these for convenience in Python. The top panel shows the visibilities (data column) with the model visibilities overlaid. You can see that our imaging-based model is a good approximation to the visibilities. In the bottom panel, the scalar differences are shown, illustrating that the model slightly underestimates the source's flux density across a large $uv$ distance. These discrepancies are due to antenna amplitude errors and will be corrected by self-calibration.
 		   						</p>
 								<div class="col-12"><span class="image fit"><img src="plots/preself_cal_uv_dist.png" alt="" /></span></div>
 								<p>
-									Now we have our model present, we will begin by doing phase self-calibration first. As with standard calibration, we need to decide what sort of solution interval we require. However, we have an extra complication as that is the source structure.
-									It can be hard to tell the difference between phase errors and source structure in the visibilities, but it helps to balance between choosing a longer interval to optimise S/N, and too long an interval (if possible the phase changes by less than a few tens of degrees). The phase will change most slowly due to source structure on the shortest baseline, Mk2&Pi, but you should also check that the longest baselines (to Cm) to ensure that there is enough S/N. 
+									Now that we have our model present, we will begin with phase self-calibration. As with standard calibration, we need to decide what sort of solution interval we require. However, we have an extra complication, namely the source structure.
+                                </p>
+								<p>
+									It can be hard to distinguish phase errors from source structure in the visibilities, but it helps to balance choosing a longer interval to optimise S/N against making it too long (ideally, the phase changes by less than a few tens of degrees). The phase will change most slowly due to source structure on the shortest baseline, Mk2 to Pi, but you should also check the longest baselines (to Cm) to ensure there is enough S/N. 
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 5. We want to plot phase against time, averaging all channels per spw (see <code class="language-bash">listobs</code> for the number of channels).<pre class="line-numbers" data-start="172"><code class="language-python">	plotms(vis=target+'.ms',
+										<li>Take a look at step 5. We want to plot phase against time, averaging across all channels per spw (see <code class="language-bash">listobs</code> for the number of channels).<pre class="line-numbers" data-start="172"><code class="language-python">	plotms(vis=target+'.ms',
 		   xaxis='**',
 		   yaxis='**',
 		   antenna='**',
@@ -125,14 +127,14 @@ onload = function(){
 		   plotfile='',
 		   timerange='',
 		   overwrite=True, showgui=gui)</code></pre></li>
-		   								<li>Once you are happy, execute step 5 and look at the GUI. 
+		   								<li>Once you are happy, execute step 5 and check the GUI. 
 							</p>
 							<p>
-								The plot below shows a zoom on a few scans. The chosen solution interval should also ideally fit an integral number of times into each scan. It is also a good idea not to use too short a solution interval for the first model. This is because the model may not be very accurate, so you don't want to constrain the solutions too tightly.
+								The plot below shows a zoom on a few scans. The chosen solution interval should ideally fit an integer number of times into each scan. It is also advisable not to use too short a solution interval for the first model. This is because the model may not be very accurate, so you don't want to constrain the solutions too tightly.
 							</p>
 							<div class="col-12"><span class="image fit"><img src="plots/3C277.1_phase.png" alt="" /></span></div>
 							<p>
-								Looking at this plot, we can see that something along a 2-4 min solution interval should be ok to track the phases without too many failed solutions. Keep your solution interval to hand as we want to now derive these corrections.
+								Looking at this plot, we can see that a 2-4 min solution interval should be sufficient to track the phases without too many failed solutions. Keep your solution interval to hand, as we now want to derive these corrections.
 							</p>
 							</section>
 							<hr/>
@@ -140,19 +142,19 @@ onload = function(){
 								<h2 class="alt"><a name="self_cal_derive_p1"></a>2. Derive phase self-calibration solutions (step 6)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Let's use <code class="language-bash">gaincal</code> to derive solutions.
+									Let's use <code class="language-bash">gaincal</code> to compute solutions.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 6 and enter the parameters in <code class="language-bash">gaincal</code> to conduct phase-only calibration using your selected solution interval,
-								<pre class="line-numbers" data-start="191"><code class="language-python">gaincal(vis=target+'.ms',
-		calmode='**',          # phase only
-		caltable='target.p1',
-		field=target,
-		solint='**',           # about half a scan duration
-		refant=antref,
-		minblperant=3, minsnr=5)</code></pre></li>
-										<li>We also want to plot these solutions which are done for both polarisations separately using the following code,
+										<li>Take a look at step 6 and enter the parameters in <code class="language-bash">gaincal</code> to perform phase-only calibration with your selected solution interval.
+								<pre class="line-numbers" data-start="191"><code class="language-python">	gaincal(vis=target+'.ms',
+			calmode='**',          # phase only
+			caltable='target.p1',
+			field=target,
+			solint='**',           # about half a scan duration
+			refant=antref,
+			minblperant=3, minsnr=5)</code></pre></li>
+										<li>We also want to plot these solutions, which are computed separately for both polarisations, using the following code.
 										<pre class="line-numbers" data-start="200"><code class="language-python">	plotms(vis='target.p1',
 		   gridcols=2, gridrows=3,
 		   xaxis='time', yaxis='phase',
@@ -173,11 +175,11 @@ onload = function(){
 		   plotfile='target.p1_R.png', overwrite=True, showgui=gui)
 	os.system('mv Step_06_target.p1_R_*png Step_06_target.p1_R.png')</code></pre></li>
 		   								<li>If you are happy, execute step 6</li>
-		   								<li>Check the terminal and logger; there should be no (or almost no) failed solutions.</li>
+		   								<li>Check the terminal and the logger; there should be no (or almost no) failed solutions.</li>
 									</ul>
 								</p>
 								<p>
-									You should have solution that look like those below (we used a 180s solution interval). The corrections should be coherent, as they are, and represent the difference caused by the different atmospheric paths between the target and phase-ref, but they may also have a spurious component if the model was imperfect. The target is bright enough that a shorter solution interval could be used. So, these solutions are applied, the data re-imaged and the corrections refined iteratively.
+									You should have a solution that looks like those below (we used a 180s solution interval). The corrections should be coherent, as they are, and represent the difference caused by the different atmospheric paths between the target and phase-ref, but they may also have a spurious component if the model was imperfect. The target is bright enough that a shorter solution interval could be used. So, these solutions are applied, the data are re-imaged, and the corrections are refined iteratively.
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/target.p1_L.png" alt="" /></span></div>
 							</section>
@@ -186,59 +188,59 @@ onload = function(){
 								<h2 class="alt"><a name="self_cal_apply_p1"></a>3. Apply first phase solutions and image again (step 7)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Let's continue by applying these solutions to the measurement set. Remember that the premise of self-calibration is that we use an iterative approach to gradually improve the calibration of these data. This means we have to get a new improved model (therefore need to correct these data for imaging)
+									Let's continue by applying these solutions to the measurement set. Remember that the premise of self-calibration is that we use an iterative approach to gradually improve the calibration of these data. This means we have to obtain a new, improved model (therefore we need to correct these data for imaging).
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 7. There's a lot to enter here but most of these you have worked out in previous steps. Firstly, we want to enter the calibration table we just made into <code class="language-bash">applycal</code>,<pre class="line-numbers" data-start="227"><code class="language-python">applycal(vis=target+'.ms',
-		 gaintable=['**']) # enter the name of the gaintable</code></pre></li>
-		 								<li>Next, we will want to image these data again to generate our new, better model. The weighting and resolution shouldn't change so we want to use the same parameters as we had done previously. Note that the number of iterations has increased as we expect a higher S/N due to phase self-calibration.
+										<li>Take a look at step 7. There's a lot to enter here, but most of it you have worked out in previous steps. Firstly, we want to enter the calibration table we just made into <code class="language-bash">applycal</code>,<pre class="line-numbers" data-start="227"><code class="language-python">	applycal(vis=target+'.ms',
+		 	 gaintable=['**']) # enter the name of the gaintable</code></pre></li>
+		 								<li>Next, we will want to image these data again to generate our new, improved model. The weighting and resolution shouldn't change, so we will use the same parameters as before. Note that the number of iterations has increased, as we expect a higher S/N due to phase self-calibration.
 										<div class="row">
 										<div class="column">
 										<b>Linux</b>
-		 								<pre class="line-numbers" data-start="233"><code class="language-python">		tclean(vis=target+'.ms',
-			   imagename='targetp1',
-			   imsize=['**','**'],
-			   cell='**arcsec',
-			   deconvolver='clark',
-			   specmode='mfs',
-			   niter=3000, 
-			   cycleniter=300,
-			   threshold=0,
-			   savemodel='modelcolumn',
-			   interactive=True)</code></pre></div>
+		 								<pre class="line-numbers" data-start="233"><code class="language-python">	tclean(vis=target+'.ms',
+		   imagename='targetp1',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   deconvolver='clark',
+		   specmode='mfs',
+		   niter=3000, 
+		   cycleniter=300,
+		   threshold=0,
+		   savemodel='modelcolumn',
+		   interactive=True)</code></pre></div>
 		   								<div class="column">
 										<b>Mac OS</b>
-										<pre class="line-numbers" data-start="245"><code class="language-python">		iclean(vis=target+'.ms',
-				   imagename='targetp1',
-				   imsize=['**','**'],
-				   cell='**arcsec',
-				   deconvolver='clark',
-				   specmode='mfs',
-				   niter=3000,
-				   cycleniter=300,
-				   threshold=0,
-				   savemodel='modelcolumn')
-		ft(vis=target+'.ms',
-		   model='targetp1.model',
-		   usescratch=True)</code></pre></div>
+										<pre class="line-numbers" data-start="245"><code class="language-python">	iclean(vis=target+'.ms',
+		   imagename='targetp1',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   deconvolver='clark',
+		   specmode='mfs',
+		   niter=3000,
+		   cycleniter=300,
+		   threshold=0,
+		   savemodel='modelcolumn')
+	ft(vis=target+'.ms',
+	   model='targetp1.model',
+	   usescratch=True)</code></pre></div>
 		   								</li>
-		 								<li>Finally, we want to record the rms and peak brightnesses so we can see if there's an improvement. As out imaging parameters are the same, you should try to use the same boxes,
+		 								<li>Finally, we want to record the rms and peak brightnesses to see whether there's an improvement. As our imaging parameters are the same, you should try to use the same boxes.
 		 								<pre class="line-numbers" data-start="259"><code class="language-python">	rmsp1=imstat(imagename='targetp1.image',
 				 box='**,**,**,**')['rms'][0]
 	peakp1=imstat(imagename='targetp1.image',
 				  box='**,**,**,**')['max'][0]</code></pre></li>
-				  						<li>If you are happy with all of these entries, execute step 7. This may take a minute as the $\texttt{CORRECTED}$ data column needs to be generated.</li>
+				  						<li>If you are happy with all these entries, proceed to step 7. This may take a minute, as the $\texttt{CORRECTED}$ data column needs to be generated.</li>
 				  					</ul>
 				  				</p>
 								<p>
-									With these corrections applied we will CLEAN using <b>(L)</b> <code class="language-bash">tclean</code> / <b>(M)</b> <code class="language-bash">iclean</code>, as before, but you will be able to do more iterations as the noise should be lower.
+									With these corrections applied, we will CLEAN using <b>(L)</b> <code class="language-bash">tclean</code> / <b>(M)</b> <code class="language-bash">iclean</code>, as before, but you will be able to perform more iterations because the noise should be lower.
 								</p>
 								<p>
-									Once this is complete we will get the peak and rms values. I managed to get $S_p \sim 168 \,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 0.282\,\mathrm{mJy\,beam^{-1}}$. This is a massive $\mathrm{S/N}$ increase to $\sim 595$ from $225$ before phase self-calibration.
+									Once this is complete, we will obtain the peak and rms values. I obtained $S_p \sim 168 \,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 0.282\,\mathrm{mJy\,beam^{-1}}$. This represents a massive $\mathrm{S/N}$ increase to $\sim 595$ from $225$ before phase self-calibration.
 								</p>
 								<p>
-									<b>Important:</b> A key indicator if self-calibration is improving your data is that the S/N should increase each iteration. Do not rely on measuring the rms/peak individually as the self-calibration model could artificially reduce all amplitudes (peak and noise) with no S/N improvement!
+									<b>Important:</b> A key indicator that self-calibration is improving your data is that the S/N should increase with each iteration. Do not rely on measuring the rms/peak individually, as the self-calibration model could artificially reduce all amplitudes (peak and noise) without any S/N improvement!
 								</p>
 							</section>
 							<hr/>
@@ -246,11 +248,11 @@ onload = function(){
 								<h2 class="alt"><a name="self_cal_p2"></a>4. Phase-self-calibrate again (step 8)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Now that the model is better, use a shorter solution interval. Heuristics suggest that 30s is usually about the shortest worth using, because the atmosphere is reasonably stable on these baseline lengths at this frequency.
+									Now that the model is better, use a shorter solution interval. Heuristics suggest that 30s is usually about the shortest worth using, because the atmosphere is reasonably stable over these baseline lengths at this frequency.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 8 and enter the parameters for <code class="language-bash">gaincal</code> as before, but now reduce the solution interval to 30s,
+										<li>Take a look at step 8 and enter the parameters for <code class="language-bash">gaincal</code> as before, but now reduce the solution interval to 30 s.
 								<pre class="line-numbers" data-start="291"><code class="language-python">	gaincal(vis=target+'.ms',
 			calmode='**',
 			caltable='target.p2',
@@ -260,12 +262,12 @@ onload = function(){
 			gaintable=['**'],
 			interp=['**'],
 			minblperant=3,minsnr=5)</code></pre></li>
-										<li>Have a look at the rest of the step which will produce plots of the calibration table</li>
-										<li>When you are happy execute step 8 and take a look at the plots.</li>
+										<li>Have a look at the rest of the step, which will produce plots of the calibration table.</li>
+										<li>When you are happy, execute step 8 and take a look at the plots.</li>
 									</ul>
 								<div class="col-12"><span class="image fit"><img src="plots/target.p2_L.png" alt="" /></span></div>
 								<p>
-									Because we apply the first self-calibration table on the fly, the resultant corrections will be smaller in amplitude that the original corrections. This is a good sign that the self-calibration is working as the phase errors in your data become smaller and smaller. You can see this in the plot below where we have overplotted the first and second calibration table which shows that the standard deviation of the solutions reduces (dotted lines). If you find that the solutions are noisier, then something may be going wrong (e.g., too small of a solution interval was used).
+									Because we apply the first self-calibration table on the fly, the resulting corrections will be smaller in amplitude than the original corrections. This is a good sign that the self-calibration is working, as the phase errors in your data become smaller. You can see this in the plot below, where we have overplotted the first and second calibration tables, showing that the standard deviation of the solutions decreases (dotted lines). If you find that the solutions are noisier, then something may be going wrong (e.g., too small a solution interval was used).
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/compare_selfcal.png" alt="" /></span></div>
 							</section>
@@ -274,24 +276,24 @@ onload = function(){
 								<h2 class="alt"><a name="apply_im_p"></a>5. Apply the solutions and re-image (step 9)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Let's apply these solutions and re-image.
+									Let's apply these solutions and reimage.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 9 and enter the parameters into <code class="language-bash">applycal</code> as before, but making sure we add the new gaintable to the list.<pre class="line-numbers" data-start="330"><code class="language-python">applycal(vis='1252+5634.ms',
-		 gaintable=['**', '**'])</code></pre></li>
+										<li>Take a look at step 9 and enter the parameters into <code class="language-bash">applycal</code> as before, but make sure we add the new gaintable to the list.<pre class="line-numbers" data-start="330"><code class="language-python">	applycal(vis='1252+5634.ms',
+			 gaintable=['**', '**'])</code></pre></li>
 			 						</ul>
 								</p>
 								
 								<p>
-									We also want to image again in this step. From <code class="language-bash">listobs</code>, the total bandwidth is ~10% of the frequency, which is enough for us to need to take the spectral index into account. <a href="plots/aa4338-05.pdf" target="_blank">Cotton et al. (2006)</a> finds the spectral index varies from $-0.1$ in the core to as steep as $-1$.
+									We also want to image again in this step. From <code class="language-bash">listobs</code>, the total bandwidth is ~10% of the frequency, which is sufficient for us to need to take the spectral index into account. <a href="plots/aa4338-05.pdf" target="_blank">Cotton et al. (2006)</a> find that the spectral index varies from $-0.1$ in the core to as steep as $-1$.
 								</p>
 								<p>
-									<code class="language-bash">listobs</code> showed the total bandwidth is 4817 to 5329 MHz, i.e. for flux density $S$, $S_{4817}/S_{5329} = (4817/5329)^{-1}$ or about 10%. The improved S/N gives much greater accuracy. Thus, in order to image properly and produce an accurate image to amplitude self-calibrate on all spectral windows, multi-term multi-frequency synthesis (<code class="language-bash">deconvolver='mtmfs'</code>) imaging is used. This solves for the sky model changing across frequency.
+									<code class="language-bash">listobs</code> showed that the total bandwidth is 4817 to 5329 MHz, i.e. for flux density $S$, $S_{4817}/S_{5329} = (4817/5329)^{-1}$, or about 10%. The improved S/N gives much greater accuracy. Thus, to image properly and produce an accurate amplitude image, self-calibration is performed on all spectral windows using multi-term multi-frequency synthesis (<code class="language-bash">deconvolver='mtmfs'</code>) imaging. This solves for the sky model that changes across frequency.
 								</p>
 								<p>	
 									<ul>
-										<li>Enter the imaging parameters into the <code class="language-bash">tclean</code>	step and the box sizes into the image statistics to track the S/N,
+										<li>Enter the imaging parameters into the <code class="language-bash">tclean</code> step and the box sizes into the image statistics to track the S/N.
 											<div class="row">
 												<div class="column">
 												<b>Linux</b>
@@ -311,17 +313,17 @@ onload = function(){
 			<div class="column">
 			<b>Mac OS</b>
 			<pre class="line-numbers" data-start="350"><code class="language-python">	iclean(vis=target+'.ms',
-			   imagename='targetp2',
-			   imsize=['**','**'],
-			   cell='**arcsec',
-			   specmode='mfs',
-			   niter=4000,
-			   cycleniter=500,
-			   gain=0.2,
-			   threshold=0,
-			   deconvolver='mtmfs',
-			   savemodel='modelcolumn',
-			   nterms=2) # Make spectral index image
+		   imagename='targetp2',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   specmode='mfs',
+		   niter=4000,
+		   cycleniter=500,
+		   gain=0.2,
+		   threshold=0,
+		   deconvolver='mtmfs',
+		   savemodel='modelcolumn',
+		   nterms=2) # Make spectral index image
 	 ft(vis=target+'.ms',
 		model=['targetp2.model.tt0','targetp2.model.tt1'],
 		nterms=2,
@@ -332,12 +334,12 @@ onload = function(){
 				box='**,**,**,**')['rms'][0]
 	peakp2=imstat(imagename='targetp2.image.tt0',
 				box='**,**,**,**')['max'][0]</code></pre></li>
-				  						<li>Once you are happy execute step 9 and clean the image! Make sure you clean till as much target flux as possible has been removed into the model - you can increase the number of iterations interactively if you want.</li>
-										<li>Use <code class="language-bash">ls</code> to see the names of the image files created. The image name is <code class="language-bash">targetp2.image.tt0</code>.</li>
+				  						<li>Once you are happy, execute step 9 and clean the image! Make sure you clean until as much target flux as possible has been removed into the model - you can increase the number of iterations interactively if you want.</li>
+										<li>Use <code class="language-bash">ls</code> to list the names of the image files created. The image is named <code class="language-bash">targetp2.image.tt0</code>.</li>
 									</ul>
 								</p>
 								<p>
-									If we check the image using the same boxes as before, I get $S_p \sim 174.779\,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 0.155\,\mathrm{mJy\,beam^{-1}}$. This is another large $\mathrm{S/N}$ increase to $\sim 1126$.
+									If we check the image using the same boxes as before, I get $S_p \sim 174.779\,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 0.155\,\mathrm{mJy\,beam^{-1}}$. This is another large increase in $\mathrm{S/N}$ to $\sim 1126$.
 								</p>
 							</section>
 							<hr/>
@@ -345,11 +347,11 @@ onload = function(){
 								<h2 class="alt"><a name="inspect_self_cal_a"></a>6. Choose solution interval for amplitude self-calibration (step 10)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Now that we have got the phases in order, we can work on the amplitudes instead. We firstly want to check what an appropriate solution interval will be so we want to use <code class="language-python">plotms</code> to get this information
+									Now that we have the phases in order, we can work on the amplitudes instead. We first want to determine an appropriate solution interval, so we will use <code class="language-python">plotms</code> to obtain this information.
 								</p>
 								<p>
 									<ul>
-										<li>In step 10, use <code class="language-bash">plotms</code> to plot the amplitude versus time of the shortest baseline then execute the step<pre class="line-numbers" data-start="394"><code class="language-python">	plotms(vis=target+'.ms',
+										<li>In step 10, use <code class="language-bash">plotms</code> to plot amplitude versus time for the shortest baseline, then execute the step.<pre class="line-numbers" data-start="394"><code class="language-python">	plotms(vis=target+'.ms',
 		   xaxis='**',
 		   yaxis='**',
 		   ydatacolumn='**',
@@ -363,18 +365,18 @@ onload = function(){
 									</ul>
 		   						</p>
 		   						<p>
-		   							You should find a plot similar to that below. The smooth amplitude changes across the duration of the observation are not due to the antennae errors but due to the structure of the source (antennae errors should be on shorter timescales and less smooth). Remember that the projected baseline length changes over time so the sky that the baseline 'sees' also changes.
+		   							You should find a plot similar to the one below. The smooth amplitude variations throughout the observation are not due to antenna errors but to the source's structure (antenna errors should appear on shorter timescales and be less smooth). Remember that the projected baseline length changes over time, so the sky that the baseline 'sees' also changes.
 		   						</p>
 		   						<div class="col-12"><span class="image fit"><img src="plots/3C277.1_amp.png" alt="" /></span></div>
 		   						<p>
 		   							<ul>
-		   								<li>For us to find a suitable solution interval, we therefore want to zoom in on a few scans using the GUI like those shown below</li>
+		   								<li>To identify a suitable solution interval, we therefore want to zoom in on a few scans using the GUI, as shown below.</li>
 		   							</ul>
 		   						</p>
 		   						<div class="col-12"><span class="image fit"><img src="plots/3C277.1_amp_zoom.png" alt="" /></span></div>
 		   						<p>
 		   							<ul>
-		   								<li>You can see that on an integration to integration it looks like random noise, therefore we want a longer solution interval. Experiment with averaging the time at different intervals. A safe bet to start would be to combine the solutions per scan (<code class="language-python">solint='inf'</code>)</li>
+		   								<li>You can see that, on an integration-to-integration basis, it looks like random noise. Therefore, we want a longer solution interval. Experiment with averaging over different time intervals. A safe starting point would be to combine the solutions per scan (<code class="language-python">solint='inf'</code>).</li>
 		   							</ul>
 		   						</p>
 							</section>
@@ -383,12 +385,11 @@ onload = function(){
 								<h2 class="alt"><a name="self_cal_a"></a>7. Amplitude self-cal (step 11)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-
-									In <code class="language-bash">gaincal</code>, the previous gaintable with short-interval phase solutions will be applied, to allow a longer solution (averaging) interval for amplitude self-calibration. 
+									In <code class="language-bash">gaincal</code>, the previous gaintable containing short-interval phase solutions will be applied to allow a longer solution (averaging) interval for amplitude self-calibration. 
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 11 and set up <code class="language-bash">gaincal</code> to calibrate amplitude and phase, with a longer solution interval, and the same refant etc. as before.
+										<li>Take a look at step 11 and set up <code class="language-bash">gaincal</code> to calibrate amplitude and phase, using a longer solution interval and the same refant, etc., as before.
 								<pre class="line-numbers" data-start="415"><code class="language-python">	gaincal(vis=target+'.ms',
 			calmode='**',
 			caltable='target.ap3',
@@ -402,7 +403,7 @@ onload = function(){
 									</ul>
 
 								<p>
-									This step will also plot the solutions for each polarisation separately (L polarisation is shown below). They should mostly be within about 20% of unity. A few very low/high points implies some bad data. If the solutions are consistently much greater than unity then the model is missing flux.
+									This step will also plot the solutions for each polarisation separately (L polarisation is shown below). They should mostly be within about 20% of unity. A few very low or very high points imply bad data. If the solutions are consistently much greater than unity, the model is missing flux.
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/target.ap1_L.png" alt="" /></span></div>
 							</section>
@@ -411,11 +412,11 @@ onload = function(){
 								<h2 class="alt"><a name="apply_im_p"></a>8. Apply amplitude and phase solutions and image again (step 12)</h2>
 								<p class="alt"><a href="selfcalibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									We are almost finished and now have corrections for phase and amplitude which we can use to remove all these errors. In reality, you may want to do more cycles of self-calibration to further refine the calibration, however, for practical purposes, we are going to apply our solutions and end here.
+									We are almost finished and now have corrections for phase and amplitude that we can use to remove all these errors. In practice, you may want to run more cycles of self-calibration to further refine the calibration. However, for practical purposes, we are going to apply our solutions and end here.
 								</p>
 								<p>
 									<ul>
-										<li>In step 12, enter the parameters to apply all the calibration tables, make a final image, and record the statistics of the final image (use the same parameters as before)<pre class="line-numbers" data-start="453"><code class="language-python">	applycal(vis=target+'.ms',
+										<li>In step 12, enter the parameters to apply all calibration tables, generate a final image, and record the statistics for the final image (use the same parameters as before).<pre class="line-numbers" data-start="453"><code class="language-python">	applycal(vis=target+'.ms',
 			 gaintable=['**','**','**'], calwt=False)</code></pre>
 			<div class="row">
 			<div class='column'>
@@ -457,14 +458,14 @@ onload = function(){
 				  					</ul>
 				  				</p>
 				  				<p>
-									For this final image using the same boxes as before, I get $S_p \sim 174.771 \,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 87.42\,\mathrm{\mu Jy\,beam^{-1}}$. This is another large $\mathrm{S/N}$ increase from $\sim 1126$ to $1999$.
+									For this final image, using the same boxes as before, I obtain $S_p \sim 174.771 \,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 87.42\,\mathrm{\mu Jy\,beam^{-1}}$. This is another substantial $\mathrm{S/N}$ increase, from $\sim 1126$ to $1999$.
 								</p>
 							</section>
 							<hr/>
 							<section>
 								<h2 class="alt"><a name="end_sc"></a>9. Summary of self-calibration</h2>
 								<p>
-									While we have only done three rounds of self-calibration, it is worth noting that you would be expected to do more iterations until the improvements in S/N plateaus and no noticeable improvements are seen in the image. Below, you can see the image improvements at each stage of the self-calibration process and the corresponding improvements in the S/N.
+									Although we have completed only three rounds of self-calibration, you should expect to perform additional iterations until the S/N plateaus and no further noticeable improvements are observed in the image. Below, you can see the image improvements at each stage of the self-calibration process and the corresponding improvements in the S/N.
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/self_cal_improvements.png" alt="" /></span></div>
 								<div class="table-wrapper">
@@ -518,14 +519,14 @@ onload = function(){
 									</table>
 								</div>
 								<p class="alt">
-									In the rightmost panel, you can see the result if we continue the self-calibration process (reaching 15 and 30s solution intervals for phase and amplitude, respectively). The majority of these errors have disappeared, the image fidelity has improved significantly and the S/N has peaked at around 3700. If you would like to continue the self-calibration process, the calibration script can be found <a href="https://jradcliffe5.github.io/eris2026_website/data/3C277.1_imaging_extrasc2026.py" target="_blank">here</a>. Note that not all errors are gone and specialist algorithms and careful flagging of these data is required to improve the S/N further. For the final tutorial on advanced imaging, we shall use this fully self-calibrated data set.
+									In the rightmost panel, you can see the result if we continue the self-calibration process (reaching 15 and 30 s solution intervals for phase and amplitude, respectively). The majority of these errors have disappeared, image fidelity has improved significantly, and the S/N has peaked at around 3700. Note that not all errors are gone, and specialist algorithms and careful flagging of these data are required to further improve the S/N. For the final tutorial on advanced imaging, we shall use this fully self-calibrated data set.
 								</p> 
+								<p>
+									<ul class="actions stacked">
+										<li><a href="adv_imaging.html" class="button fit">Part 5 - advanced imaging</a></li>
+									</ul>
+								</p>
 							</section>
-							
-
-							<!-- Lists -->
-								
-
 						</div>
 					</section>
 			</div>

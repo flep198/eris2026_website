@@ -55,14 +55,14 @@ onload = function(){
 							<section>
 								<h2 class="alt"><a name=""></a>Data required</h2>
 									<p>
-										For this section, you want to download the fully self-calibrated data set which is contained in the tar bundle <code class="language-bash">ERIS26_adv_imaging.tar.gz</code>. This data-set has had the CORRECTED self-calibrated visibilities split into the DATA columns of this measurement set (to reduce the data size) and the most recent self-calibration model has been Fourier transformed into the measurement set (making a MODEL column).
+										For this section, you want to download the fully self-calibrated data set, contained in the tar bundle <code class="language-bash">ERIS26_adv_imaging.tar.gz</code>. This data set has had the CORRECTED self-calibrated visibilities split into the DATA columns of this measurement set (to reduce the data size), and the most recent self-calibration model has been Fourier transformed into the measurement set (creating a MODEL column).
 									</p>
 									<p>
-										You also want to copy the two calibration scripts that we have been using for the previous imaging and self-calibration tutorial. However, we have included copies of these scripts in the tar bundle. Ensure that you have the following in your folder,
+										You also want to copy the two calibration scripts we have been using for the previous imaging and self-calibration tutorial. However, we have included copies of these scripts in the tar bundle. Ensure that you have the following in your folder,
 										<ol>
-											<li><code class="language-bash">1252+5634_adv_im.ms</code> - fully self-calibrated visibilities</li>
+											<li><code class="language-bash">1252+5634_adv_im.ms</code> - fully self-calibrated visibilities.</li>
 											<li><code class="language-bash">3C277.1_imaging_outline2026.py</code> - imaging script.</li>
-											<li><code class="language-bash">3C277.1_imaging_all2026.py</code> - cheat script containing the answers</li>
+											<li><code class="language-bash">3C277.1_imaging_all2026.py</code> - cheat script containing the answers.</li>
 										</ol>
 									</p>
 							</section>
@@ -81,25 +81,25 @@ onload = function(){
 								<h2><a name="reweigh"></a>1. Reweigh the data according to sensitivity (step 13)</h2>
 								<p class="alt"><a href="adv_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Often, especially for heterogeneous arrays, the assigned weighting is not optimal for sensitivity. For example, the Cambridge (Cm) telescope is more sensitive, therefore, to get the optimal image must be given a larger weight than the other arrays.
+									Often, especially for heterogeneous arrays, the assigned weighting is not optimal for sensitivity. For example, the Cambridge (Cm) telescope is more sensitive; therefore, to obtain the optimal image, it must be given a larger weight than the other arrays.
 								</p>
 								<p>
-									To recalculate the optimal weights we use the task <code class="language-bash">statwt</code> calculates the weights based on the scatter in small samples of data. Note that the original data are overwritten, so you might want to copy the MS to a different name or directory first.
+									To recalculate the optimal weights, we use the task <code class="language-bash">statwt</code>, which calculates the weights based on the scatter in small samples of data. Note that the original data are overwritten, so you might want to copy the MS to a different name or directory first.
 								</p>
 								<p>
-									There are alot of options here, but we are just going to use the default options. You can try with different weightings if you'd like.
+									There are a lot of options here, but we are just going to use the default options. You can try different weightings if you'd like.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 13 and you will see three commands. The <code class="language-bash">plotms</code> step will plot the weights before and after while the <code class="language-python">statwt</code> command will rescale the weights. Note that we are going to use the residual column to estimate the scatter (which is the data$-$model column)
+										<li>Take a look at step 13, where you will see three commands. The <code class="language-bash">plotms</code> step will plot the weights before and after, while the <code class="language-python">statwt</code> command will rescale them. Note that we are going to use the residual column to estimate the scatter (which is the data $-$ model column).
 								<pre class="line-numbers" data-start="534"><code class="language-python">	statwt(vis='**',
            datacolumn='residual_data')</code></pre></li>
-           								<li>Enter the relevant parameters (remembering we are using a different measurement set) and execute step 13</li>
-           								<li>Take a look at the <code class="language-bash">plotms</code> results</li>
+           								<li>Enter the relevant parameters (remembering that we are using a different measurement set) and execute step 13.</li>
+           								<li>Take a look at the <code class="language-bash">plotms</code> results.</li>
            							</ul>
            						</p>
 								<p>
-									In the plot below, we show the weights before (top panel) and after re-weighting (bottom panel) on the baselines to our refant (Mk2). As you can see, the telescopes have similar weights despite Cm being more sensitive. With the use of <code class="language-bash">statwt</code>, the weights now reflect the sensitivities, with Cm having the lowest sigma weight so is more sensitive.
+									In the plot below, we show the weights before (top panel) and after re-weighting (bottom panel) for the baselines to our reference antenna (Mk2). As you can see, the telescopes have similar weights despite Cm being more sensitive. With the use of <code class="language-bash">statwt</code>, the weights now reflect the sensitivities, with Cm having the lowest sigma weight, so it is more sensitive.
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/compare_weights_statwt.png" alt="" /></span></div>
 							</section>
@@ -108,11 +108,11 @@ onload = function(){
 								<h2><a name="multiscale"></a>2. Try multi-scale clean (step 14)</h2>
 								<p class="alt"><a href="adv_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Let's image the re-weighted data using multiscale clean, which instead assumes that the sky can be represented by a bunch of Gaussians rather than delta functions. 
+									Let's image the re-weighted data using multiscale clean, which assumes that the sky can be represented by a set of Gaussians rather than delta functions. 
 								</p>
 								<p>
 									<ul>
-										<li>Look at step 14 and enter the imaging parameters for multi scale clean. Have a look at the help for the <code class="language-bash">tclean</code> task, which suggests suitable values of the <code class="language-bash">scale</code> parameter.
+										<li>Look at step 14 and enter the imaging parameters for multi-scale clean. Have a look at the help for the <code class="language-bash">tclean</code> task, which suggests suitable values for the <code class="language-bash">scale</code> parameter.
 								<div class="row">
 									<div class="column">
 										<b>Linux</b>
@@ -132,17 +132,17 @@ onload = function(){
 			   						<div class="column">
 									<b>Mac OS</b>
 									<pre class="line-numbers" data-start="571"><code class="language-python">	iclean(vis=target+'_adv_im.ms',
-			   imagename='advIMmulti',
-			   imsize=['**','**'],
-			   cell='**arcsec',
-			   specmode='mfs',
-			   niter=3000, 
-			   cycleniter=300,
-			   gain=0.2,
-			   threshold=0,
-			   deconvolver='mtmfs',
-			   scales=['**','**','**'],
-			   nterms=2)</code></pre>
+		   imagename='advIMmulti',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   specmode='mfs',
+		   niter=3000, 
+		   cycleniter=300,
+		   gain=0.2,
+		   threshold=0,
+		   deconvolver='mtmfs',
+		   scales=['**','**','**'],
+		   nterms=2)</code></pre>
 			   						</div>
 			   						</div>
 									<pre class="line-numbers" data-start="571"><code class="language-python">	rmsmulti=imstat(imagename='advIMmulti.image.tt0',
@@ -153,13 +153,13 @@ onload = function(){
 	print('advIMmulti.image.tt0 rms  = %7.3f mJy/bm' % (rmsmulti*1000.))
 	print('advIMmulti.image.tt0 peak = %7.3f mJy/bm' % (peakmulti*1000.))
 	print('advIMmulti.image.tt0 S/N  = %7.3f' % (peakmulti/rmsmulti))</code></pre></li>
-										<li>Once you are happy, execute step 14 and deconvolve the image</li>
+										<li>Once you are happy, execute step 14 and deconvolve the image.</li>
 									</ul>
 								<p>
-									You will find that the beam is now slightly smaller (I got $52\times42\,\mathrm{mas}$) as the longer baselines have more weight, so the peak is lower). I got $S_p \sim 149.235 \,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 50\,\mathrm{\mu Jy\,beam^{-1}}$ when using a <code class="language-python">scales=[0,2,5]</code>. Note that this gives a lower S/N despite the optimal reweighting. This is mainly because the beam area is smaller and hence the peak flux in beam area units is lower.
+									You will find that the beam is now slightly smaller (I got $52\times42\,\mathrm{mas}$) because the longer baselines have more weight, so the peak is lower. I got $S_p \sim 149.235 \,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 50\,\mathrm{\mu Jy\,beam^{-1}}$ when using a <code class="language-python">scales=[0,2,5]</code>. Note that this gives a lower S/N despite the optimal reweighting. This is mainly because the beam area is smaller, so the peak flux in beam area units is lower.
 								</p>
 								<p>
-									With multi-scale CLEAN we can look at the two models to see the difference between them. Often multi-scale is required when you are dominated by diffuse emission and can then be used to improve the self-calibration model. Below, I have plotted the models using just standard delta function CLEAN and the multi-scale clean.
+									With multi-scale CLEAN, we can compare the two models to see the difference between them. Multi-scale CLEAN is often required when diffuse emission dominates, and it can then be used to improve the self-calibration model. Below, I have plotted the models using standard delta-function CLEAN and multi-scale CLEAN.
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/compare_models_mscale.png" alt="" /></span></div>
 							</section>
@@ -168,51 +168,51 @@ onload = function(){
 								<h2><a name="taper"></a>3. Taper the visibilities during imaging (step 15)</h2>
 								<p class="alt"><a href="adv_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Next we shall experiment with changing the relative weights given to longer baselines. Applying a taper reduces this, giving a larger synthesised beam more sensitive to extended emission. This just changes the weights during gridding for imaging, no permanent change to the uv data. However, strong tapering increases the noise.
+									Next, we shall experiment with changing the relative weights given to longer baselines. Applying a taper reduces this, yielding a larger synthesised beam that is more sensitive to extended emission. This only changes the weights during gridding for imaging, with no permanent change to the uv data. However, strong tapering increases the noise.
 								</p>
 								<p>
 									<ul>
-										<li>Look at the $uv$ distance plot and choose an outer taper (half-power of Gaussian taper applied to data) which is about 2/3 of the longest baseline. Units are wavelengths, so calculate that or plot amplitude vs. uvwave.</li>
-										<li>Enter this and the imaging parameters into step 15 and execute,
+										<li>Look at the $uv$ distance plot and choose an outer taper (a half-power Gaussian taper applied to the data) that is about 2/3 of the longest baseline. Units are wavelengths, so calculate that or plot amplitude vs. $uv$ wave.</li>
+                                        <li>Enter this and the imaging parameters into step 15, then execute.
 								<div class="row">
 									<div class="column">
 										<b>Linux</b>
-								<pre class="line-numbers" data-start="615"><code class="language-python">		tclean(vis=target+'_adv_im.ms',
-			   imagename='advIMtaper',
-			   imsize=['**','**'],
-			   cell='**arcsec',
-			   specmode='mfs',
-			   niter=4000,
-			   cycleniter=300,
-			   gain=0.2,
-			   threshold=0,
-			   deconvolver='mtmfs',
-			   uvtaper=['**Mlambda'],
-			   scales=[0],
-			   nterms=2,
-			   interactive=True)</code></pre></div>
+								<pre class="line-numbers" data-start="615"><code class="language-python">	tclean(vis=target+'_adv_im.ms',
+		   imagename='advIMtaper',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   specmode='mfs',
+		   niter=4000,
+		   cycleniter=300,
+		   gain=0.2,
+		   threshold=0,
+		   deconvolver='mtmfs',
+		   uvtaper=['**Mlambda'],
+		   scales=[0],
+		   nterms=2,
+		   interactive=True)</code></pre></div>
 							<div class="column"><b>Mac OS</b><pre class="line-numbers" data-start="630"><code class="language-python">	iclean(vis=target+'_adv_im.ms',
-			   imagename='advIMtaper',
-			   imsize=['**','**'],
-			   cell='**arcsec',
-			   uvtaper=['**Mlambda'],
-			   specmode='mfs',
-			   niter=4000, 
-			   cycleniter=300,
-			   gain=0.2,
-			   threshold=0,
-			   deconvolver='mtmfs',
-			   scales=[0],
-			   nterms=2)</code></div></div>
+		   imagename='advIMtaper',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   uvtaper=['**Mlambda'],
+		   specmode='mfs',
+		   niter=4000, 
+		   cycleniter=300,
+		   gain=0.2,
+		   threshold=0,
+		   deconvolver='mtmfs',
+		   scales=[0],
+		   nterms=2)</code></div></div>
 				   <pre class="line-numbers" data-start="630"><code class="language-python">	rmstaper=imstat(imagename='advIMtaper.image.tt0',
 					box='**,**,**,**')['rms'][0]
 	peaktaper=imstat(imagename='advIMtaper.image.tt0',
 					box='**,**,**,**')['max'][0]</code></pre></li>
-									<li>Inspect the image and check the beam size and the image statistics.</li>
+									<li>Inspect the image, check the beam size and the image statistics.</li>
 									</ul>
 								</p>
 								<p> 
-									For a taper of 2.5 Mlambda I managed to get a restoring beam size of $129\times100\,\mathrm{mas}$, a peak brightness of $S_p \sim 265.595\,\mathrm{mJy\,beam^{-1}}$ and an rms noise of $\sigma \sim 78\,\mathrm{\mu Jy\,beam^{-1}}$.
+									For a taper of 2.5 Mlambda, I obtained a restoring beam size of $129\times100\,\mathrm{mas}$, a peak brightness of $S_p \sim 265.595\,\mathrm{mJy\,beam^{-1}}$ and an rms noise of $\sigma \sim 78\,\mathrm{\mu Jy\,beam^{-1}}$.
 								</p>
 							</section>
 							<hr/>
@@ -221,43 +221,43 @@ onload = function(){
 								<p class="alt"><a href="adv_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 
 								<p>
-									In our final experimentation with imaging we shall change the relative weights given to longer baselines. Default natural weighting gives zero weight to parts of the $uv$ plane with no samples. Briggs weighting interpolates between samples, giving more weight to the interpolated areas for lower values of robust. For an array like e-MERLIN with sparser sampling on long baselines, this has the effect of increasing their contribution, i.e., making the synthesised beam smaller. This may bring up the jet/core in more detail, at the expense of the extended lobes. Low values of robust increase the noise. You can combine with tapering or multiscale, but initially remove these parameters.
+									In our final imaging experiments, we shall adjust the relative weights given to longer baselines. Default natural weighting gives zero weight to parts of the $uv$ plane with no samples. Briggs weighting interpolates between samples, giving more weight to interpolated areas for lower values of robust. For an array like e-MERLIN with sparser sampling on long baselines, this increases their contribution, i.e., making the synthesised beam smaller. This may bring out the jet/core in more detail, at the expense of the extended lobes. Low values of robust increase the noise. You can combine with tapering or multiscale, but initially remove these parameters.
 								</p>
 								<ul>
-									<li>Take a look at step 16 and enter the parameters to conduct imaging with Briggs weighting and a robust value of 1. Remember to use the help function to find the correct inputs.
+									<li>Take a look at step 16 and enter the parameters to perform imaging with Briggs weighting and a robust value of 1. Remember to use the help function to find the correct inputs.
 								<div class="row">
 									<div class="column">
 										<b>Linux</b>
-										<pre class="line-numbers" data-start="574"><code class="language-python">		tclean(vis=target+'_adv_im.ms',
-			   imagename='advIMrobust',
-			   imsize=['**','**'],
-			   cell='**arcsec',
-			   specmode='mfs',
-			   niter=4000,
-			   cycleniter=300,
-			   gain=0.2,
-			   threshold=0,
-			   deconvolver='mtmfs',
-			   nterms=2,
-			   weighting='**',
-			   robust='**',
-			   interactive=True)</code></pre>
+										<pre class="line-numbers" data-start="574"><code class="language-python">	tclean(vis=target+'_adv_im.ms',
+		   imagename='advIMrobust',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   specmode='mfs',
+		   niter=4000,
+		   cycleniter=300,
+		   gain=0.2,
+		   threshold=0,
+		   deconvolver='mtmfs',
+		   nterms=2,
+		   weighting='**',
+		   robust='**',
+		   interactive=True)</code></pre>
 									</div>
 									<div class="column">
 										<b>Mac OS</b>
-										<pre class="line-numbers" data-start="589"><code class="language-python">		iclean(vis=target+'_adv_im.ms',
-				   imagename='advIMrobust',
-				   imsize=['**','**'],
-				   cell='**arcsec',
-				   specmode='mfs',
-				   niter=4000, 
-				   cycleniter=300,
-				   gain=0.2,
-				   threshold=0,
-				   deconvolver='mtmfs',
-				   nterms=2,
-				   weighting='**',
-				   robust='**')</code></pre>
+										<pre class="line-numbers" data-start="589"><code class="language-python">	iclean(vis=target+'_adv_im.ms',
+		   imagename='advIMrobust',
+		   imsize=['**','**'],
+		   cell='**arcsec',
+		   specmode='mfs',
+		   niter=4000, 
+		   cycleniter=300,
+		   gain=0.2,
+		   threshold=0,
+		   deconvolver='mtmfs',
+		   nterms=2,
+		   weighting='**',
+		   robust='**')</code></pre>
 									</div>
 								</div>
 							<pre class="line-numbers" data-start="703"><code class="language-python">	rmsrobust=imstat(imagename='advIMrobust.image.tt0',
@@ -268,7 +268,7 @@ onload = function(){
 				  					<li>If you have time, you can also experiment with other robust values and weighting schemes.</li>
 				  				</ul>
 							<p>
-								With a robust parameter of 1, I made an image with a restoring beam of $48\times39\,\mathrm{mas}$, $S_p \sim 143.404\,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 52\,\mathrm{\mu Jy\,beam^{-1}}$
+								With a robust parameter of 1, I produced an image with a restoring beam of $48\times39\,\mathrm{mas}$, $S_p \sim 143.404\,\mathrm{mJy\,beam^{-1}}$ and $\sigma \sim 52\,\mathrm{\mu Jy\,beam^{-1}}$
 							</p>
 
 							</section>
@@ -277,13 +277,13 @@ onload = function(){
 								<h2><a name="#summary"></a>5. Summary and conclusions</h2>
 								<p class="alt"><a href="adv_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									This tutorial investigated the various imaging techniques which can be used to extenuate features. In the first instance we used <code class="language-bash">statwt</code> to optimally reweigh the data to have maximum sensitivity. We find that the Cm telescope is the most sensitive (as it is 32m wide), but also contains all the long baselines. As a result these long baselines are expressed more when imaging resulting in a higher resolution image than what we've seen before. As a result the peak flux reduces but so did the sensitivity! In addition, we used multiscale clean to better deconvolve the large fluffy structures which standard clean can struggle with.
+									This tutorial investigated the various imaging techniques which can be used to enhance features. In the first instance, we used <code class="language-bash">statwt</code> to optimally reweight the data to maximise sensitivity. We find that the Cm telescope is the most sensitive (as it is 32m wide) and contains all the long baselines. As a result, these long baselines are more prominent in the image, producing a higher-resolution image than we've seen before. However, the peak flux decreases, and so does the sensitivity! In addition, we used multiscale clean to better deconvolve the large, fluffy structures which standard clean can struggle with.
 								</p>
 								<p>
-									The next step that we did was to taper the weights with respect to $uv$ distance. The downweighting of the long baselines means that we are more sensitive to larger structures hence our resolution is lower. However, because of the sensitivity contained in these long baselines, we have a much larger rms.
+									The next step we took was to taper the weights with respect to $uv$ distance. The downweighting of the long baselines means that we are more sensitive to larger structures, hence our resolution is lower. However, because of the sensitivity contained in these long baselines, we have a much larger rms.
 								</p>
 								<p>
-									And finally, we introduced robust weighting schemes. These schemes provide a clear way to achieve intermediate resolutions between naturally weighted and uniformly weighted data.
+									Finally, we introduced robust weighting schemes. These schemes provide a clear way to achieve intermediate resolutions between naturally and uniformly weighted data.
 								</p>
 								<div class="table-wrapper">
 									<table>
