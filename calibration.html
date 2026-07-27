@@ -398,7 +398,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 	       							</ul>
 								</p>
 								<p>
-									These should produce plots like those below, which correct for the receiver response on each antenna (note the close comparison to the plots when we flagged the edge channels). This error is antenna-based and direction-independent, so we can use it for all other sources, as it should not change with time. Note that the spectral index of this source is taken into account here, as it was specified in step 3A (normally you'd do the bandpass calibration twice, with the second time using an estimate of the spectral index).
+									These should produce plots like those below, which correct for the receiver response on each antenna (note the close match to the plots when we flagged the edge channels). This error is antenna-based and direction-independent, so we can apply it to all other sources, as it should not change with time. Note that the spectral index of this source is taken into account here, as it was specified in step 3A (normally you'd do the bandpass calibration twice, with the second time using an estimate of the spectral index).
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/bpcal.B1_amp.png" alt="" /></span></div>
 								<div class="col-12"><span class="image fit"><img src="plots/bpcal.B1_phase.png" alt="" /></span></div>
@@ -408,11 +408,11 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 								<h2 class="alt"><a id="delay"></a>3. Time-dependent delay calibration (15)</h2>
 								<p class="alt"><a href="calibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									We've calibrated the bandpass calibrator to obtain the bandpass corrections. We now need to derive the time-dependent phase and amplitude corrections for all the calibrators simultaneously. This will allow us to perform phase referencing (remember this from the lecture) so we can observe the target source. As before, we will start with the delays and then move on to the phase and amplitude corrections.
+									We've calibrated the bandpass calibrator to obtain the bandpass corrections. We now need to derive the time-dependent phase and amplitude corrections for all the calibrators simultaneously. This will allow us to perform phase referencing (as discussed in the lecture) so we can observe the target source. As before, we will start with the delays and then move on to the phase and amplitude corrections.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 15 and enter the parameters for both the gaincal and plotting commands so that we can perform delay calibration for all calibrator sources. The solution interval we used for the bandpass calibrator should be applicable here as well. Remember to apply the bandpass calibration table now.<pre class="line-numbers" data-start="524"><code class="language-python">	gaincal(vis='all_avg.ms',
+										<li>Review step 15 and enter the parameters for both the gaincal and plotting commands to perform delay calibration for all calibrator sources. The solution interval used for the bandpass calibrator should be applicable here as well. Remember to apply the bandpass calibration table now.<pre class="line-numbers" data-start="524"><code class="language-python">	gaincal(vis='all_avg.ms',
 			gaintype='K',
 			field='**',
 			caltable='all_avg.K',
@@ -432,11 +432,11 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 	       yselfscale=True,
 	       plotfile='',
 	       showgui=gui, overwrite=True)</code></pre></li>
-	       								<li>Once you are happy execute step 15 and look at the output of <code class="language-python">plotms</code></li>
+	       								<li>Once you are happy, execute step 15 and review the output of <code class="language-python">plotms</code></li>
 	       							</ul>
 	       						</p>
 	       						<p>
-	       							You should end up with a plot that looks like this below. The solutions are smoothly varying with only a few jumps which shows that our solutions are ok.
+	       							You should end up with a plot that looks like the one below. The solutions vary smoothly, with only a few jumps, which shows that our solutions are ok.
 	       						</p>
 	       						<div class="col-12"><span class="image fit"><img src="plots/all_avg.K.png" alt="" /></span></div>
 	       					</section>
@@ -444,38 +444,37 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 							<section>
 	       						<h3 class="alt"><a id="inspect_bandpass"></a>3A. Inspect effects of calibration (16)</h3>
 	       						<p>
-	       							<b>Important:</b> if you are short on time, skip this step and just read the information and plots shown here
+	       							<b>Important:</b> If you are short on time, skip this step and just read the information and plots shown here.
 	       						</p> 
 	       						<p>
-	       							In this step, we shall apply the delay and bandpass solutions to the calibration sources as a test, to check that they have the desired effect of producing a flat bandpass for the phase-reference source (not on the fly this time!). There is no need to apply the time-dependent calibration as we have not derived this for the phase-reference source yet anyway.
+	       							In this step, we shall apply the delay and bandpass solutions to the calibration sources as a test to verify that they produce a flat bandpass for the phase-reference source (not on the fly this time!). There is no need to apply the time-dependent calibration, as we have not derived it for the phase-reference source yet anyway.
 	       						</p>
 	       						<p>
-	       							To apply these we shall use a task called <code class="language-bash">applycal</code>. Some notes about <code class="language-bash">applycal</code>:
+	       							To apply these, we shall use a task called <code class="language-bash">applycal</code>. Some notes on <code class="language-bash">applycal</code>:
 	       							<ol>
 	       								<li>The first time <code class="language-python">applycal</code> is run, it creates a CORRECTED data column in the MS, which is quite slow.</li>
 										<li>Each time <code class="language-python">applycal</code> is run, it replaces the entries in the CORRECTED column, i.e. the corrected column is not cumulative, but you can give <code class="language-python">applycal</code> a cumulative list of gain tables.</li>
 										<li><code class="language-python">applymode</code> can be used to flag data with failed solutions but we do not want that here as this is just a test.</li>
 										<li>The <code class="language-python">interp</code> parameter can take two values for each gaintable to be applied, the first determining interpolation in time and the second in frequency. The times of data to be corrected may coincide with, or be bracketed by the times of calibration solutions, in which case <code class="language-python">linear</code> interpolation can be used, the default, normally used if applying solutions derived from a source to itself, or from phase ref to target in alternating scans. However, if solutions are to be extrapolated in time from one source to another which are not interleaved, then nearest is used. A similar argument covers frequency. There are additional modes not used here (see <code class="language-python">help(applycal)</code>).</li>
 									</ol>
-							
-									The delay correction ('K') table contains entries for all sources except the target. so we can use linear interpolation for this one. The bandpass table only has one entry so we cannot interpolate hence we'd want to select the nearest solutions.
+									The delay-correction ('K') table contains entries for all sources except the target, so we can use linear interpolation for this one. The bandpass table has only one entry, so we cannot interpolate. Hence, we'd want to select the nearest solutions.
 								</p>
 								<p>
 									<ul>
-										<li>Fill in the <code class="language-python">applycal</code> step in step 16 and look at the following <code class="language-python">plotms</code> command which will plot the 'before and after' phase reference phase and amplitude against frequency.<pre class="line-numbers" data-start="555"><code class="language-python">	applycal(vis='all_avg.ms',
+										<li>Fill in the <code class="language-python">applycal</code> step in step 16, then look at the following <code class="language-python">plotms</code> command, which will plot the 'before and after' phase reference phase and amplitude against frequency.<pre class="line-numbers" data-start="555"><code class="language-python">	applycal(vis='all_avg.ms',
 			 field='1302+5748,0319+4130,1331+3030',
 			 calwt=False,
 			 applymode='calonly',
 			 gaintable=['**','**'],
 			 interp=['**','**,**'])</code></pre></li>
-			 							<li>Execute step 16 and take a look at the plots saved to the current directory.</li>
+			 							<li>Execute step 16, then take a look at the plots saved to the current directory.</li>
 									</ul>
 									<p>
-										The plot below shows the uncorrected and corrected amplitudes and phases for the Mk2-Cm baseline of the phase reference source (1302+5748) that is coloured by scan. It has been replotted in python for clarity!
+										The plot below shows the uncorrected and corrected amplitudes and phases for the Mk2-Cm baseline of the phase reference source (1302+5748), with data coloured by scan. It has been replotted in Python for clarity.
 									</p>
 									<div class="col-12"><span class="image fit"><img src="plots/applycal_effects.png" alt="" /></span></div>
 									<p>
-										In the figure, each scan is coloured separately and shows a random offset in phase and some discrepancies in amplitude compared to other scans, but for each individual time interval it is quite flat. So we can average in frequency across each spw and plot the data to show remaining, time-dependent errors.
+										In the figure, each scan is coloured separately and shows random phase offsets and amplitude discrepancies compared with other scans, but within each individual time interval it is quite flat. So we can average in frequency across each spw and plot the data to show any remaining time-dependent errors.
 									</p>
 							</section>
 							<hr/>
@@ -484,11 +483,11 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 								<h3 class="alt"><a name="time_dep_phase"></a>4A. Time dependent phase calibration</h3>
 								<p class="alt"><a href="calibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									As with the bandpass calibrator, we now move onto correcting for the phase fluctuations caused by tubulence in the atmosphere. This will allow us to phase reference and see our target source as the phase calibrator is approximately along the same line-of-sight.
+									As with the bandpass calibrator, we now move on to correcting for the phase fluctuations caused by turbulence in the atmosphere. This will allow us to phase-reference and see our target source, as the phase calibrator is approximately along the same line of sight.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 17 and insert the parameters that will allow us to conduct time-dependent phase calibration of all calibrator sources<pre class="line-numbers" data-start="623"><code class="language-python">	gaincal(vis='all_avg.ms',
+										<li>Take a look at step 17 and insert the parameters that will enable us to perform time-dependent phase calibration of all calibrator sources.<pre class="line-numbers" data-start="623"><code class="language-python">	gaincal(vis='all_avg.ms',
 			calmode='p',
 			caltable='calsources.p1',
 			field='**,**,**',
@@ -498,11 +497,11 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 			minblperant=2,minsnr=1,
 			gaintable=['all_avg.K','bpcal.B1'],
 			interp=['linear','nearest,nearest'])</code></pre></li>
-										<li>Copy this into the CASA propmt and run to generate the calibration table and have a look at the logger</li>
+										<li>Copy this into the CASA prompt, run it to generate the calibration table, and have a look at the logger.</li>
 									</ul>
 								</p>
 								<p>
-									The logger should show something like (if you used 16s solution intervals like me):<pre><code class="language-none">2022-08-12 10:08:20	INFO		Writing solutions to table: calsources.p1
+									The logger should show something like this (if you used 16s solution intervals, like me):<pre><code class="language-none">2022-08-12 10:08:20	INFO		Writing solutions to table: calsources.p1
 2022-08-12 10:08:21	INFO	calibrater::solve	Finished solving.
 2022-08-12 10:08:21	INFO	gaincal::::casa	Calibration solve statistics per spw:  (expected/attempted/succeeded):
 2022-08-12 10:08:22	INFO	gaincal::::casa	  Spw 0: 1988/1572/1571
@@ -512,16 +511,16 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 </code></pre>
 								</p>
 								<p>
-									This means that although there are 1988 16s intervals one the calibration sources data, about a fifth (1988−1572=416) of them have been partly or totally flagged. But almost all (99.93%) of the intervals which do have enough unflagged ('attempted') data gave good solutions ('succeeded'). There are no further messages about completely flagged data but in the terminal you see a few messages when there are fewer than the requested 2 baselines per antenna unflagged:<pre><code class="language-none">Found no unflagged data at:   (time=2019/08/02/21:00:04.5 field=0 spw=3 chan=0)
+									This means that although there are 1988 16s intervals in the calibration sources' data, about a fifth (1988-1572=416) of them have been partially or fully flagged. But almost all (99.93%) of the intervals that do have enough unflagged ('attempted') data gave good solutions ('succeeded'). There are no further messages about completely flagged data, but in the terminal you see a few messages when there are fewer than the requested 2 baselines per antenna unflagged.<pre><code class="language-none">Found no unflagged data at:   (time=2019/08/02/21:00:04.5 field=0 spw=3 chan=0)
  Insufficient unflagged antennas to proceed with this solve.
    (time=2019/08/02/21:17:19.2 field=0 spw=3 chan=0)</code></pre>
  								</p>
  								<p> 
- 									 Here, there are very few predicable failures. If there were many or unexpected failures, investigate - perhaps there are unflagged bad data, or pre-calibration has not been applied, or an inappropriate solution interval was used.
+ 									Here, there are very few predictable failures. If there are many or unexpected failures, investigate - perhaps there are unflagged bad data, pre-calibration has not been applied, or an inappropriate solution interval was used.
  								</p>
  								<p>
  									<ul>
- 										<li>Plot the solutions and you should get something which tracks the phases well (as seen below)</li>
+ 										<li>Plot the solutions, and you should get something that tracks the phases well (as shown below).</li>
  									</ul>
  								</p> 
 								<div class="col-12"><span class="image fit"><img src="plots/calsources.p1.png" alt="" /></span></div>
@@ -531,11 +530,11 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 								<h3 class="alt"><a name="time_dep_phase"></a>4B. Time dependent amplitude calibration</h3>
 								<p class="alt"><a href="calibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Next we are going to derive time-dependent amplitude solutions for all the calibration sources, applying the delay, bandpass tables and the time-dependent phase solution table.
+									Next, we are going to derive time-dependent amplitude solutions for all the calibration sources, applying the delay, bandpass, and time-dependent phase solution tables.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at the second <code class="language-python">gaincal</code> entry in step 17 and Iisert a suitable solution interval, the tables to apply and interpolation modes. Note that if you set a solint longer than a single scan on a source, the data will still only be averaged within each scan unless an additional 'combine' parameter is set (not needed here).<pre class="line-numbers"
+										<li>Take a look at the second <code class="language-python">gaincal</code> entry in step 17, and insert a suitable solution interval, the tables to apply, and interpolation modes. Note that if you set a solint longer than a single scan on a source, the data will still be averaged only within each scan unless an additional 'combine' parameter is set (not needed here).<pre class="line-numbers"
 											data-start="648"><code class="language-python">	gaincal(vis='all_avg.ms',
 			calmode='a',
 			caltable='calsources.a1',
@@ -546,12 +545,12 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 			minblperant=2,minsnr=2,
 			gaintable=['**','**','**'],
 			interp=['linear','nearest,nearest','**'])</code></pre></li>
-										<li>The logger shows a similar proportion of expected:attempted solution intervals as for phase, but those with failed phase solutions are not attempted so all the attempted solutions work. Plot these solutions to ensure they look ok</li>
+										<li>The logger shows a similar proportion of expected/attempted solution intervals to that for phase, but those with failed phase solutions are not attempted, so all attempted solutions work. Plot these solutions to ensure they look ok.</li>
 									</ul>
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/calsources.a1.png" alt="" /></span></div>
 								<p>
-									The plot above shows the time dependent amplitude solutions on just the L polarisation and coloured by spw. The solutions for each separate source look similar but there are big differences between sources, since they have all (apart from 1331+3030 and 0319+4130) been compared with a 1 Jy model but they have different flux densities.
+									The plot above shows the time-dependent amplitude solutions for the L polarisation only, coloured by spw. The solutions for each source look similar, but there are significant differences between sources, since they have all (apart from 1331+3030 and 0319+4130) been compared with a 1 Jy model, yet they have different flux densities.
 								</p>
 							</section>
 							<hr/>
@@ -559,10 +558,10 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 								<h2 class="alt"><a name="determine_flux"></a>5. Determining true flux densities of other calibration sources (steps 18-19)</h2>
 								<p class="alt"><a href="calibration.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									The solutions for 1331+3030 in <code class="language-bash">calsources.a1</code> contain the correct scaling factor to convert the raw units from the correlator to Jy as well as removing time-dependent errors. This is used to calculate the scaling factor for the other calibration sources in the CASA task <code class="language-bash">fluxscale</code>. We run this task in a different way because the calculated fluxes are returned in the form of a python dictionary. They are also written to a text file. Only the best data are used to derive the flux densities but the output is valid for all antennas. This method assumes that all sources without starting models are points, so it cannot be used for an extended target. 
+									The solutions for 1331+3030 in <code class="language-bash">calsources.a1</code> include the correct scaling factor to convert the raw correlator units to Jy and remove time-dependent errors. This is used to calculate the scaling factor for the other calibration sources in the CASA task <code class="language-bash">fluxscale</code>. We run this task differently because the calculated fluxes are returned as a Python dictionary. They are also written to a text file. Only the best data are used to derive the flux densities, but the output is valid for all antennas. This method assumes that all sources without starting models are point sources, so it cannot be used for an extended target. 
 								<p>
 									<ul>
-										<li>We are not going to input anything for step 18 so just run it and we shall look at the outputs</li>
+										<li>We are not going to input anything for step 18, so just run it and we shall look at the outputs.</li>
 									</ul>
 								</p>
 								<pre class="line-numbers" data-start="684"><code class="language-python">	os.system('rm -rf calsources.a1_flux calsources_flux.txt')
@@ -575,10 +574,10 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 						reference='1331+3030',
 						transfer=phref)</code></pre>
 			    				<p> 
-			    					If you type <code class="language-bash">calfluxes</code> (once the step has been run) this will show you the python dictionary.
+			    					If you type <code class="language-bash">calfluxes</code> after the step has been run, it will show you the Python dictionary.
 			    				</p>
 			    				<p>
-			    					The individual spw estimates may have uncertainties up to $∼20\%$ but the bottom lines give the fitted flux density and spectral index for all spw which should be accurate to a few percent. These require an additional scaling of 0.938 to allow for the resolving out of flux of 1331+3130 by e-MERLIN. The python dictionary  <code class="language-bash">calfluxes</code> is edited to do this:
+			    					The individual spw estimates may have uncertainties of up to $\sim20\%$, but the bottom lines give the fitted flux density and spectral index for all spw, which should be accurate to a few per cent. These require an additional scaling of 0.938 to account for the resolving out of flux of 1331+3130 by e-MERLIN. The Python dictionary <code class="language-bash">calfluxes</code> is edited to apply this:
 			    				</p>
 			    				<pre class="line-numbers" data-start="694"><code class="language-python">	eMcalfluxes={}
 	for k in calfluxes.keys():
@@ -589,7 +588,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 			a.append(calfluxes[k]['fitRefFreq'])
 			eMcalfluxes[calfluxes[k]['fieldName']]=a</code></pre>
 								<p>
-									Next we use <code class="language-python">setjy</code> in a loop to set each of the calibration source flux densities. The logger will report the values being set.<pre class="line-numbers" data-start="708"><code class="language-python">	for f in eMcalfluxes.keys():
+									Next, we use <code class="language-python">setjy</code> in a loop to set the flux densities for each calibration source. The logger will report the values being set.<pre class="line-numbers" data-start="708"><code class="language-python">	for f in eMcalfluxes.keys():
 		setjy(vis='all_avg.ms',
 			  field=f,
 			  standard='manual',
@@ -598,7 +597,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 			  reffreq=str(eMcalfluxes[f][2])+'Hz')</code></pre>
 			  					</p>
 			  					<p>
-			  						The default in <code class="language-python">setjy</code>  is to scale by the spectral index for each channel . Finally we plot the models for the bandpass calibrators, amplitude against frequency, to see the spectral slopes.<pre class="line-numbers" data-start="717"><code class="language-python">	plotms(vis='all_avg.ms', field=phref, xaxis='frequency',
+			  						The default in <code class="language-python">setjy</code> is to scale by the spectral index for each channel. Finally, we plot the models for the bandpass calibrators, amplitude against frequency, to see the spectral slopes.<pre class="line-numbers" data-start="717"><code class="language-python">	plotms(vis='all_avg.ms', field=phref, xaxis='frequency',
 		   yaxis='amp',ydatacolumn='model',
 		   coloraxis='spw',correlation='RR',
 		   customsymbol=True,symbolshape='circle', symbolsize=5,
@@ -608,7 +607,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 			  					<div class="col-12"><span class="image fit"><img src="plots/phref_model.png" alt="" /></span></div>
 			  					<p>
 			  						<ul>
-			  							<li>Move onto step 19 and look at the inputs and run the step. Again, we won't be inputting parameters here. We are going to now use these new found flux densities to scale our visibilities to the correct, physical values using an amplitude correction.<pre class="line-numbers" data-start="731"><code class="language-python">	gaincal(vis='all_avg.ms',
+			  							<li>Move on to step 19, review the inputs, and run the step. Again, we won't be inputting parameters here. We are now going to use these newly found flux densities to scale our visibilities to the correct physical values using an amplitude correction.<pre class="line-numbers" data-start="731"><code class="language-python">	gaincal(vis='all_avg.ms',
 			calmode='a',
 			caltable='calsources.a2',
 			field=calsources,
@@ -631,14 +630,14 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 	       							</ul>
 	       						</p>
 	       						<p>
-	       							This should produce a plot that that shown below:
+	       							This should produce a plot that is shown below:
 	       						</p>
 	       						<div class="col-12"><span class="image fit"><img src="plots/calsources.a2.png" alt="" /></span></div>
 	       						<p>
-	       							You expect to see a similar scaling factor for all sources. 1331+305 is somewhat resolved, giving slightly higher values for Cm (the antenna giving the longest baselines).
+	       							You expect to see a similar scaling factor across all sources. 1331+305 is somewhat resolved, yielding slightly higher values for Cm (the antenna providing the longest baselines).
 	       						</p>
 	       						<p>
-	       							In the final part of the section we are going to derive phase solutions again but now combining all data on the phase calibrator source. This is because we only need one solution to interpolate across the target scans. We derive these and plot them with the following code<pre class="line-numbers" data-start="756"><code class="language-python">	gaincal(vis='all_avg.ms',
+	       							In the final part of the section, we are going to derive phase solutions again, this time combining all data on the phase calibrator source. This is because we only need one solution to interpolate across the target scans. We derive these and plot them with the following code.<pre class="line-numbers" data-start="756"><code class="language-python">	gaincal(vis='all_avg.ms',
 			calmode='p',
 			caltable='phref.p2',
 			field=phref,
@@ -662,7 +661,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 	os.system('mv phref.p2?*.png phref.p2.png')</code></pre>
 	       						</p>
 	       						<p>
-	       							This should produce a plot like that shown below:
+	       							This should produce a plot like the one shown below:
 	       						</p>
 								<div class="col-12"><span class="image fit"><img src="plots/phref.p2.png" alt="" /></span></div>
 							</section>
@@ -674,10 +673,10 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 								
 								<p>
 								<ul>
-									<li>Look and execute step 20 while reading the following information about this step.</li>
+									<li>Look at and execute step 20 while reading the following information about this step.</li>
 								</ul>
 								<p>
-									This step will apply the bandpass correction to all sources. For the other gaintables, for each calibrator (<code class="language-bash">field</code>), the solutions for the same source (<code class="language-bash">gainfield</code>) are applied. <code class="language-bash">gainfield=''</code> for the bandpass table means apply solutions from all fields in that gaintable. <code class="language-bash">applymode='calflag'</code> will flag data with failed solutions which is ok as we know that these were due to bad data. We use a loop over all calibration sources.
+									This step applies the bandpass correction to all sources. For the other gaintables, for each calibrator (<code class="language-bash">field</code>), the solutions for the same source (<code class="language-bash">gainfield</code>) are applied. <code class="language-bash">gainfield=''</code> for the bandpass table means applying solutions from all fields in that gaintable. <code class="language-bash">applymode='calflag'</code> flags data with failed solutions, which is ok, as we know these were due to bad data. We use a loop over all calibration sources.
 								</p>
 								<pre class="line-numbers" data-start="784"><code class="language-python">	cals=bases
 	cals.remove(target)
@@ -692,7 +691,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 				 flagbackup=False)</code></pre>
 
 								<p>
-								 We then apply the phase-ref solutions to the target. We assume that the phase reference scans bracket the target scans so linear interpolation is used except for bandpass.
+								 We then apply the phase-ref solutions to the target. We assume that the phase-reference scans bracket the target scans, so linear interpolation is used except for bandpass.
 								</p>
 								<pre class='line-numbers' data-start='797'><code class="language-python">	applycal(vis='all_avg.ms',
 			 field='1252+5634',
@@ -702,7 +701,7 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 			 gaintable=['all_avg.K','bpcal.B1','phref.p2','calsources.a2'],
 			 interp=['linear','nearest','linear','linear'],
 		 	 flagbackup=True)</code></pre>
-								Next we want to visualise our target and phase reference source. We want to ensure that the phase reference source is a true point source and if there is structure on the target. We can do this by looking at the amp vs uv distance plots. Remember a point source will be flat across uv distance!
+								Next, we want to visualise our target and phase reference source. We want to ensure that the phase reference source is a true point source and that the target shows no structure. We can do this by looking at the amp vs uv distance plots. Remember, a point source will be flat across uv distance.
 								</p>
 								<pre class='line-numbers' data-start='807'><code class="language-python">	plotms(vis='all_avg.ms', field='1302+5748', xaxis='uvdist',
 		   yaxis='amp',ydatacolumn='corrected',
@@ -713,18 +712,18 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 								<div class="col-12"><span class="image fit"><img src="plots/1302+5748_amp-uvdist.png" alt="" /></span></div>
 
 								<p>
-									This looks pretty point-like!. Let's repeat the above for the target.
+									This looks quite point-like. Let's repeat the above for the target.
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/1252+5634_amp-uvdist.png" alt="" /></span></div>
 								<p>
-									Hurray, there's some structure here!
+									Hurray, there's some structure here.
 								</p>
 								<p>
-									As a test, <b>QUESTION 5:</b> What do the plots of amplitude against $uv$ distance tell you? <br/><div class="popup" onclick="myFunction('Q5')"><b>Click for answer</b><span class="popuptext" id="Q5">The visibility amplitudes for the phase ref are constant as a function of projected baseline length ($uv$ distance in metres), showing that it is point-like at e-MERLIN resolutions.<br/> The amplitudes are noisiest out to 130km as these are the Defford baselines which are less sensitive. There's a little data which is anomalously low but this is ok as the target is bright.<br/> The target has higher amplitudes on shorter baselines, showing that it has structure on scales larger than 50mas, and has complex structure on the long baselines.</span></div>
+									As a test, <b>QUESTION 5:</b> What do the plots of amplitude against $uv$ distance tell you? <br/><div class="popup" onclick="myFunction('Q5')"><b>Click for answer</b><span class="popuptext" id="Q5">The visibility amplitudes for the phase ref are constant as a function of projected baseline length ($uv$ distance in metres), indicating that it is point-like at e-MERLIN resolutions.<br/> The amplitudes are noisiest out to 130 km, as these are the Defford baselines, which are less sensitive. There is a little data that is anomalously low, but this is ok as the target is bright.<br/> The target has higher amplitudes on shorter baselines, indicating structure on scales larger than 50 mas, and complex structure on the long baselines.</span></div>
 								</p>
 
 								<p>
-									Finally in step 21, we are going to split out the target source. <pre class="line-numbers" data-start="829"><code class="language-python">	mstransform(vis='all_avg.ms',
+									Finally, in step 21, we will split out the target source.<pre class="line-numbers" data-start="829"><code class="language-python">	mstransform(vis='all_avg.ms',
 										field='1252+5634',
 										correlation='LL,RR',
 										outputvis='1252+5634.ms',
@@ -741,13 +740,13 @@ execfile('3C277.1_cal_outline2026.py')</code></pre>
 		  							</ul>
 		  						</p>
 		  						<p>
-		  							The task <code class="language-bash">mstranform</code> will make a new measurement set called <code class="language-bash">1252+5634.ms</code> which contains the calibrated visibilities of the target source (moving the CORRECTED data to the DATA column in the new measurement set).  This means we don't need to apply those tables on the fly when we do further calibration. We have also specified some averaging so that the next steps of the tutorial can be processed quicker. In step 21, you will see that another listobs is run for to look at, and we have phase rotated the data to make the imaging steps easier. If you wish to have more information on this, ask your tutor. 
+		  							The task <code class="language-bash">mstranform</code> will create a new measurement set called <code class="language-bash">1252+5634.ms</code> that contains the calibrated visibilities of the target source (moving the CORRECTED data to the DATA column in the new measurement set). This means we don't need to apply those tables on the fly during further calibration. We have also specified some averaging so that the next steps of the tutorial can be processed more quickly. In step 21, you will see that another listobs is run to look at the data, and we have phase-rotated the data to make the imaging steps easier. If you wish to have more information on this, ask your tutor. 
 		  						</p>
 								<p>
-									This concludes the calibration section. Make sure that you save <code class="language-bash">1252+5634.ms</code> for the imaging and self-calibration tutorials.
+									This concludes the calibration section. Make sure you save <code class="language-bash">1252+5634.ms</code> for the imaging and self-calibration tutorials.
 								</p>
 								<p>
-									Congratulations, you have finished the second part of this tutorial and calibrated your data. Next we shall move onto imaging your objects. Follow the link below to continue.
+									Congratulations, you have finished the second part of this tutorial and calibrated your data. Next, we shall move on to imaging your objects. Follow the link below to continue.
 								</p>
 								<p>
 									<ul class="actions stacked">

@@ -56,11 +56,11 @@ onload = function(){
 							<section>
 								<h2 class="alt"><a name=""></a>Data required</h2>
 									<p>
-										For this section, it is advised to start from the pre-calibrated data (rather than your own from the calibration section). These are contained in the <code class="language-bash">ERIS26_imaging_tutorial.tar.gz</code> which you should have already downloaded. Untar this folder and enter the <code class="language-bash">ERIS26_imaging</code> folder that should have been created. Please ensure the following are in your current working directory,
+										For this section, it is advisable to start with the pre-calibrated data (rather than your own from the calibration section). These are contained in the <code class="language-bash">ERIS26_imaging_tutorial.tar.gz</code> file, which you should already have downloaded. Untar this file and enter the <code class="language-bash">ERIS26_imaging</code> folder that should have been created. Please ensure the following are in your current working directory,
 										<ol>
-											<li><code class="language-bash">1252+5634.ms</code> - measurement set containing just the 3C277.1 visibilities (this should have been created after the calibration tutorial or untar from the imaging tar bundle (see <a href="index.html#three">Home</a>)</li>
-											<li><code class="language-bash">3C277.1_imaging_outline2026.py</code> - imaging script for the next three tutorials (imaging, self-calibration and advanced imaging)</li>
-											<li><code class="language-bash">3C277.1_imaging_all2026.py</code> - cheat script containing the answers</li>
+											<li><code class="language-bash">1252+5634.ms</code> - measurement set containing only the 3C277.1 visibilities (this should have been created after the calibration tutorial, or untar the imaging tar bundle (see <a href="index.html#three">Home</a>)).</li>
+											<li><code class="language-bash">3C277.1_imaging_outline2026.py</code> - imaging script for the next three tutorials (imaging, self-calibration and advanced imaging).</li>
+											<li><code class="language-bash">3C277.1_imaging_all2026.py</code> - cheat script containing the answers.</li>
 										</ol>
 									</p>
 							</section>
@@ -79,32 +79,32 @@ onload = function(){
 								<h2 class="alt"><a name="imaging101"></a>1. Imaging 101</h2>
 								<div class="col-12"><span class="image fit"><img src="plots/imaging_demo.png" alt="" /></span></div>
 								<p>
-									The figure above summarises the imaging process (using our target as an example) and we shall go through this in the following section. If you remember from the lectures, we can represent the visibilities measured by an interferometer, $\mathsf{V} ( u , v )$, with the following equation: $$\mathsf{V} ( u , v ) \approx \iint _ { l m } \mathsf { B } ( l , m ) \exp\left[ - 2 \pi i ( u l + v m ) \right] \mathrm{d}l \mathrm{d}m$$
-									where $\mathsf { B } ( l , m )$ is the sky brightness distribution, $l,m$ are directional cosines and $u,v$ are the coordinates (defined as perpendicular to the source). From the lectures, you will remember that a key factor in interferometric observations is that we have an unfilled $uv$-plane i.e., we are not sensitive to all spatial frequencies. This makes imaging a fundamentally more difficult problem because we have to deal with arrays with 'holes' in them (also known as sparse arrays). This makes directly Fourier transforming the visibilities nigh-on impossible.
+									The figure above summarises the imaging process (using our target as an example), and we shall go through it in the following section. As you may recall from the lectures, we can represent the visibilities measured by an interferometer, $\mathsf{V} ( u , v )$, with the following equation: $$\mathsf{V} ( u , v ) \approx \iint _ { l m } \mathsf { B } ( l , m ) \exp\left[ - 2 \pi i ( u l + v m ) \right] \mathrm{d}l \mathrm{d}m$$
+                                    where $\mathsf { B } ( l , m )$ is the sky brightness distribution, $l,m$ are directional cosines, and $u,v$ are the coordinates (defined as perpendicular to the source). From the lectures, you will remember that a key factor in interferometric observations is that we have an unfilled $uv$-plane, i.e., we are not sensitive to all spatial frequencies. This makes imaging a fundamentally more difficult problem because we have to deal with arrays with 'holes' in them (also known as sparse arrays). This makes directly Fourier-transforming the visibilities nigh-on impossible.
 								</p>
 								<p>
-									To get around this, we can define a sampling function, $\mathsf{S}(u,v)$, which is equal to 1 where there is a measurement on the $uv$ plane and 0 otherwise. The sampling function is easy to determine because we know exactly where our antennas are at all times, so we therefore know what parts of the $uv$ plane they will occupy. A good way to visualise $uv$ plane is to imagine the apparent movement of the antennas across the course of the observations as if you were looking at the Earth from the direction of the source.
+									To address this, we can define a sampling function, $\mathsf{S}(u,v)$, which equals 1 where there is a measurement on the $uv$ plane and 0 otherwise. The sampling function is straightforward to determine because we know exactly where our antennas are at all times, so we know which parts of the $uv$ plane they will occupy. A good way to visualise the $uv$ plane is to imagine the apparent movement of the antennas across the course of the observations, as if you were looking at the Earth from the direction of the source.
 								</p>
 								<p>
-									If we multiply each side of the imaging equation by the inverse Fourier Transform of the sampling function, we can Fourier Transform ($\mathfrak{F}$) the imaging equation to give: $$\mathsf{ B } ( l , m ) * \mathsf{ D } ( l , m ) \approx \iint _ { uv } \mathsf{S} ( u , v ) \mathsf{V}( u , v ) \exp\left[ 2 \pi i ( u l + v m ) \right] \mathrm{d}u\mathrm{d}v \\\mathsf{ D } ( l , m ) = \iint _ { u v } \mathsf{S} ( u , v ) \exp\left[ 2 \pi i ( u l + v m )\right] \mathrm{d}u \mathrm{d}v$$
-									where $\ast$ is the convolution operator. You can see that now we can recover the intrinsic source brightness distribution $\mathsf{B}(l,m)$ if we can deconvolve the $\mathsf{D}(l,m)$ term from it. This $\mathsf{D}(l,m)$ term is known as the dirty beam or point spread function (PSF). Luckily this can be derived easily because we know exactly what $\mathsf{S}(u,v)$ is.
+									If we multiply each side of the imaging equation by the inverse Fourier Transform of the sampling function, we can apply the Fourier Transform ($\mathfrak{F}$) to obtain: $$\mathsf{ B } ( l , m ) * \mathsf{ D } ( l , m ) \approx \iint _ { uv } \mathsf{S} ( u , v ) \mathsf{V}( u , v ) \exp\left[ 2 \pi i ( u l + v m ) \right] \mathrm{d}u\mathrm{d}v \\\mathsf{ D } ( l , m ) = \iint _ { u v } \mathsf{S} ( u , v ) \exp\left[ 2 \pi i ( u l + v m )\right] \mathrm{d}u \mathrm{d}v$$
+                                    where $\ast$ is the convolution operator. You can see that we can now recover the intrinsic source brightness distribution $\mathsf{B}(l,m)$ if we can deconvolve the $\mathsf{D}(l,m)$ term from it. This $\mathsf{D}(l,m)$ term is known as the dirty beam or point spread function (PSF). Fortunately, this can be derived easily because we know exactly what $\mathsf{S}(u,v)$ is.
 								</p>
 								<p>
-									Sounds simple eh? Not so! The next step, namely the deconvolution of the PSF from the dirty image, is a little more complicated than it sounds. The deconvolution process is called an 'ill-posed' problem in mathematics. What this means is that, without some assumptions, solutions to deconvolution are often not unique i.e. there are many variants of $\mathsf{B}(l,m)$ that would satisfy the equation. In addition to this, the algorithms used to perform deconvolution can be highly non-linear and can diverge from 'good' solutions.
+									Sounds simple, eh? Not so! The next step, namely deconvolving the PSF from the dirty image, is a little more complicated than it sounds. The deconvolution process is called an 'ill-posed' problem in mathematics. This means that, without some assumptions, solutions to deconvolution are often not unique, i.e. there are many variants of $\mathsf{B}(l,m)$ that would satisfy the equation. In addition, the algorithms used to perform deconvolution can be highly non-linear and can diverge from 'good' solutions.
 								</p>
 								<p>
-									To help the deconvolution process, we can apply a range of assumptions in order to guide the deconvolution process towards to the most likely sky brightness distribution. These assumptions are often physically based, e.g. the assumption that $\mathsf{B}(l,m)$ is always positive, but the assumptions can vary slightly with each different deconvolution algorithm.
+									To help the deconvolution process, we can apply a range of assumptions to guide it towards the most likely sky brightness distribution. These assumptions are often physically based, e.g. the assumption that $\mathsf{B}(l,m)$ is always positive, but they can vary slightly with each deconvolution algorithm.
 								</p>
 								<p>
-									The most commonly used string of algorithms are the CLEAN variants which we shall discuss here. The standard CLEAN algorithm (either Högbom or Clark) assumes that the sky is sparse, i.e., radio sources are far from each other and that the sky brightness distribution can be represented by point sources (i.e. delta functions). The CLEAN algorithm goes through many cycles in which it identifies the brightest pixels and then removes 10% (the default value) of the flux density at each of these pixels and records the value and position in a model image. CLEAN then calculates the contribution of these removed pixels convolved with the PSF and subtracts it from the dirty image. This is known as a 'minor cycle'.
+									The most commonly used algorithms are the CLEAN variants, which we shall discuss here. The standard CLEAN algorithm (either Högbom or Clark) assumes that the sky is sparse, i.e., radio sources are far from each other, and that the sky brightness distribution can be represented by point sources (i.e. delta functions). The CLEAN algorithm iterates through many cycles, identifying the brightest pixels, removing 10% (the default value) of the flux density at each of these pixels, and recording the value and position in a model image. CLEAN then calculates the contribution of these removed pixels, convolved with the PSF, and subtracts it from the dirty image. This is known as a 'minor cycle'.
 								<p>
-									After a certain number of minor cycles, the model is the Fourier transformed and subtracted from the visibility data, which are then re-Fourier transformed back to make a new dirty image, which will have less bright emission and fewer contributions from the dirty beam. This is known as a 'major cycle'. These cycles are continued until the final dirty image (or the 'residual image') is indistinguishable from noise. The following plot shows the CLEAN process on 3C277.1, which we are about to image. You can see how the model gets built up and the contribution from the PSF reduces over each major cycle and each CLEAN iteration (which removes the 10% from the brightest pixel). 
+									After a certain number of minor cycles, the model is Fourier transformed and subtracted from the visibility data, which are then re-Fourier transformed to produce a new dirty image with less bright emission and fewer contributions from the dirty beam. This is known as a 'major cycle'. These cycles are continued until the final dirty image (or the 'residual image') is indistinguishable from noise. The following plot shows the CLEAN process on 3C277.1, which we are about to image. You can see how the model is built up and how the contribution from the PSF decreases over each major cycle and each CLEAN iteration (which, by default, removes 10% from the brightest pixel). 
 								</p>
 
 								<div class="col-12"><span class="image fit"><img src="plots/clean_demo.png" alt="" /></span></div>
 
 								<p>
-									Once deconvolution is complete and the residual image looks close to noise, the model is convolved with the synthesised beam and added (without all the horrible sidelobes) back into the data. The synthesised or restoring beam is an idealised Gaussian fit to the PSF and can be thought of as the effective resolution of the interferometer array. The final image is shown in the right most panel of the figure at the start of this section. The synthesised beam size is represented by the elliptical overlay in the bottom left of the image.
+									Once deconvolution is complete and the residual image looks close to noise, the model is convolved with the synthesised beam and added back to the data (without the horrible sidelobes). The synthesised or restoring beam is an idealised Gaussian fit to the PSF and can be thought of as the effective resolution of the interferometer array. The final image is shown in the rightmost panel of the figure at the start of this section. The synthesised beam size is represented by the elliptical overlay in the bottom left of the image.
 								</p>
 
 							</section>
@@ -113,14 +113,14 @@ onload = function(){
 								<h2 class="alt">2. <a name="determining">Determining the imaging parameters (steps 1-2)</a></h2>
 								<p class="alt"><a href="imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Let's get on with making our first image using the CASA task <code class="language-python">tclean</code>. In the CASA prompt, type <code class="language-python">default(tclean)</code> and then <code class="language-python">inp</code>. There is a quite a few inputs which can be quite daunting, however, this task is very versatile and conducts imaging for many different observing set-ups (e.g. spectral line, wide-field etc.). If you wonder what is best for your data, consult the <a href="https://casadocs.readthedocs.io/en/stable/" target="_blank">CASA docs</a>. Note that for Mac OS users, we will be using a task called <code class="language-python">iclean</code>. This is functionally the same as <code class="language-python">tclean</code> and is simply a wrapper that provides the GUI to do interactive cleaning because the casaviewer has been depreciated on Mac OS. 
+									Let's get on with making our first image using the CASA task <code class="language-python">tclean</code>. At the CASA prompt, type <code class="language-python">default(tclean)</code> and then <code class="language-python">inp</code>. There are quite a few inputs, which can be daunting. However, this task is very versatile and supports imaging for many different observing set-ups (e.g. spectral line, wide-field, etc.). If you are unsure what is best for your data, consult the <a href="https://casadocs.readthedocs.io/en/stable/" target="_blank">CASA docs</a>. Note that for Mac OS users, we will be using a task called <code class="language-python">iclean</code>. This is functionally the same as <code class="language-python">tclean</code> and is simply a wrapper that provides the GUI for interactive cleaning, because the casaviewer has been deprecated on Mac OS. 
 								</p>
 								<p>
-									<b>Important:</b>. For the next sections, Linux specific help will start the sentence with a <b>(L)</b> and Mac specific with a <b>(M)</b>
+									<b>Important:</b> In the following sections, Linux-specific help will start the sentence with a <b>(L)</b> and Mac-specific help with a <b>(M)</b>.
 								</p>
 								<p>
 									<ul>
-										<li>Take a look at step 2 and fill in the empty parameters using the information and instructions given below. For the following 
+										<li>Take a look at step 2 and fill in the empty parameters using the information and instructions provided below.
 		   							
 								<div class="row">
 								<div class="column">
@@ -141,16 +141,16 @@ onload = function(){
 								<div class="column">
 									<b>Mac OS</b>
 									<pre class="line-numbers" data-start="103"><code class="language-python">	iclean(vis=target+'.ms',
-			   imagename='target1',
-			   specmode='mfs',
-			   niter=1500,
-			   cycleniter=300,
-			   threshold=0,
-			   imsize=['**','**'],
-			   cell='**',
-			   weighting='**',
-			   deconvolver='**',
-			   savemodel='modelcolumn')
+		   imagename='target1',
+		   specmode='mfs',
+		   niter=1500,
+		   cycleniter=300,
+		   threshold=0,
+		   imsize=['**','**'],
+		   cell='**',
+		   weighting='**',
+		   deconvolver='**',
+		   savemodel='modelcolumn')
 	ft(vis=target+'.ms', 
 	   model='target1.model',
 	   usescratch=True) </code></pre>
@@ -159,13 +159,13 @@ onload = function(){
 					  			</li></ul>
 		   						</p>
 								<p>
-									There some things that we always need to decide and set when imaging which are:
+									There are some things that we always need to decide and set when imaging, which are:
 									<ol>
-										<li><code class="language-python">imagename</code> - this is self explanatory, you need to set an image name which should describe the imaging step and object imaged.</li>
-										<li><code class="language-python">field</code> - this is the name of the field that you want to observe and again is self-explanatory.</li>
-										<li><code class="language-python">cell</code> - this is the angular size of each pixel in our output image. To estimate this, we need to determine the resolution of our interferometer. We can do this by looking at the $uv$ distance (i.e. the radial distance of measurements in the $uv$ plane). This is done in step 1 of your <code class="language-bash">3C277.1_imaging_outline2026.py</code> script. 
+										<li><code class="language-python">imagename</code> - this is self-explanatory. You need to set an image name that should describe the imaging step and the object imaged.</li>
+										<li><code class="language-python">field</code> - this is the name of the field/source you want to observe, and it is self-explanatory.</li>
+										<li><code class="language-python">cell</code> is the angular size of each pixel in our output image. To estimate this, we need to determine the resolution of our interferometer. We can do this by examining the $uv$ distance (i.e. the radial distance of measurements in the $uv$ plane). This is done in step 1 of your <code class="language-bash">3C277.1_imaging_outline2026.py</code> script.
 										<ul>
-											<li>Either execute step 1 or use the following commands,<pre class="line-numbers" data-start="66"><code class="language-python">	plotms(vis='1252+5634.ms',
+											<li>Either execute step 1 or use the following commands.<pre class="line-numbers" data-start="66"><code class="language-python">	plotms(vis='1252+5634.ms',
 		   xaxis='uvwave',
 		   yaxis='amp',
 		   correlation='RR',
@@ -178,44 +178,42 @@ onload = function(){
 										</ul>
 										<div class="col-12"><span class="image fit"><img src="plots/3C277.1_uvdist.png" alt="" /></span></div>
 										<p>
-											Only the highest frequency spectral window is chosen (as this corresponds to the best resolution, remember $\lambda/B$), and only one correlation is picked. These are picked to improve the plotting time.
+											Only the highest-frequency spectral window is chosen (as this corresponds to the best resolution, remember $\lambda/B$), and only one correlation is selected. These choices are made to improve the plotting time.
 										<p>
-											In this plot, the greatest projected baseline length of the observation corresponds to the highest possible resolution of your observation. Note that we have plotted this in units of wavelength so that we can simplify the calculation.
+											In this plot, the greatest projected baseline length of the observation corresponds to the highest possible resolution of your observation. Note that we have plotted this in units of wavelength to simplify the calculation.
 										</p>
 										<p>
-											To obtain a good value for the cell size, you should read the highest $uv$ distance value (which is approximately $3.8\times10^{6}\,\lambda$). With this obtained we can convert the values into a representative resolution (remember the resolution of an interferometer is $\sim\lambda/D$ and the $\lambda$s will cancel out!).
+											To obtain a good value for the cell size, you should read the highest $uv$ distance value (which is approximately $3.8\times10^{6}\,\lambda$). With this value in hand, we can convert it into a representative resolution (remember the resolution of an interferometer is $\sim\lambda/D$ and the $\lambda$s will cancel out!).
 										</p>
 										<p>
-											There is one other factor that we have missed out and that is Nyquist sampling ($N_\mathrm{s}$). Remember that, during imaging, we have to fit a 2D Gaussian to the PSF in order to get our synthesised/restoring beam. The minimum number of pixels required to obtain a fit to a Gaussian must be at least 3 pixels but often (especially for sparse arrays where the PSFs are highly non-Gaussian) more pixels are used.
+											There is one other factor we have missed, namely Nyquist sampling ($N_\mathrm{s}$). Remember that, during imaging, we have to fit a 2D Gaussian to the PSF to obtain our synthesised/restoring beam. The minimum number of pixels required to fit a Gaussian is at least 3, but often (especially for sparse arrays where the PSFs are highly non-Gaussian) more pixels are used.
 										</p>
 										<p>
-											Based upon the aforementioned points, an estimate for a good cell size is given by the following equation: $$\mathrm{cell} \approx  \frac{180}{\pi N_\mathrm{s}} \times \frac{1}{D_\mathrm{max}\,\mathrm{[\lambda]}}~\mathrm{[deg]}$$
-										</p>
-										<p>
-											In this case assuming a $D_\mathrm{max} = 3.8\times10^{6}\,\lambda$ and $N_\mathrm{s}$ of 4 pixels, you should obtain a cell size of around $13.5\,\mathrm{milliarcseconds~(mas)}$ i.e. <code class="language-python">cell=['13.5mas']</code>.
+											Based on the aforementioned points, an estimate for a suitable cell size is given by the following equation: $$\mathrm{cell} \approx  \frac{180}{\pi N_\mathrm{s}} \times \frac{1}{D_\mathrm{max}\,\mathrm{[\lambda]}}~\mathrm{[deg]}$$
+											In this case, assuming $D_\mathrm{max} = 3.8\times10^{6}\,\lambda$ and $N_\mathrm{s} = 4$ pixels, you should obtain a cell size of around $13.5\,\mathrm{milliarcseconds~(mas)}$, i.e. <code class="language-python">cell=['13.5mas']</code>.
 										</p></li>
 										<li>
 											<p>
-												<code class="language-python">imsize</code> - This describes the number of pixels your image is going to be on a side. This is often a compromise between computing speed and deconvolution performance. You want an image which is not too large, but large enough that you can remove the PSF sidelobes (see the imaging figure above!). If your source is extended, then the image size may also need to be larger to account for this. On top of this, we also want to set an image size which is optimal for the underlying algorithms in <code class="language-python">tclean</code>. According to CASA, a good number to choose is even, divisible by 2, 3, 5 and 7 only, or a factor of $2^n$!. An easy rule of thumb is to use an image size of $2^{n}\times 10$, where $n$ is an integer. 
+												<code class="language-python">imsize</code> - This sets the number of pixels along each side of the image. It is often a compromise between computing speed and deconvolution performance. You want an image that is not too large, but large enough to remove the PSF sidelobes (see the imaging figure above!). If your source is extended, the image size may also need to be larger to account for this. In addition, we want to set an image size that is optimal for the underlying algorithms in <code class="language-python">tclean</code>. According to CASA, a good choice is an even number that is divisible only by 2, 3, 5 and 7, or a factor of $2^n$!. An easy rule of thumb is to use an image size of $2^{n}\times 10$, where $n$ is an integer. 
 											</p>
 											<p>  
-												Our source is extended so we want an image to be large enough to cover all the emission. To find a good image size, look at <a href="plots/299-2-467.pdf" target="_blank">Ludke et al. 1998</a> page 5, and estimate the size of that image, in pixels. You should find that something close to an image size of 256 should be sufficient i.e., <code class="language-python">imsize=[256,256]</code></p></li>
-										<li><p><code class="language-python">deconvolver</code> - The choice of deconvolution algorithm is highly dependent upon your source and your interferometer. To establish the correct choice for you data consult the CASA docs. A good rule of thumb of what to pick is the following:
+												Our source is extended, so we want an image large enough to cover all the emission. To find a suitable image size, see <a href="plots/299-2-467.pdf" target="_blank">Ludke et al. 1998</a> page 5 and estimate the size of that image in pixels. You should find that an image size of about 256 should be sufficient, i.e., <code class="language-python">imsize=[256,256]</code></p></li>
+										<li><p><code class="language-python">deconvolver</code> - The choice of deconvolution algorithm depends on your source and your interferometer. To establish the correct choice for your data, consult the CASA docs. A good rule of thumb for what to pick is the following:
 										</p>
 										<p>
 											<ul>
-												<li> Do you expect that your sources are extended i.e. $\gg$ than the resolution? - consider <code class="language-python">multiscale</code> (this deconvolution algorithm, assumes the sky is comprised of many Gaussians which is better for modelling fluffy emission compared to using delta functions)</li>
-												<li> Does your observation have a large fractional bandwidth i.e. a good rule of thumb is $\mathrm{total~bandwidth/central~frequency} = \mathrm{BW}/\nu_c > 15\%$? - consider <code class="language-python">mtmfs</code> (this models the change in flux/morphology of the source across the bandwidth and failures to model this can cause un-deconvolvable errors in the image)<br/><b>If</b> the source is extended too, implement multiscale deconvolution by setting the <code class="language-python">scales</code> parameter.</li>
-												<li> Do you expect that the source has polarisation structure? - consider <code class="language-python">clarkstokes</code> (which cleans the separate polarisations separately)</li>
-												<li> If not, then we would expect we have a small bandwidth and compact structure therefore the <code class="language-python">clark</code> algorithm should be sufficient.</li>
+												<li>Do you expect your sources to be extended, i.e. $\gg$ the resolution? Consider <code class="language-python">multiscale</code> (this deconvolution algorithm assumes the sky comprises many Gaussians, which is better for modelling fluffy emission than using delta functions)</li>
+												<li>Does your observation have a large fractional bandwidth, i.e., a good rule of thumb is $\mathrm{total~bandwidth/central~frequency} = \mathrm{BW}/\nu_c > 15\%$? Consider <code class="language-python">mtmfs</code> (this models changes in the source's flux/morphology across the bandwidth, and failing to model this can cause un-deconvolvable errors in the image)<br/><b>If</b> the source is also extended, implement multiscale deconvolution by setting the <code class="language-python">scales</code> parameter.</li>
+												<li>Do you expect the source to have polarisation structure? - consider <code class="language-python">clarkstokes</code> (which cleans the polarisations separately)</li>
+												<li>If not, we would expect to have a small bandwidth and a compact structure, so the <code class="language-python">clark</code> algorithm should be sufficient.</li>
 											</ul>
 										</p>
 										<p>
-											In our case, we have a borderline fractional bandwidth ($\mathrm{BW}/\nu_c \sim 0.512\,\mathrm{GHz}/5.072\,\mathrm{GHz} \sim \mathbf{10\%}$), and we don't care about polarisation here. This means that setting <code class="language-python">deconvolver='clark'</code> should be fine (note that we will try multiscale in the advanced imaging tutorial)!
+											In our case, we have a borderline fractional bandwidth ($\mathrm{BW}/\nu_c \sim 0.512\,\mathrm{GHz}/5.072\,\mathrm{GHz} \sim \mathbf{10\%}$), and we don't care about polarisation. This means that setting <code class="language-python">deconvolver='clark'</code> should be fine (note that we will try multiscale in the advanced imaging tutorial).
 										</p></li>
-										<li><p><code class="language-python">niter</code> - following on from the deconvolver, this parameter determines the number of iterations the deconvolution algorithm is going to use. If you remember earlier, for each iteration a percentage of the flux of the brightest pixel is removed from the dirty image therefore the larger the <code class="language-python">niter</code>, the more flux is removed. Luckily we are going to do this interactively and inspect the residuals after each major cycle so we can adjust <code class='language-python'>niter</code> on the fly. For this, we won't go so deep therefore we set <code class='language-python'>niter=1500</code>. <b>(L)</b> We will do it interactively so set <code class='language-python'>interactive=True</code>. <b>(M)</b> For Mac users, we shall use <code class="language-python">iclean</code> to do interative cleaning. Note that if we didn't do it interactively, you could use tclean on Mac OS.</p></li>
+										<li><p><code class="language-python">niter</code> - following on from the deconvolver, this parameter determines the number of iterations the deconvolution algorithm will use. As mentioned earlier, at each iteration a percentage of the flux of the brightest pixel is removed from the dirty image; therefore, the larger the <code class="language-python">niter</code>, the more flux is removed. Luckily, we are going to do this interactively and inspect the residuals after each major cycle, so we can adjust <code class='language-python'>niter</code> on the fly. For this, we won't go so deep, so we set <code class='language-python'>niter=1500</code>. <b>(L)</b> We will do it interactively, so set <code class='language-python'>interactive=True</code>. <b>(M)</b> For Mac users, we shall use <code class="language-python">iclean</code> to do interactive cleaning. Note that if we didn't do it interactively, you could use tclean on Mac OS.</p></li>
 
-										<li><p><code class="language-python">weighting</code> - the weighting parameter determines how the various baselines are represented in the imaging routine. Uniform weighting makes each baseline in the $uv$ plane have equal weight, which typically gives images with the highest resolution, whilst natural weighting maximises sensitivity and increases the contributions from data points/baselines which are closer in the $uv$ plane. For this imaging, we shall run the default of <code class="language-python">weighting='natural'</code>. We shall investigate the effects of changing the weighting in the advanced imaging section.</p></li>
+										<li><p><code class="language-python">weighting</code> - the weighting parameter determines how the various baselines are represented in the imaging routine. Uniform weighting gives each baseline in the $uv$ plane equal weight, which typically yields the highest resolution, whilst natural weighting maximises sensitivity and increases the contributions from data points/baselines that are closer in the $uv$ plane. For this imaging, we shall use the default <code class="language-python">weighting='natural'</code>. We shall investigate the effects of changing the weighting in the advanced imaging section.</p></li>
 									</ol>
 								</p>
 							</section>
@@ -225,60 +223,60 @@ onload = function(){
 								<p class="alt"><a href="imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 
 								<p>
-									With the imaging parameters set in step 2, we want to start the imaging of our source.
+									With the imaging parameters set in step 2, we want to start imaging our source.
 								</p>
 								<p>
 									<ul>
-										<li>Execute step 2 and check the logger. The algorithm will grid the visibilities with the appropriate weights and produce the PSF, ready for deconvolution and inversion of the visibilities to make our dirty image. We can guide the deconvolution process so that it doesn't diverge (as explained in part 9).</li>
-										<li>The guidance comes via the use of masks. These masks tells the algorithm which pixels should be searched for flux to be removed and the PSF deconvolved. These masks should be set in regions which you think contains real flux. These typically look like the PSF shape in the case of point sources (see part 9 of this section for the PSF shape). Because we set <b>(L)</b><code class="language-python">interactive=True</code> / <b>(M)</b> used <code class="language-python">iclean</code> CASA returns a GUI similar to that shown below where we can set masks and guide the deconvolution process.</li>
+										<li>Execute step 2 and check the logger. The algorithm will grid the visibilities with the appropriate weights and produce the PSF, ready for deconvolution and for inverting the visibilities to produce our dirty image. We can guide the deconvolution process to prevent divergence (as explained in part 9).</li>
+										<li>The guidance comes via masks. These masks tell the algorithm which pixels to search for flux to be removed and for PSF deconvolution. These masks should be set in regions that you think contain real flux. They typically match the PSF shape for point sources (see part 9 of this section for the PSF shape). Because we set <b>(L)</b><code class="language-python">interactive=True</code> / <b>(M)</b> used <code class="language-python">iclean</code>, CASA returns a GUI similar to that shown below, where we can set masks and guide the deconvolution process.</li>
 
 										<b>Linux</b>
 										<div class="col-12"><span class="image fit"><img src="plots/viewer_gui.png" alt="" /></span></div>
 										<b>Mac OS</b>
 										<div class="col-12"><span class="image fit"><img src="plots/casagui_info.001.png" alt="" /></span></div>
-										<li><span class="image right"><img src="plots/dirty_image.png" alt="" /></span>The GUI will show the dirty image. At the bottom left of the image, there is a bright source with the characteristic PSF shape around it. It is here that we want to begin setting our mask. The figure to the right shows the dirty image and the black contour an example of a good first mask.</li>
-										<li>To set the mask we want to use the region buttons (e.g. <b>(L)</b> <img src="plots/region_button.png" width="18"> / <b>(M)</b> <img src="plots/region_button_mac.png" width="18">). <b>(L)</b> The filled rectangle of the three rectangles on these buttons, corresponds to the mouse buttons. <b>(L)</b> These can be adjusted and re-assigned to different mouse buttons by clicking on them.</li>
-										<li>The gif below shows how we can set the mask and run the next major cycle. Important Note that to set the mask, we need to <b>(L)</b> double-click with the appropriate button (in this case, the right mouse button) / <b>(M)</b> press shift+a, and the box should change to a solid line. Set a mask round the obviously brightest regions and clean interactively, mask new regions or increase the mask size as needed. A guide to setting a mask is shown in the gif below.</li>
+										<li><span class="image right"><img src="plots/dirty_image.png" alt="" /></span>The GUI will display the dirty image. At the bottom left of the image, there is a bright source with the characteristic PSF shape around it. This is where we want to begin setting our mask. The figure to the right shows the dirty image, with the black contour indicating an example of a good first mask.
+                                        <li>To set the mask, we want to use the region buttons (e.g. <b>(L)</b> <img src="plots/region_button.png" width="18"> / <b>(M)</b> <img src="plots/region_button_mac.png" width="18">). <b>(L)</b> The filled rectangle among the three on these buttons corresponds to the mouse buttons. <b>(L)</b> These can be adjusted and reassigned to different mouse buttons by clicking on them.</li>
+										<li>The gif below shows how to set the mask and run the next major cycle. Important note that to set the mask, we need to <b>(L)</b> double-click with the appropriate button (in this case, the right mouse button) or <b>(M)</b> press shift+a. The box should change to a solid line. Set a mask around the brightest regions and clean interactively, masking new regions or increasing the mask size as needed. A guide to setting a mask is shown in the gif below.</li>
 									</ul>
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/mask_demo.gif" alt="" /></span></div>
 								<p>
 									<ul>
-										<li>Once the green arrow button has been pressed, the next major cycle will run and the GUI will freeze. This process will remove some flux, deconvolve the PSF and begin the process of generating the model as explained in part A. Once these contributions have been removed from the visibilities, the task will generate another residual image with less bright flux and re-open the imview GUI.</li>
+										<li>Once the green arrow <b>(L)</b> or single circular arrow <b>(M)</b> button is pressed, the next major cycle will run and the GUI will freeze. This process will remove some flux, deconvolve the PSF, and begin generating the model, as explained in part A. Once these contributions have been removed from the visibilities, the task will generate another residual image with less bright flux and re-open the imview GUI.</li>
 
-										<li>Continue with the CLEANing process and modify the mask as appropriate. Note that you can delete parts of the mask by clicking on the erase button, overlaying the green box on the region to remove and double clicking to remove that portion.</li>
+										<li>Continue with the cleaning process and modify the mask as appropriate. You can delete parts of the mask by clicking the erase button, placing the green box over the region to remove, and double-clicking to remove that portion.</li>
 
-										<li>Over the course of the CLEAN process you should see the PSF imprint getting removed and the residual turning into noise (or noise + calibration errors). The plot from earlier, showing the deconvolution process 
+										<li>Over the course of the CLEAN process, you should see the PSF imprint being removed and the residual turning into noise (or noise plus calibration errors). The plot from earlier, showing the deconvolution process illustrates this.</li>
 
-										<li>After around 2 major cycles, you should see some low flux density structure appears which we then need to CLEAN. This is why we modify our mask as this was unseen in the dirty image</li>
+										<li>After about 2 major cycles, you should see some low-flux-density structure appear, which we then need to CLEAN. This is why we modify our mask, as this was unseen in the dirty image.</li>
 
-										<li>Continue until around major cycle 6, where the source is indistinguishable from noise, and click on the red cross to stop cleaning.</li>
+										<li>Continue until around major cycle 6, when the source becomes indistinguishable from noise, then click the red cross to stop cleaning.</li>
 									</ul>
 								</p>
 								<p>
-									With CLEAN stopped and completed, the algorithm shall take the model image (the delta functions) convolve it with the fitted PSF i.e. synthesised beam and add this onto the residual image to generate the image. Let's have a look at what clean has made,
+									With CLEAN stopped and completed, the algorithm shall take the model image (the delta functions), convolve it with the fitted PSF (i.e. the synthesised beam), and add this to the residual image to generate the image. Let's have a look at what CLEAN has made.
 								</p>
 								<p>
 									<ul>
-										<li>Type !ls into the CASA prompt.</li>
+										<li>Type <code class="language-bash">!ls</code> into the CASA prompt.</li>
 									</ul>
 								</p>
 								<p>
-									You should see some new files which are CASA images. These are:
+									You should see some new files, which are CASA images. These are:
 									<ol>
-										<li><code class="language-bash">target0.image</code> - The model convolved with the synthesised beam added into the residual image</li>
-										<li><code class="language-bash">target0.residual</code> - The noise image after CLEAN deconvolution (seen in the interactive prompt during CLEANing)</li>
-										<li><code class="language-bash">target0.model</code> - The underlying estimated sky brightness model by CLEAN</li>
-										<li><code class="language-bash">target0.psf</code> - The FT of the sampling function that is deconvolved</li>
-										<li><code class="language-bash">target0.pb</code> - The primary beam response across the image (Note this is not correct for heterogeneous arrays yet)</li>
-										<li><code class="language-bash">target0.sumwt</code> - The sum of weights (not needed)</li>
+										<li><code class="language-bash">target0.image</code> - The model, convolved with the synthesised beam, is then added to the residual image.</li>
+										<li><code class="language-bash">target0.residual</code> - The noise image after CLEAN deconvolution (seen in the interactive prompt during CLEANing).</li>
+										<li><code class="language-bash">target0.model</code> - The underlying estimated sky brightness model by CLEAN.</li>
+										<li><code class="language-bash">target0.psf</code> - The FT of the sampling function used for deconvolution.</li>
+										<li><code class="language-bash">target0.pb</code> - The primary beam response across the image (Note this is not correct for heterogeneous arrays).</li>
+										<li><code class="language-bash">target0.sumwt</code> - The sum of weights (not needed).</li>
 									</ol>
 								</p>
 								<p>
 									<ul>
-										<li><b>(L)</b> Type <code class="language-python">imview</code> into the CASA prompt / <b>(M)</b> open CARTA to view these images. Try to discern where these images originate from by comparing it to the imaging 101 section.</li>
+										<li><b>(L)</b> Type <code class="language-python">imview</code> at the CASA prompt / <b>(M)</b> open CARTA to view these images. Try to determine where these images originate by comparing them with the imaging 101 section.</li>
 
-										<li>Look at the <code class="language-bash">target0.image</code>. The source shows some structure but the background noise looks fairly non-Gaussian, i.e., there are stripes and negatives in a non-random way. This is a tell-tale sign of calibration errors. We shall deal with these errors in the self-calibration section.</li>
+										<li>Look at the <code class="language-bash">target0.image</code>. The source shows some structure, but the background noise appears non-Gaussian, with stripes and negatives in a non-random pattern. This is a tell-tale sign of calibration errors. We shall address these errors in the self-calibration section.</li>
 									</ul>
 								</p>
 								<div class="col-12"><span class="image fit"><img src="plots/clean_demo.png" alt="" /></span></div>
@@ -288,13 +286,13 @@ onload = function(){
 								<h2 class="alt"><a name="image_properties">4. </a>Measuring image properties (step 3)</h2>
 								<p class="alt"><a href="imaging.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>
-									Now that we have produced the first image, we want to extract some properties from this image. You will have to do this in order to extract your science while, in this case, we are going to do it to track the calibration improvements in the next tutorial (on self-calibration).
+									Now that we have produced the first image, we want to extract some properties from it. You will need to do this to extract your science, and in this case we are going to do it to track the calibration improvements in the next tutorial (on self-calibration).
 								</p>
 								<p>
 									<ul>
-										<li>Take another look at your image using <b>(L)</b> <code class="language-bash">imview</code> / <b>(M)</b> CARTA. The synthesised beam is displayed, and is about $64\times53\,\mathrm{mas}$ for this image.</li>
-										<li>To track the calibration improvements we want to measure the noise level ($\sigma$) and the peak brightness ($S_\mathrm{p}$) so that we can measure the signal-to-noise ($\mathrm{S/N} = S_\mathrm{p}/\sigma$).  To do this we can use the set a region. We want to have a region where there's no source flux present so we can measure the rms noise (see the statistics tab) and another region over the brightest emission to measure the peak brightness. Try this interactively first and record your values for the peak, rms noise and S/N.</li>
-			<li>To automate this process we can also use the task <code class="language-bash">imstat</code> and select the boxes using the inputs. Take a look at step 3 and input the box values (note that the box format is <code class="language-bash">box = "x_bottom_left_corner, y_blc, x_top_right_corner, y_trc"</code>)<pre class="line-numbers" data-start="123"><code class="language-python">	rms1=imstat(imagename='target0.image',
+										<li>Take another look at your image using <b>(L)</b> <code class="language-bash">imview</code> or <b>(M)</b> CARTA. The synthesised beam is displayed and measures about $64\times53\,\mathrm{mas}$ for this image.</li>
+										<li>To track calibration improvements, we want to measure the root-mean-square (rms) noise level ($\sigma$) and the peak brightness ($S_\mathrm{p}$) so that we can calculate the signal-to-noise ($\mathrm{S/N} = S_\mathrm{p}/\sigma$). To do this, we can use the set a region tool. We want a region with no source flux so we can measure the rms noise (see the statistics tab), and another region over the brightest emission to measure the peak brightness. Try this interactively first, and record your values for the peak, rms noise and S/N.</li>
+			<li>To automate this process, we can also use the task <code class="language-bash">imstat</code> and select the boxes via the inputs. See step 3 and enter the box values (note that the box format is <code class="language-bash">box = "x_bottom_left_corner, y_blc, x_top_right_corner, y_trc"</code>)<pre class="line-numbers" data-start="123"><code class="language-python">	rms1=imstat(imagename='target0.image',
 				box='**,**,**,**')['rms'][0]
 	peak1=imstat(imagename='target0.image',
 				box='**,**,**,**')['max'][0]
@@ -304,7 +302,7 @@ onload = function(){
 	print(('target0.image S/N = %7.3f' % (peak1/rms1)))</code></pre>
 								
 								<p>
-									<b>(L)</b> The other command in step 3 illustrates the use of <code class="language-bash">imview</code> to produce reproducible images. This is optional but is shown for reference. You can use <code class="language-bash">imview</code> interactively to decide what values to give the parameters. Note: If you use it interactively, make sure that the black area is a suitable size to just enclose the image, otherwise <code class="language-bash">imview</code> will produce a strange aspect ratio plot. <b>(M)</b> On Macs, you can save the image in CARTA to save a png. 
+									<b>(L)</b> The other command in step 3 demonstrates how to use <code class="language-bash">imview</code> to produce reproducible images. This is optional but included for reference. You can use <code class="language-bash">imview</code> interactively to determine parameter values. Note: If you use it interactively, ensure the black area is just large enough to enclose the image; otherwise, <code class="language-bash">imview</code> will produce a strange aspect ratio plot. <b>(M)</b> On Macs, you can save the image in CARTA as a PNG.
 								</p>
 			<pre class="line-numbers" data-start="134"><code class="language-python">		imview(raster={'file': 'target0.image',
 					   'colormap':'Rainbow 2',
@@ -315,18 +313,18 @@ onload = function(){
 			out='target0.image.png')</code></pre>
 	       						<p>
 	       							<ul>
-	       								<li>Execute step 3 and you should get the rms and peak brightness printed onto the screen. Calculate the S/N and record these values for later. You should also have a saved plot like the one shown below</li>
+	       								<li>Execute step 3, and you should see the rms and peak brightness displayed on the screen. Calculate the S/N and record these values for later. You should also have a saved plot like the one shown below.</li>
 	       							</ul>
 	       						</p>
 	       						<p>
-	       							I managed to get a peak brightness of $S_\mathrm{p} = 160.96\,\mathrm{mJy\,beam^{-1}}$, a rms noise level of $\sigma = 0.71\,\mathrm{mJy\,beam^{-1}}$ which corresponds to a $\mathrm{S/N} \approx 225$. You should find values that are similar to this ($\mathrm{S/N} \sim 160\mbox{--}240$). If you did not, take a look at your residuals to check you cleaned deep enough or retrace your calibration steps.
+	       							I managed to achieve a peak brightness of $S_\mathrm{p} = 160.96\,\mathrm{mJy\,beam^{-1}}$ and an rms noise level of $\sigma = 0.71\,\mathrm{mJy\,beam^{-1}}$, corresponding to an $\mathrm{S/N} \approx 225$. You should find values similar to these ($\mathrm{S/N} \sim 160\mbox{--}240$). If you did not, check your residuals to ensure you cleaned deeply enough, or retrace your calibration steps.
 	       						</p>
 								<b>Linux / imview</b>
 								<span class="image main"><img src="plots/1252+5634_1.clean.png" alt="" /></span>
 								<b>Mac OS / CARTA</b>
 								<span class="image main"><img src="plots/1252+5634_1.carta.png" alt="" /></span>
 	       						<p>
-									Congratulations, you have finished the imaging part of this tutorial. Next we shall move onto removing these final calibration errors using this image. Follow the link below to continue.
+									Congratulations, you have finished the imaging part of this tutorial. Next, we shall move on to removing these final calibration errors using this image. Follow the link below to continue.
 								</p>
 								<p>
 									<ul class="actions stacked">
