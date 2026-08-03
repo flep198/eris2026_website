@@ -1,0 +1,1207 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>ERIS2026 - Polarisation</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/prism.css">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap' rel='stylesheet'>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+		</script>
+		<script type="text/javascript">
+var pcs = document.lastModified.split(" ")[0].split("/");
+var date = pcs[1] + '/' + pcs[0] + '/' + pcs[2];
+onload = function(){
+    document.getElementById("lastModified").innerHTML = "Page last modified: " + date;
+}
+		</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">ERIS 2026 - Advanced tutorials</a>
+				<nav>
+					<ul>
+						<li><a href="index.html#five">Home</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+							<h1 class="major">Advanced Tutorial - Polarisation</h1>
+							<!-- Text -->
+							<section>
+								<h2 class="alt"><a name=""></a>Goals of the tutorial</h2>
+								<p>
+									This tutorial is divided in two parts. First, we will produce and explore different sets of simulated full-polarization visibilities, in order to learn to recognize the different kinds of polarization signals (i.e., source-intrinsic versus instrumental). Then, we will work on a set of real VLBI full-polarization observations, to calibrate the instrumental effects, deconvolve polarized images and perform a basic analysis of the results.
+								</p><br>
+
+								<h2 class="alt"><a name=""></a>Getting the software and data</h2>
+								<p>
+The tutorial makes use of the CASA-based software called $\texttt{casa-poltools}$, which can be downloaded from:<br><br>
+
+<a href="https://github.com/marti-vidal-i/casa-poltools/releases/latest">CASA-poltools (GitHub 2026A Release).</a><br><br>
+
+Untar the contents of $\texttt{casa-poltools}$ in any directory of your choice. Then, compile it using the Python3 binary that comes with CASA. You just have to open a terminal, go to the $\texttt{casa-poltools}$ directory (that you have just created) and run the command:<br><br>
+
+<code class="language-bash">PATH/TO/YOUR/CASA/bin/python3 setup.py build_ext --inplace  </code><br><br>
+
+If something fails, you probably need the Python headers (in Ubuntu/Debian, you can install them with $\texttt{sudo apt install python3-dev}$) or some library that should be easily installed.
+Once the code is compiled, you have to update the file $\texttt{.bashrc}$ (located in your $\texttt{\$HOME}$ directory) and add the line:<br><br>
+
+<code class="language-bash">export PYTHONPATH=${PYTHONPATH}:/FULL/PATH/TO/CASA-POLTOOLS/DIRECTORY </code><br><br>
+
+Beware of not adding spaces in that line! And that's it! Now, you can run the $\texttt{casa-poltools}$ by just starting CASA and loading the modules by writing these lines in the CASA prompt:<br><br>
+
+<code class="language-python">from task_polsimulate import polsimulate</code> <br>
+<code class="language-python">from task_polsolve import polsolve</code> <br><br>
+
+
+</p>
+
+
+
+								<p>
+									<ul>
+										
+										<li>To run all the steps in the tutorial, you have to download the datasets and scripts from this link:
+										<ul class="actions">
+											<li><a href="https://consigna.uv.es/?recoge:ca:850_5177_6641_7064" target="_blank" class="button primary icon solid fa-download">ERIS26_Data_polarisation.tar.gz (~310MB)</a></li>
+										</ul>
+										<pre><code class="language-bash">wget https://consigna.uv.es/consigna/pub/Consigna?bajarlo:ca:850_5177_6641_7064:ERIS2026_Polarization.tar.gz</code></pre></li>
+										<li>Un-tar the download using <code class="language-bash">tar -zxvf ERIS26_Data_polarisation.tar.gz</code>
+									</ul>
+								</p>
+								<p>
+									You should find the following files in your folder:
+									<ol>
+										<li><code class="language-bash">running_polsimulate.py</code> - Script to generate (and process) all the simulations of the first part of the tutorial.</li>
+										<li><code class="language-bash">running_polsolve.py</code> - Script to estimate (and apply) the instrumental polarization in the simulations used in this tutorial.</li>
+										<li><code class="language-bash">EHT.cfg</code> - Array configuration file to simulate the Event Horizon Telescope (in its 2017 campaign).</li>
+										<li><code class="language-bash">EHT_M87_11Apr2017.listobs</code> - List of scans corresponding to the M87* EHT observations on April 11, 2017. This file will be used by $\texttt{polsimulate}$, to generate synthetic EHT data reproducing the same UV coverage as the real observations.</li>
+
+										<li><code class="language-bash">EHT_11Apr2017_M87.ms</code> - Measurement set containg the Event Horizon Telescope (EHT) observations of M87* taken on April 11, 2017, already self-calibrated and ready for imaging and D-term calibration.</li>
+										<li><code class="language-bash">EHT_ERIS26_polsolve.py</code> - script for the second part of the tutorial (M87* data).</li>
+										<li><code class="language-bash">VLBA_BG251A_7mm.ms</code> - Multi-source VLBA observations at 43GHz, taken on year 2017, after fringe-fitting, amplitude calibration, and hybrid imaging (i.e., self-calibration). The data are ready for the calibration of the instrumental polarization.</li>
+
+										<li><code class="language-bash">VLBA_ERIS26_polsolve.py</code> - script for the second part of the tutorial (VLBA data).</li>
+
+
+																			</ol>
+								</p>
+								<p>
+									The tutorial scripts don't have blanks, as most parameter settings are unambiguous. There are, though, some steps where you will have to figure out a few other things, as well as optional extra activities suggested across the tutorial, if you have time.
+								</p>
+								<p>
+                                You can find a complete guide to display polarization information in CARTA here: <a href="carta_display_polarisation.pdf" target="_blank">Displaying polarization in CARTA</a>
+								</p>
+							</section>
+							<hr/>
+							<section>
+			<h2><a name="TOC">Table of contents</h2>
+
+			<h3>Part 0. Software and Scripts</h2>
+				<ul>
+					<li><a href="polarisation_new.html#polsimulate">Description of PolSimulate and simulation scripts.</a></li>
+					<li><a href="polarisation_new.html#polsolve">Description of PolSolve and calibration scripts.</a></li>
+				</ul><br>
+
+
+			<h3>Part I. Simulations</h2>
+				<ul>
+					<li><a href="polarisation_new.html#pointUnpol">Unpolarized point source (no Dterms).</a></li>
+					<li><a href="polarisation_new.html#pointUnpol2">Unpolarized point source (with Dterms).</a></li>
+					<li><a href="polarisation_new.html#pointPol">Polarized point source (no Dterms).</a></li>
+					<li><a href="polarisation_new.html#pointPol2">Polarized point source (with Dterms).</a></li>
+					<li><a href="polarisation_new.html#double">Double polarized source (no Dterms).</a></li>
+					<li><a href="polarisation_new.html#double2">Double polarized source (with Dterms).</a></li>
+					<li><a href="polarisation_new.html#double3">Double polarized source (with cross-delay).</a></li>
+				</ul><br>
+
+			<h3>Part II. Real Data</h2>
+				<ul>
+					<li><a href="polarisation_new.html#M87EHT">EHT Observations of M87* in 2017.</a></li>
+					<li><a href="polarisation_new.html#VLBA7mm">VLBA Observations of 3C279 and OJ287 at 7mm.</a></li>
+				</ul><br>
+
+			<h3>Additional Material</h2>
+				<ul>
+					<li><a href="polarisation_new.html#additional">Additional Material.</a></li>
+					<li><a href="polarisation_new.html#definitions">Summary, definitions and symbols.</a></li>
+				</ul><br>
+
+
+							</section>
+							<hr/>
+
+
+
+<hr/>
+
+
+<h1 class="alt">Part 0: Software and Scripts</h1>
+
+<hr/>
+
+
+
+
+
+	<section>
+	<h2 class="alt"><a name="polsimulate"></a>Description of PolSimulate</h2>
+	<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
+	<p>
+	For the first part of the tutorial, we will make use of the $\texttt{casa-poltools}$ program $\texttt{polsimulate}$, as well as $\texttt{plotms}$, $\texttt{iclean/tclean}$, $\texttt{polcal}$ and $\texttt{CARTA}$. We will also use some other auxiliary functions provided in $\texttt{casa-poltools}$, like $\texttt{plotPolImage}$ and $\texttt{plotPolTraces}$. Here we describe the main arguments of $\texttt{polsimulate}$, which will allow us to generate realistic full-polarization synthetic datasets under different instrumental conditions: 
+	</p>
+	<p></p>
+
+	<h4 class="alt">Parameters related to the data and the instrument:</h4><br>
+
+
+<ol start="1">
+	<li>$\texttt{vis}$: Name of the measurement set to be populated with the synthetic data.</li>
+	<li>$\texttt{array_configuration}$: ASCII file containing the names, coordinates and mount types of the antennas to be simulated. We will use the file $\texttt{EHT.cfg}$, provided for the tutorial, although you have other example files in the $\texttt{casa-poltools/TESTS}$ directory.</li>
+	<li>$\texttt{plot_elevs}$: If True, the program makes a plot of antenna elevations versus time.</li> 
+	<li>$\texttt{model_Dt_0}$: List of instrumental polarization (D-terms) for the first polarization channel (i.e., RCP, if circular polarization is used) of all antennas. For the most simple simulations (the ones that we will be doing here), this is just a list of complex numbers (i.e., the D-terms), one per antenna.</li>
+	<li>$\texttt{model_Dt_1}$: Instrumental polarization (D-terms) for the second polarization (LCP) of all antennas (one complex number per antenna).</li>
+	<li>$\texttt{Kcross}$: Cross-polarization delay of the reference antenna (in seconds). RCP (or X) is taken as reference.</li>
+	<li>$\texttt{feed}$: The polarization feed to simulate (in our case, this will always be $\texttt{"circular"}$).</li>
+	<li>$\texttt{LO}$: Center observing frequency (in Hz).</li>
+	<li>$\texttt{BBs}$: List of baseband frequencies (in Hz), one per spectral window to be simulated. The actual frequencies of the spectral windows are $\texttt{LO}$ + $\texttt{BBs}$. </li>
+	<li>$\texttt{spw_width}$ and $\texttt{nchan}$: Width (in Hz) and number of channels of the spectral windows. The same values are used for all of them.</li>
+	<li>$\texttt{nscan}$: Number of scans to simulate. If the path to a $\texttt{listobs}$ file is given instead, the observing times of the scans will be taken from the $\texttt{listobs}$ contents.</li>
+	<li>$\texttt{visib_time}$: Integration time used at the correlator (in s).</li>
+	<li>$\texttt{apply_parang}$: Whether to apply the parallactic-angle correction (in principle, this should be set to True).</li>
+	<li>$\texttt{corrupt}$: Whether to add thermal noise to the visibilities (the default values for System Temperatures, gains, atmospheric opacity, etc., based on the CASA simulator, should be fine).</li>
+</ol>
+
+
+		<h4 class="alt">Parameters related to the source:</h4><br>
+
+<p class="alt">The source structure (in full polarization) can be given either from a CASA (model) image or as a set of polarized point sources (which is the option that we will use here). In this case, the parameters for the point sources are:</p><br>
+
+<ol start="14">
+	<li>$\texttt{phase_center}$: The sky coordinates of the phase center, in standard format. For example:<br> $\texttt{"J2000 17h45m40.4230 -29d00m28.0400"}$.</li>
+	<li>$\texttt{RA_offset}$: List of offsets in right ascension (in arcsec), with respect to the $\texttt{phase_center}$. One value per point source to be simulated.</li>
+	<li>$\texttt{Dec_offset}$: List of offsets in declination (in arcsec). One value per point source.</li>
+	<li>$\texttt{I}$: List of flux densities (in Jy) for the point sources (in consistent order with the previous lists).</li>
+	<li>$\texttt{Q_frac}$, $\texttt{U_frac}$ and $\texttt{V_frac}$: Lists of fractional Stokes Q, U and V (respectively) for each of the point sources to simulate.</li>
+	<li>$\texttt{RM}$ and $\texttt{spec_index}$: Lists of Rotation Measures and spectral indices (we will not use any of these).</li>
+</ol>
+
+
+<p class="alt">For example, setting $\texttt{RAoffset=[0.0]}$; $\texttt{Decoffset=[0.0]}$; $\texttt{I=[1.0]}$; and $\texttt{Q_frac=U_frac=V_frac=[0.0]}$ will simulate a single unpolarized point source at the phase center.</p><br>
+
+
+		<h4 class="alt">Simulation script:</h4><br>
+
+
+<p class="alt">  The script <code class="language-bash">running_polsimulate.py</code> runs $\texttt{polsimulate}$ programatically and can be configured by setting a few parameters at its header. The most important one is $\texttt{CASE}$, an integer that sets the different sources (and D-terms) depending on its value. In particular, the cases included in the script are:
+</p><br>
+
+<ol start="0">
+	<li>Unpolarized point source with no instrumental polarization (the simplest case).</li>
+	<li>Unpolarized point source with instrumental polarization (to learn how to identify D-term effects).</li>
+	<li>Polarized point source without instrumental polarization (to learn how to identify source-intrinsic polarization).</li>
+	<li>Polarized point source with instrumental polarization (a more realistic scenario).</li>
+	<li>Polarized double source without instrumental polarization (closure traces will be interesting here).</li>
+	<li>Polarized double source with instrumental polarization (how will closure traces compare with the case above?).</li>
+	<li>A different polarized double source (how will closure traces compare with the cases above?).</li>
+	<li>Polarized point source with D-terms and cross-polarization delay (we will try to calibrate both quantities).</li>
+</ol><br>
+
+
+<p class="alt">  Another relevant script parameter is $\texttt{DtermAmp}$, which sets the amount of instrumental polarization to simulate. The Dterms are set from a complex random Gaussian distribution, centered at zero with a width equal to $\texttt{DtermAmp}$. It may be a good idea to repeat some of the script cases by increasing $\texttt{DtermAmp}$, so you can see how a more important instrumental polarization may affect the visibilities.<br>
+
+Regarding the radiotelescopes, we will use the array configuration of the Event Horizon Telescope in its campaign of year 2017. The antenna coordinates, sizes, and mount types are given in the file <code class="language-bash">EHT.cfg</code>. The exact observing times used in our simulations will be extracted from those of the real EHT observations of M87* on April 11, 2017. This information will be provided to $\texttt{polsimulate}$ via the file <code class="language-bash">EHT_M87_11Apr2017.listobs</code>
+</p><br>
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+
+
+
+
+<section>
+
+
+
+	<h2 class="alt"><a name="polsolve"></a>Description of PolSolve</h2>
+	<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
+	<p>
+	For the second part of the tutorial (and some exercises of the first part), we will make use of $\texttt{polsolve}$, a program that estimates the instrumental polarization and applies it to the data, allowing us to deconvolve full-polarization images. The most important parameters of $\texttt{polsolve}$ (at least, the ones that we will use here) are:
+	</p>
+	<p></p>
+
+	<!-- <h4 class="alt">The most important parameters related to the instrument:</h4><br>  -->
+
+
+<ol start="1">
+	<li>$\texttt{vis}$: Name of the measurement set to calibrate in polarization.</li>
+	<li>$\texttt{caltable}$: Name of the output Dterms calibration table.</li>
+	<li>$\texttt{field}$: Name (or ID) of the source(s) to be used as calibrator(s).</li>
+	<li>$\texttt{target_field}$: Name (or ID) of the source(s) to be used as the target(s) (can be equal to $\texttt{field}$). The program will apply the estimated D-terms to the $\texttt{corrected}$ data column of the fields given here.</li>
+	<li>$\texttt{DR}$ and $\texttt{DL}$: Lists (or dictionaries) of a-priori D-terms for RCP and LCP, respectively (default is zero). One value (complex number) per antenna. If a list is used, we assume the same order than that of the $\texttt{ANTENNA}$ table. If a dictionary is given, the keywords will be the antenna names (codes).</li> 
+	<li>$\texttt{DRSolve}$ and $\texttt{DLSolve}$: Lists (or dictionaries) of booleans (one value per antenna). If True, the D-term of that antenna will be fitted; if False, it will be fixed to its a-priori value. Default is True for every antenna.</li> 
+	<li>$\texttt{CLEAN_models}$: Setting it to $\texttt{"model_column"}$ will use the full-polarization model stored in the model column of the measurement set (populated, for instance, by $\texttt{iclean}$ or $\texttt{tclean}$) as the source model. Otherwise, we can define the source model as a set of point sources, in a similar way as it is done in $\texttt{polsimulate}$ (although, in this case, the polarization properties of each point source are given in the lists called $\texttt{frac_pol}$ and $\texttt{EVPA}$). In this tutorial, we will (almost) always set it to $\texttt{"model_column"}$.</li> 
+	<li>$\texttt{plot_parang}$ and $\texttt{plot_residuals}$: It's good to set these to True, so we can check the time evolution of the parallactic angles of the antennas and the post-fit cross-polarization visibility residuals in phasor space.</li>
+</ol>
+
+
+
+		<h4 class="alt">Calibration script:</h4><br>
+
+
+<p class="alt">  The script <code class="language-bash">running_polsolve.py</code> estimates the D-terms of a measurement set using $\texttt{polsolve}$. The strategy followed is similar to a self-calibration, but in polarization. The idea is to iterate the following steps:
+</p><br>
+
+<ol start="0">
+	<li>Build a full-polarization image of the $\texttt{field}$ source(s) (use $\texttt{iclean}$ first, to define a mask, and $\texttt{tclean}$ later, in automatic mode using that mask). The $\texttt{model}$ column of the measurement set will be populated with the visibility matrices computed from the CLEAN model.</li>
+	<li>Estimate the antenna D-terms with $\texttt{polsolve}$, by nimimizing the residuals between the $\texttt{data}$ and the $\texttt{model}$ columns.</li>
+	<li>Apply the estimated D-terms to the $\texttt{target_field}$ (which we make equal to $\texttt{field}$), by populating the $\texttt{corrected}$ column. This is done automatically by $\texttt{polsolve}$.</li>
+	<li>Go back to step 0, but using the $\texttt{corrected}$ column for the full-polarization deconvolution.</li>
+</ol>
+
+At each iteration, the CLEAN image of $\texttt{field}$ is plotted for assessment, together with:
+
+<ul>
+<li> <em> For simulated data:</em> Correlation plots between the estimated D-terms and the ground-truth D-term values used in $\texttt{polsimulate}$.</li>
+<li> <em> For real data:</em> The estimated D-terms.</li>
+</ul>
+
+<p class="alt">  Once the D-terms have converged (after a few iterations of the steps described above), the script applies them one last time, to generate the final $\texttt{corrected}$ column. Then, a final run of $\texttt{tclean}$ generates the full-polarization image of $\texttt{target_field}$ (i.e., $\texttt{field}$).<br><br>
+
+
+The parameters to set up the script are given in its header. In particular:<br><br>
+
+<ul start="0">
+<li> $\texttt{vis}$: The measurement set to calibrate.</li>
+<li> $\texttt{field}$: The name(s) or ID of the source(s) to be used as calibrator(s). If the measurement set only contains one source, it can be set to just $\texttt{"0"}$.</li>
+<li> $\texttt{polNiter}$: Number of $\texttt{tclean}$-$\texttt{polsolve}$ iterations to estimate the D-terms.</li>
+<li> $\texttt{imagename}$, $\texttt{weighting}$, $\texttt{niter}$, $\texttt{gain}$, $\texttt{cell}$, and $\texttt{imsize}$: Homologous to the $\texttt{iclean}$ and $\texttt{tclean}$ parameters to be used in the iterations.</li>
+<li> $\texttt{ground_truth}$: If we are using a simulation, this should be the name of the binary table where the ground-truth D-terms have been stored (i.e., the file that ends with "$\texttt{*.true-dterms}$").</li>
+</ul>
+
+The D-terms estimated by $\texttt{polsolve}$ will be stored in binary files ended with "$\texttt{*.polsolve-dterms}$", as well as CASA calibration tables ended with "$\texttt{*.polsolve-dtcal}$". However, none of these are actually needed, since $\texttt{polsolve}$ applies the D-terms to the $\texttt{corrected}$ data column automatically.
+
+
+</p><br>
+
+
+
+<p></p>
+</section>
+
+
+<hr/>
+
+
+<h1 class="alt">Part I: Simulations</h1>
+
+<hr/>
+
+
+<section>
+
+<h2 class="alt"><a name="pointUnpol"></a>CASE=0. Unpolarized point source (no D-terms)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> We will set $\texttt{CASE = 0}$ in the simulation script, <code class="language-bash">running_polsimulate.py</code>, and run it from CASA. If the installation of $\texttt{casa-poltools}$ was OK, it should soon generate a measurement set called <code class="language-bash">POLSIM_CASE_0.ms</code>, corresponding to an unpolarized point source located in the same coordinates as SgrA* (i.e., we have replaced SgrA* by a synthetic point source), and observed with the EHT in its exact configuration of April 7, 2017.<br> Explore the visibilities with $\texttt{plotms}$. The interesting quantities are amplitude (and phase) vs. time (and UV-distance) for all four correlation products, $\texttt{RR}$, $\texttt{RL}$, $\texttt{LR}$, and $\texttt{LL}$.<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AP_AZ_CASE-0.png" alt="" /></span></div>
+
+
+<p class="alt"> <strong>EXERCISE:</strong> Use the helper function $\texttt{plotPolTraces}$ to plot the closure traces for the antenna quadruplet ALMA-APEX-LMT-SMT (AA-AP-LM-AZ). Comment on the results. This function is called by running the lines:<br>
+
+<pre>
+<code class="language-python">from poltools_helper import plotPolTraces
+plotPolTraces(vis=["POLSIM_CASE-0.ms"],antennas=["AA","AP","LM","AZ"])</code><br>
+</pre>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Traces_CASE-0.png" alt="" /></span></div>
+
+
+</p>
+
+
+
+
+
+
+
+
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="pointUnpol2"></a>CASE=1. Unpolarized point source (with D-terms)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> By setting $\texttt{CASE = 1}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_1.ms</code>, corresponding to a source with no polarization, but observed with an imperfect interferometer (i.e., affected by instrumental polarization). <br>
+
+<strong>QUESTION:</strong> Explore the parallel-hand visibilities, $\texttt{RR}$ and $\texttt{LL}$ (in amplitude and phase) versus time and compare them to those of the previous case (i.e., unpolarized source with no instrumental polarization). Comment on the results.<br>
+
+<strong>QUESTION 2:</strong> Now, repeat the previous comparison, but with the cross-hand visibilities, $\texttt{RL}$ and $\texttt{LR}$. Do you see any qualitative difference with respect to the parallel-hand visibilities? Why?<br>
+
+<strong>QUESTION 3:</strong> You may see rapid changes (especially in the visibility phases) for some baselines at some particular time ranges. What do you think is happening? Plotting the antenna elevations versus time (i.e., $\texttt{plot_elevs=True}$) may be helpful.<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/POLSIM_Elev.png" alt="" /></span></div>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AA_CASE-1.png" alt="" /></span></div>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AA_CASE-1b.png" alt="" /></span></div>
+
+<p class="alt"> <strong>EXERCISE:</strong> Use the function $\texttt{plotPolTraces}$ to plot the closure traces for the antenna quadruplet ALMA-APEX-LMT-SMT (AA-AP-LM-AZ), as you did in the previous case. How does the new figure compare to that of $\texttt{CASE=0}$? Comment on the results.</p>
+
+<p class="alt"> <strong>EXERCISE 2:</strong> Use the script $\texttt{running_polsolve.py}$ to solve for the D-terms (just a handful of iterations should suffice). Check the correlation plots between true D-terms and estimated D-terms and discuss on the results. Now, use $\texttt{plotms}$ to plot the cross-hand visibilities of the $\texttt{CORRECTED_DATA}$ column and comment on the results.</p>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CASE-1.gif" alt="" /></span></div>
+
+
+
+
+</p>
+
+
+
+
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="pointPol"></a>CASE=2. Polarized point source (no D-terms)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> By setting $\texttt{CASE = 2}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_2.ms</code>, corresponding to a source with Stokes parameters $\texttt{I=1.0}$Jy, $\texttt{Q=0.1/I}$, $\texttt{U=0.0/I}$, $\texttt{V=0.0/I}$. Explore, again, the visibilities with $\texttt{plotms}$, as you did with the previous cases.
+
+
+<p class="alt"> <strong>EXERCISE:</strong> What are the phases of $\texttt{RL}$ and $\texttt{LR}$? Re-generate the measurement set with $\texttt{Q=0.0/I}$, $\texttt{U=0.1/I}$ (i.e., exchanging $\texttt{U}$ and $\texttt{Q}$). What happens to the phases of $\texttt{RL}$ and $\texttt{LR}$? How does this relate to the Visibility Matrix in the Measurement Equation? Do you think that, once the data are fully calibrated, the RL phases may <em>always</em> be the opposite of the LR phases? Why?</p><br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AA_CASE-2c.png" alt="" /></span></div>
+
+<p class="alt"> <strong>EXERCISE 2:</strong> Run $\texttt{iclean}$ on the last measurement set, using $\texttt{stokes="IQUV"}$. You should set the weighting to $\texttt{uniform}$ and the pixel size to about $\texttt{0.001 mas}$. The CASA image will have four polarization channels (I, Q, U, and V). Then, plot the image in $\texttt{CARTA}$, with raster (and/or contours) reflecting total intensity and lines (on top of the raster) to show the EVPA and intensity of the polarization.<br>
+
+<ul>
+
+<li> Alternatively to the use of $\texttt{CARTA}$, the image of polarized intensity can be generated in $\texttt{immath}$, using $\texttt{mode="poli"}$ and setting $\texttt{sigma}$ to the noise level (rms) of the image.</li>
+
+<li> The image with the EVPA information can also be generated in $\texttt{immath}$, using $\texttt{mode="pola"}$ and setting $\texttt{polithresh}$ to 3-5 times the rms.</li> 
+
+<li> Another alternative is to use $\texttt{casa-poltools}$ to generate the polarized image. Just run, for instance:<br>
+<pre><code class="language-python">
+from poltools_helper import plotPolImage
+plotPolImage(img='CASE-2_IMG.image', mSigmaCut=2.0, SigmaCut=2.0,
+            dPol=7, lPol=0.1, zoom=3)
+</code></pre>
+(you have a description of all the $\texttt{plotPolImage}$ parameters by doing: $\texttt{help(plotPolImage}$).<br> 
+</li>
+
+
+</ul>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CARTA_CASE-2.png" alt="" /></span></div>
+
+
+</p><br>
+
+<p class="alt"> <strong>EXERCISE:</strong> Plot the closure traces for the quadruplet ALMA-APEX-LMT-SMT and compare them to those from the previous cases. Comment on the results.</p>
+
+
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="pointPol2"></a>CASE=3. Polarized point source (with D-terms)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> By setting $\texttt{CASE = 3}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_3.ms</code>, corresponding to a source with the same Stokes parameters as in $\texttt{CASE = 2}$, but with instrumental polarization added to the signal. Explore the visibilities with $\texttt{plotms}$ and compare the results to those in the previous cases.<br><br>
+
+
+<p class="alt"> <strong>QUESTIONS:</strong> How do the cross-polarization amplitudes and phases (vs. time) compare to those of $\texttt{CASE = 1}$? And those of $\texttt{CASE = 2}$? How could we disentangle the source-instrinsic polarization from the instrumental signal?</p><br>
+
+<p class="alt"> <strong>EXERCISE:</strong> Run $\texttt{iclean}$ on this measurement set <em>without performing any D-term calibration</em>, and plot the full-polarization image in $\texttt{CARTA}$. How does the noise level in the polarization intensity compare to that of $\texttt{CASE = 2}$? Is the peak value of polarization intensity (or the EVPA at the peak) much affected by the D-terms?</p><br>
+
+<p class="alt"> <strong>OPTIONAL EXTRA EXERCISE 2:</strong> Repeat the previous exercise, but re-generating the measurement set with much larger (say, 3 times larger) D-terms. This can be done by increasing the value of $\texttt{DtermAmp}$. Compare results.</p><br>
+
+<p class="alt"> <strong>EXERCISE 3:</strong> Plot the closure traces for the quadruplet ALMA-APEX-LMT-SMT and compare them to those from the previous cases. Comment on the results.</p><br>
+
+<p class="alt"> <strong>EXERCISE 4:</strong> Use the script $\texttt{running_polsolve.py}$ to solve for the D-terms. Use $\texttt{plotms}$ to plot the cross-hand visibilities of the $\texttt{CORRECTED_DATA}$ column. How do these visibilities compare to those of $\texttt{CASE=2}$ (i.e., without D-term contamination)?</p>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CASE-3.gif" alt="" /></span></div>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AA_CASE-3.png" alt="" /></span></div>
+
+</p><br>
+
+
+<h3 class="alt"> Solving for the source polarization simultaneously </h3>
+<br>
+
+<p class="alt"> The procedure followed in $\texttt{running_polsolve.py}$ is qualitatively similar to <em>hybrid mapping</em> (i.e., the process of self-calibration coupled to deconvolution). In this process, the source model is kept fixed when the D-terms are estimated.<br> 
+
+However, if the source structure is very simple (e.g., a point source) it is possible to estimate the source polarization model and the D-terms <em>simultaneously</em>, hence optimizing convergence.<br>
+
+$\texttt{polsolve}$ can fit the polarization of calibrators with relatively resolved brightness distributions, modelling them as a set of point (delta) components. Each component (or subset of components) can be assigned one fractional polarization and EVPA, which will be fitted together with the antenna D-terms. Let's redo the calibration of <bf>EXERCISE 4</bf>, but fitting also for the polarization of the point source, so <em>only one fit will be enough</em>; we will not need to iterate any $\texttt{tclean-polsolve}$ procedure at all! Just run this line:<br><br>
+
+
+<pre>
+<code class="language-python">polsolve(vis='POLSIM_CASE-3.ms', caltable='CASE-3_With-Source-Fitting.dterms',
+         CLEAN_models=[1.0], frac_pol=[0.0], EVPA=[0.0], PolSolve=[True])
+</code><br>
+</pre>
+
+In this case, $\texttt{CLEAN_models}$ is a list of one Stokes I flux density (i.e., there is only one point source), $\texttt{frac_pol}$ is the (list of) a-priori fractional polarization of the point source and $\texttt{EVPA}$ is its a-priori polarization angle. Regarding $\texttt{PolSolve}$, it is a list of booleans (one per point source) that tells $\texttt{polsolve}$ whether the polarization of the point sources has to be fitted or kept fixed (True means to be fitted).<br> 
+
+Once you have run the code, take a look at the text printed by $\texttt{polsolve}$ in the terminal. You will see an estimate of the polarization state of the point source, as well as the D-terms. You can compare the numbers by eye to those printed by $\texttt{polsimulate}$ when you generated the measurement set. However, it is a much better idea to generate correlation plots. To do this, just execute these lines:
+
+<pre>
+<code class="language-python">from poltools_helper import compareDterms
+compareDterms(dt1='POLSIM_CASE-3.true-dterms',dt2='CASE-3_With-Source-Fitting.dterms')  </code>
+</pre>
+
+This function will generate a plot of the correlation between the true D-terms and the ones just estimated by $\texttt{polsolve}$ (the table is called $\texttt{CASE-3_With-Source-Fitting.dterms}$).<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/compareDterms_3a.png" alt="" /></span></div>
+
+
+</p>
+
+
+
+
+<h3 class="alt">Using CASA's $\texttt{polcal}$ task</h3>
+<br>
+
+<p class="alt"> CASA has a built-in task called $\texttt{polcal}$, able to estimate the instrumental polarization (D-terms) and their possible frequency dependence. As in the fitting above, $\texttt{polcal}$ can also fit for the source polarization at the same time as the D-terms. Even though the use of this task is very simple, it has some limitations. Mainly:<br><br>
+
+<ul>
+ <li> The calibrator is assumed to be point-like. This limitation is especially important for VLBI.</li>
+ <li> Several antenna mounts (like the Nasmyth or the X-Y types) are not supported.</li> 
+ <li> The parallactic-angle correction is always forced to be applied on-the-fly (so we cannot use data that have been splitted from and ordinary amplitude-phase calibration).</li>
+</ul>
+
+Hence, if we are going to use $\texttt{polcal}$, we need to simplify the simulation. We will thus re-generate the synthetic visibilities of our point-like source by forcing alt-az mounts for all antennas and not applying the parallactic-angle correction. This will introduce large non-zero phases in the parallel hands, but it's OK, since $\texttt{polcal}$ will correct them back when it applies the parallactic-angle correction on-the-fly:<br><br>
+
+<ol>
+<li> Open the script $\texttt{running-polsimulate.py}$ and set $\texttt{FORCE_ALTAZ}$ to $\texttt{True}$. This will override all the antenna mounts to be alt-azimuthal <em>and</em> will not apply the parallactic-angle correction to the simulated data. This is all we need to run $\texttt{polcal}$ successfully. <em>Don't forget</em> to make a backup of the measurement set that you created before, or you will loose the data!</li>
+
+
+<li> Run the $\texttt{polcal}$ task, to fit the D-terms and the source polarization:<br>
+
+    <code class="language-none">polcal(vis='POLSIM_CASE-3_ALTAZ.ms', caltable='CASE-3_ALTAZ.POLCAL.Dt', poltype='D+QU')</code></li>
+
+<li> Check the output of the CASA logger. You will see the Dterm estimates as well as the polarization properties of the point source:<br>
+
+<pre><code class="language-none">........
+2026-07-25 11:14:08 INFO Calibrater	For solint = inf, found 1 solution intervals.
+2026-07-25 11:14:11 INFO  	Fractional polarization solution for POLSIM (spw = 0): : Q = 0.117364, U = -0.0102127  (P = 0.117807, X = -2.48661 deg)
+2026-07-25 11:14:11 INFO Calibrater	  Found good D Jones solutions in 1 solution intervals.
+2026-07-25 11:14:11 INFO  	The instrumental polarization solutions are: 
+2026-07-25 11:14:11 INFO  	 Spw 0:
+2026-07-25 11:14:11 INFO +	 Time 2017/04/07/10:06:52.5:
+2026-07-25 11:14:11 INFO +	  Ant=AA: R: A=0.0339     P=-48.23   ; L: A=0.03198    P=-158.9  
+2026-07-25 11:14:11 INFO  	  Ant=AP: R: A=0.0150937  P=93.3821  ; L: A=0.0185893  P=19.4299 
+2026-07-25 11:14:11 INFO  	  Ant=AZ: R: A=0.0186179  P=-35.134  ; L: A=0.0627831  P=-132.581
+2026-07-25 11:14:11 INFO  	  Ant=JC: R: A=0.0429941  P=-20.3006 ; L: A=0.0639881  P=165.987 
+2026-07-25 11:14:11 INFO  	  Ant=LM: R: A=0.0169335  P=155.431  ; L: A=0.0482837  P=-24.4703
+2026-07-25 11:14:11 INFO  	  Ant=SM: R: A=0.0684124  P=-107.407 ; L: A=0.0214689  P=-157.807
+2026-07-25 11:14:11 INFO  	  Ant=SP: R: A=0.0704858  P=-52.3352 ; L: A=0.028451   P=-112.486
+2026-07-25 11:14:11 INFO  	  Ant=PV: R: A=0.0301284  P=-48.0376 ; L: A=0.0904047  P=130.974 
+2026-07-25 11:14:11 INFO  	Writing solutions to table: CASE-3/POLCAL.DTERMS
+</code></pre></li>
+
+<li> Compare the fitted Stokes parameters to the true ones (i.e., I=1.0; Q=0.1; U=V=0.0). How do they compare?
+
+</ol></p>
+
+<p class="alt"> Once you have run $\texttt{polcal}$, the program generates a D-term calibration table (named $\texttt{CASE-3_ALTAZ.POLCAL.Dt}$, in the example above) that you can apply to the data (but don't forget to set $\texttt{parang=True}$ if you decide to do this). We will not apply this table in the tutorial, but you can do it and produce a full-polarization image of the calibrated data, if you like.<br>
+
+In any case, you can plot the correlation between the true D-terms and the ones fitted by $\texttt{polcal}$:<br>
+
+<pre>
+<code class="language-python">from poltools_helper import compareDterms
+compareDterms(dt1='POLSIM_CASE-3.true-dterms',dt2='CASE-3_ALTAZ.POLCAL.Dt')  </code>
+</pre><br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/compareDterms_3b.png" alt="" /></span></div><br>
+
+
+</p><br>
+
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+<section>
+
+
+
+
+<h2 class="alt"><a name="double"></a>CASE=4. Polarized double source (no D-terms)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> By setting $\texttt{CASE = 4}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_4.ms</code>, corresponding to a double source (oriented with a position angle of about 45 degrees) with different Stokes parameters for each component. In this case, the instrumental polarization is assumed perfect.<br>
+
+Run $\texttt{plotms}$ and generate plots of visibility amplitudes and phases for some prepresentative baselines, in both parallel-hand correlations (RR and LL) and cross-hand correlations (RL and LR). How do the RL visibilities compare to LR? Comment on the results in the frame of the Measurement Equation (and recalling the similar question about cross-hand phases made in $\texttt{CASE=2}$).
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AA_CASE-4b.png" alt="" /></span></div>
+
+
+<strong>EXERCISE:</strong> Generate a full-polarization image from these data, using $\texttt{iclean}$ and $\texttt{CARTA}$. Check the images for Stokes Q and U, and how they relate to the EVPAs of each source component.
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CARTA_CASE-4.png" alt="" /></span></div>
+
+
+<p class="alt"> <strong>EXERCISE 2:</strong> Plot the closure traces for the quadruplet ALMA-APEX-LMT-SMT and compare them to those from the previous case. Comment on the results.</p>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Traces_CASE-4.png" alt="" /></span></div>
+
+</p>
+
+
+<p></p>
+</section>
+
+<hr/>
+
+<section>
+
+
+
+<h2 class="alt"><a name="double2"></a>CASE=5. Polarized double source (with D-terms)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> By setting $\texttt{CASE = 5}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_5.ms</code>, corresponding to the same double source as in $\texttt{CASE = 4}$, but observed with an interferometer with imperfect instrumental polarization.<br>
+
+<strong>EXERCISE:</strong> Generate a full-polarization image from these data, but <em>without any D-term calibration</em>. Use $\texttt{iclean}$ and $\texttt{CARTA}$ and compare to the image obtained in the previous case. How do the polarization intensities and EVPA compare with the case of perfect instrumental polarization? How does the polarized image <em>noise</em> compare?</p>
+
+<p class="alt"> <strong>EXERCISE 2:</strong> Plot the closure traces for the quadruplet ALMA-APEX-LMT-SMT and compare with those from the previous case. Comment on the results.</p>
+
+<p class="alt"> <strong>EXERCISE 3:</strong> Solve for the D-terms using the $\texttt{running_polsolve.py}$ script. How do the D-terms converge, compared to the case of a simple point-like structure?</p>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CASE-5.gif" alt="" /></span></div>
+
+
+
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+<section>
+
+
+
+<h2 class="alt"><a name="double3"></a>CASE=6. Polarized point source (with cross-delay)</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> By setting $\texttt{CASE = 6}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_6.ms</code>, corresponding to a polarized point source observed by an interferometer with instrumental polarization and non-zero cross-polarization delay. In this case, we will have to estimate the delay and apply it to the data, before attempting to calibrate the D-terms:<br><br>
+
+
+<ul>
+
+<li> Run $\texttt{gaincal}$ with $\texttt{gaintype='KCROSS'}$ (you may also set $\texttt{calmode='p'}$) and $\texttt{combine='scan'}$ (together with $\texttt{solint='inf'}$, since the R-L delay is constant). Setting ALMA as the reference antenna may also be a good option.</li>
+
+<li> Run $\texttt{applycal}$, to apply the cross-delay table and split the $\texttt{corrected}$ column into a new measurement set.</li> 
+
+</ul>
+
+
+<strong>QUESTION:</strong> How do the visibility phases compare with those without the cross-delay correction? Plot them against frequency for a time-averaged scan and some sensitive baselines (ALMA-APEX is, by far, the best one). If there is a difference, how do you think it may it affect the final image? Let's see it in the next exercise! 
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/AA_CASE-6.png" alt="" /></span></div>
+
+<p class="alt"> <strong>EXERCISE:</strong> Use the script $\texttt{running_polsolve.py}$ to solve for the D-terms, using the new measurement set (i.e., the one with the corrected cross-delay). Compare the final image (using, e.g., $\texttt{CARTA}$) to that of the previous case. Take a look at the correlation plots between fitted D-terms and their ground-truth values and comment on the results.</p>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CASE-6.gif" alt="" /></span></div>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/CARTA_CASE-6.png" alt="" /></span></div>
+
+<strong>EXERCISE 2:</strong> Again, plotting the closure traces and comparing with the previous cases of a double source may be interesting.<br>
+
+
+</p>
+
+
+
+
+<p></p>
+</section>
+
+<hr/>
+
+
+<h1 class="alt">Part II: Real Data</h1>
+
+<hr/>
+
+
+
+<section>
+
+
+
+
+
+
+<h2 class="alt"><a name="M87EHT"></a>EHT Observations of M87* in 2017</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+<p class="alt"> Let us run $\texttt{listobs}$ on the measurement set $\texttt{EHT-11Apr17_M87.ms}$, to check its contents:<br>
+</p>
+
+
+<p class="alt">
+									
+<pre><code class="language-none">================================================================================
+           MeasurementSet Name:  /home/marti/WORK_LOCAL/ERIS_2026_POL/EHT_3601/EHT_11Apr2017_M87.ms      MS Version 2
+================================================================================
+   Observer: EHT     Project:   
+Observation: VLBA
+Data records: 7447       Total elapsed time = 24938.6 seconds
+   Observed from   11-Apr-2017/00:32:00.4   to   11-Apr-2017/07:27:39.0 (TAI)
+
+   ObservationID = 0         ArrayID = 0
+  Date        Timerange (TAI)          Scan  FldId FieldName             nRows     SpwIds   Average Interval(s)    ScanIntent
+  11-Apr-2017/00:32:00.4 - 00:37:59.2     1      0 M87                         36  [0]  [9.21] 
+              00:41:00.2 - 00:46:59.8     2      0 M87                         42  [0]  [8.93] 
+              00:50:00.4 - 00:55:59.8     3      0 M87                        108  [0]  [9.1] 
+              01:15:00.8 - 01:20:59.9     4      0 M87                        108  [0]  [9.05] 
+              ...........
+              06:40:00.2 - 06:45:59.8    20      0 M87                        540  [0]  [9.07] 
+              07:11:00.0 - 07:17:00.0    21      0 M87                        435  [0]  [9.06] 
+              07:25:00.2 - 07:27:39.0    22      0 M87                        160  [0]  [9.11] 
+           (nRows = Total number of rows per scan) 
+Fields: 1
+  ID   Code Name                RA               Decl           Epoch   SrcId      nRows
+  0         M87                 12:30:49.423382 +12.23.28.04366 J2000   0           7447
+Spectral Windows:  (1 unique spectral windows and 1 unique polarization setups)
+  SpwID  Name   #Chans   Frame   Ch0(MHz)  ChanWid(kHz)  TotBW(kHz) CtrFreq(MHz)  Corrs          
+  0      none       1   TOPO  227070.703   1856000.000   1856000.0 227070.7031   RR  RL  LR  LL
+Sources: 1
+  ID   Name                SpwId RestFreq(MHz)  SysVel(km/s) 
+  0    M87                 0     0              0            
+Antennas: 7:
+  ID   Name  Station   Diam.    Long.         Lat.                Offset from array center (m)                ITRF Geocentric coordinates (m)        
+                                                                     East         North     Elevation               x               y               z
+  0    AA    AA        25.0 m   -067.45.17.1  -22.53.27.9         -0.0000       -0.0000  6379959.6713  2225060.813600 -5440059.599940 -2481681.150540
+  1    AP    AP        25.0 m   -067.45.32.9  -22.52.04.0         -0.0000       -0.0000  6379998.2522  2225039.529700 -5441197.629200 -2479303.359700
+  2    AZ    AZ        25.0 m   -109.53.28.5  +32.31.37.1         -0.0000        0.0000  6375090.8598 -1828796.200000 -5054406.800000  3427865.200000
+  3    JC    JC        25.0 m   -155.28.37.3  +19.42.01.7         -0.0000        0.0000  6379816.0683 -5464584.676000 -2493001.170000  2150653.982000
+  4    LM    LM        25.0 m   -097.18.53.2  +18.52.04.0         -0.0000        0.0000  6380483.8311  -768715.632000 -5988507.072000  2063354.852000
+  5    PV    PV        25.0 m   -003.23.33.4  +36.52.52.7         -0.0000        0.0000  6373329.0065  5088967.745440  -301681.185860  3825012.205610
+  6    SM    SM        25.0 m   -155.28.39.2  +19.42.06.6         -0.0000        0.0000  6379810.7485 -5464555.493000 -2492927.989000  2150797.176000</code></pre>
+
+
+The text shows the observed field (M87*), the frequency configuration (there is only one spectral window with one channel), the observing date (11 April 2017, from 00:30 UTC to 7:30 UTC), and the list of antennas.	<br>
+
+These data have already been fringe-fitted, calibrated in amplitude, and self-calibrated in a careful process of hybrid imaging. Hence, instrumental polarization is the only remaining calibration step. For this, we will use the script $\texttt{EHT_ERIS26_polcal.py}$. The contents of this script are remarkably similar to those of $\texttt{running-polsolve.py}$, so we are not going to explain it again.<br>
+
+</p>
+
+
+<p class="alt"> 
+<strong> EXERCISE: </strong> Run $\texttt{polsolve}$ using the provided script, which will run the first imaging iteration using $\texttt{iclean}$. There, you will have to define the CLEAN masks, ensuring that you have the same exact masks for all the Stokes parameters. Once the iterations are finished, use $\texttt{CARTA}$ to generate a full-polarization image of M87*. You can also use the $\texttt{plotPolImage}$ function of $\texttt{casa-poltools}$, which will give you complementary information printed out in the terminal (i.e., peak polarization intensity, EVPA at the peak, and intensity-weighted EVPA). <br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/EHT-M87.gif" alt="" /></span></div><br>
+
+The residuals after proper D-term calibration are basically thermal noise, as you can check for the most sensitive EHT baselines in 2017 (i.e., those with ALMA) in these plots generated by $\texttt{polsolve}$ in the last iteration (left is data; right, residuals):<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Phasors_M87.jpg" alt="" /></span></div><br>
+
+
+<strong> QUESTION: </strong> Take a look at the plot of feed angles vs. time generated by the script. The values for ALMA (AA) and APEX (AP) look quite different, despite the fact that they are very close geographically. How can you explain this? <br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/EHT_FeedAngles.png" alt="" /></span></div><br>
+
+</p><br>
+
+
+
+
+
+<hr/>
+
+
+
+<h2 class="alt"><a name="VLBA7mm"></a>VLBA Observations of 3C279 and OJ287 at 7mm</h2>
+<p class="alt"><a href="polarisation_new.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+
+
+<p class="alt"> 
+
+These data are part of project $\texttt{BG251A}$, which contains VLBA full-polarization observations of 3C279 and OJ287 at 7mm (43GHz). For this tutorial, we have already pre-calibrated the parallel-hand data in both phase and amplitude, so you don't have to worry about fringe-fitting and atmospheric opacity. We have splitted only four sources of the dataset (3C84, M84, OJ287 and 3C279). Run $\texttt{listobs}$ on the masurement set $\texttt{VLBA_BG251A_7mm.ms}$ and check the output:<br><br>
+
+
+<pre><code class="language-none"> ================================================================================
+           MeasurementSet Name:  /home/marti/WORK_LOCAL/ERIS_2026_POL/VLBA_7mm/VLBA_BG251A_7mm.ms      MS Version 2
+================================================================================
+   Observer: BG251A     Project:   
+Observation: VLBA
+Data records: 317688       Total elapsed time = 35617 seconds
+   Observed from   05-May-2017/23:16:29.0   to   06-May-2017/09:10:06.0 (UTC)
+
+   ObservationID = 0         ArrayID = 0
+  Date        Timerange (UTC)          Scan  FldId FieldName             nRows     SpwIds   Average Interval(s)    ScanIntent
+  05-May-2017/23:16:29.0 - 23:17:25.0     1      0 3C84                      9696  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+              23:18:43.0 - 23:23:35.0     2      0 3C84                     32376  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+              23:30:05.0 - 23:32:01.0     3      1 OJ287                    16304  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+  06-May-2017/00:09:56.0 - 00:11:52.0     4      1 OJ287                    16336  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+  .......
+              02:05:42.0 - 02:06:08.0    11      2 M84                       4256  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+              02:39:35.0 - 02:41:31.0    12      1 OJ287                    20496  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+              02:45:04.0 - 02:46:58.0    13      3 3C279                    20064  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+  .......
+              08:32:33.0 - 08:32:59.0    35      2 M84                       2064  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+              09:08:12.0 - 09:10:06.0    36      3 3C279                    12456  [0,1,2,3,4,5,6,7]  [2, 2, 2, 2, 2, 2, 2, 2] 
+           (nRows = Total number of rows per scan) 
+Fields: 4
+  ID   Code Name                RA               Decl           Epoch   SrcId      nRows
+  0         3C84                03:19:48.160094 +41.30.42.10414 J2000   0          42072
+  1         OJ287               08:54:48.874926 +20.06.30.64088 J2000   1         106200
+  2         M84                 12:25:03.743335 +12.53.13.13928 J2000   2          66160
+  3         3C279               12:56:11.166568 -05.47.21.52500 J2000   3         103256
+Spectral Windows:  (8 unique spectral windows and 1 unique polarization setups)
+  SpwID  Name   #Chans   Frame   Ch0(MHz)  ChanWid(kHz)  TotBW(kHz) CtrFreq(MHz)  Corrs          
+  0      none      16   TOPO   43024.875      2000.000     32000.0  43039.8750   RR  RL  LR  LL
+  1      none      16   TOPO   43056.875      2000.000     32000.0  43071.8750   RR  RL  LR  LL
+  2      none      16   TOPO   43088.875      2000.000     32000.0  43103.8750   RR  RL  LR  LL
+  3      none      16   TOPO   43120.875      2000.000     32000.0  43135.8750   RR  RL  LR  LL
+  4      none      16   TOPO   43152.875      2000.000     32000.0  43167.8750   RR  RL  LR  LL
+  5      none      16   TOPO   43184.875      2000.000     32000.0  43199.8750   RR  RL  LR  LL
+  6      none      16   TOPO   43216.875      2000.000     32000.0  43231.8750   RR  RL  LR  LL
+  7      none      16   TOPO   43248.875      2000.000     32000.0  43263.8750   RR  RL  LR  LL
+Sources: 32
+  ID   Name                SpwId RestFreq(MHz)  SysVel(km/s) 
+  0    3C84                0     0              0            
+.......
+  1    OJ287               0     0              0            
+.......
+  2    M84                 0     0              0            
+.......
+  3    3C279               0     0              0      
+.......      
+Antennas: 10:
+  ID   Name  Station   Diam.    Long.         Lat.                Offset from array center (m)                ITRF Geocentric coordinates (m)        
+                                                                     East         North     Elevation               x               y               z
+  0    BR    BR        25.0 m   -119.40.59.8  +47.56.23.6         -0.0000        0.0000  6366573.1559 -2112065.270560 -3705356.502585  4726813.644675
+  1    FD    FD        25.0 m   -103.56.41.4  +30.27.59.8         -0.0000        0.0000  6374225.1305 -1324009.382231 -5332181.952615  3231962.375184
+  2    HN    HN        25.0 m   -071.59.11.7  +42.44.30.3         -0.0000        0.0000  6368555.4400  1446374.797314 -4447939.684001  4322306.202257
+  3    KP    KP        25.0 m   -111.36.44.7  +31.47.01.6         -0.0000        0.0000  6374084.6483 -1995678.899870 -5037317.693369  3357327.998305
+  4    LA    LA        25.0 m   -106.14.44.2  +35.35.34.2         -0.0000        0.0000  6372831.2532 -1449752.646436 -4975298.573311  3709123.825446
+  5    MK    MK        25.0 m   -155.27.19.9  +19.40.44.8         -0.0000        0.0000  6379464.1022 -5464075.247410 -2495247.833469  2148297.505345
+  6    NL    NL        25.0 m   -091.34.26.9  +41.34.49.1         -0.0000        0.0000  6368913.6411  -130872.566143 -4762317.086160  4226850.992106
+  7    OV    OV        25.0 m   -118.16.37.4  +37.02.47.3         -0.0000        0.0000  6371546.5879 -2409150.482445 -4478573.089077  3838617.324039
+  8    PT    PT        25.0 m   -108.07.09.1  +34.07.19.7         -0.0000        0.0000  6373749.2196 -1640954.001748 -5014816.024612  3575411.768974
+  9    SC    SC        25.0 m   -064.35.01.1  +17.38.42.4         -0.0000        0.0000  6376148.0958  2607848.668864 -5488069.494717  1932739.786060  </code></pre><br>
+
+
+Given that the measurement set contains several sources, the script $\texttt{VLBA_ERIS2026_polsolve.py}$ has the possibility of selecting different (sets of) calibrator(s) and target(s). We are going to use different combinations of calibrators, in order to check how this affects the estimated D-terms.<br><br>
+
+But before starting to calibrate the D-terms, we must calibrate the cross-polarization delay (and phase) of the reference antenna that we have used in the Global Fringe Fitting (Los Alamos, LA). The fringe fitting only cares about the parallel-hand correlations, RR and LL, which means that the relative instrumental delay (and phase) between the R and L polarization channels of Los Alamos (LA) are still affecting all the cross-hand data (i.e., <em>all</em> baselines are affected by <em>the same</em> cross-hand delay and phase). This delay can be easily seen by just plotting the cross-hand phases of any baseline with a good SNR (say, LA-KP or LA-FD, observing 3C279). Please, run $\texttt{plotms}$ and check it:<br><br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/VLBA_crossDelays.png" alt="" /></span></div><br>
+
+How do we estimate these instrumental cross-polarization delays? It has to be done in different steps. First, we will estimate the cross-hand single-band delays (SBD). Then, we will adjust the remaining phase slope across spectral windows (multi-band delays). Let's go step by step:<br><br>
+
+
+<ol>
+<li> Use $\texttt{gaincal}$ to determine the cross-hand SBDs:<br>
+<pre><code class="language-python">
+gaincal(vis='VLBA_BG251A_7mm.ms', 
+        caltable='BG251A.KcrossSBD',
+        gaintype='KCROSS', combine='scan',
+        field='3C279', refant='LA')
+</code></pre><br>
+
+Notice that we are not providing any polarization source model to $\texttt{gaincal}$ (it has no effect when we run it in $\texttt{KCROSS}$ mode). <br><br></li>
+
+<li> Apply the table (using $\texttt{applycal}$; you will have to sort out how to do it, ensuring that $\texttt{parang}$ is always False) and check the $\texttt{corrected}$ data column in $\texttt{plotms}$. It should look like this:<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/VLBA_crossDelays2.png" alt="" /></span></div><br>
+
+As you can see, there is still a small slope of the cross-hand phases as a function of frequency (i.e., a small MBD). The easiest way to handle it would be to run $\texttt{polcal}$ with $\texttt{poltype='X'}$ (by undoing the parallactic-angle correction first, as we discussed in the first part of the tutorial). However, the $\texttt{polcal}$ algorithm fails to solve this particular problem. We will thus take a different strategy within $\texttt{CASA}$.<br><br></li>
+
+<li> Combine the different spectral windows into one, so we can use $\texttt{gaincal}$ in $\texttt{KCROSS}$ mode again, this time to derive the cross-hand MBD.<br>
+<pre><code class="language-python">
+mstransform(vis='VLBA_BG251A_7mm.ms', 
+            outputvis='VLBA_BG251A_7mm_spwComb.ms'
+            datacolumn='corrected', combinespws=True,
+            chanaverage=True, chanbin = 16,
+            timeaverage=True,timebin='20s')
+</code></pre><br>
+
+Notice that, besides combining the spectral windows, we are also averaging them in frequency (down to one channel per spectral window). This way, we avoid re-introducing small SBDs when applying the MBD correction to the whole band. We also average a bit in time, to help accelerate the CLEAN major cycles when we do the imaging.<br><br></li>
+
+<li> Compute the cross-polarization MBD:<br>
+<pre><code class="language-python">
+gaincal(vis='VLBA_BG251A_7mm_spwComb.ms', 
+        caltable='BG251A.KcrossMBD',
+        gaintype='KCROSS', combine='scan',
+        field='3C279', refant='LA')
+</code></pre><br>
+
+
+<li> Apply the table to $\texttt{VLBA_BG251A_7mm_spwComb.ms}$ and check the $\texttt{corrected}$ data column. Now, the cross-hand phases look much flatter (not perfect, though). Notice that the absolute EVPA is not calibrated at this point, since we haven't had the chance to set a polarization model for the calibrator, 3C279. We will have to deal with the EVPA calibration later.
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/VLBA_crossDelays3.png" alt="" /></span></div><br></li>
+
+<li> Since $\texttt{polsolve}$ cannot pre-calibrate the data using $\texttt{CASA}$ tables on-the-fly, we need to $\texttt{split}$ the $\texttt{corrected}$ column of $\texttt{VLBA_BG251A_7mm_spwComb.ms}$, to generate a new measurement set that includes all these calibration steps. Let's call this new measurement set $\texttt{BG251A_kcrossCalib.ms}$:<br>
+<pre><code class="language-python">
+split(vis='VLBA_BG251A_7mm_spwComb.ms', 
+      outputvis='BG251A_kcrossCalib.ms',
+      datacolumn='corrected')
+</code></pre><br>
+
+
+</ol>
+
+
+
+At this point, we can finally solve for the D-terms! The program $\texttt{polsolve}$ can handle more than one calibrator at a time, in a multi-calibrator self-consistent D-term fit, which can be very useful if there are elements of the interferometer with a very poor parallactic-angle coverage for a particular calibrator source. In this tutorial, we will estimate the D-terms in two different ways: (1) either using each source independently as the only polarization calibrator or (2) combining calibrators. Then, we will analyze whether the D-terms and the final full-polarization images are much affected by the different choices of calibrators.<br>
+
+The $\texttt{VLBA_ERIS2026_polsolve.py}$ script will estimate the D-terms in the same way as we did in the previous cases (i.e., by an iterative <em>self-calibration</em> process, where a CLEAN model obtained from D-term calibrated data is used as the input for the next D-term estimates).<br><br>
+</p>
+
+
+<hr/>
+<h3 class="alt">Using 3C279 as Polarization Calibrator</h3>
+
+<p class="alt"> 
+
+
+Open the script $\texttt{VLBA_ERIS2026_polsolve.py}$ and edit its header to set $\texttt{3C279}$ as the $\texttt{field}$ (i.e., $\texttt{field='3C279'}$). You can add more sources to $\texttt{target_field}$ (separated by commas) if you want to image them using the D-terms estimated from 3C279. For instance, $\texttt{target_field='M84'}$ will calibrate M84 using the D-terms derived from 3C279.<br>
+
+The first time that you run the script with a given calibrator source, $\texttt{iclean}$ will be run at the beginning, so you can set its CLEAN masks. Then, after that, all the further deconvolutions of that source will use the same mask and everything will run automatically.<br>
+
+<em>NOTE:</em> you can also play with the CLEAN parameters (like the weighting, which you could set to $\texttt{natural}$ instead of $\texttt{uniform}$).<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/VLBA_3C279.gif" alt="" /></span></div><br>
+
+After the last iteration, write down the EVPA values of 3C279 printed by $\texttt{plotPolImage}$ on the terminal (i.e., the values for $\texttt{EVPA(Peak)}$ and $\texttt{EVPA(avg)}$). You will need these values later, for the absolute EVPA calibration.<br><br>
+
+Take a look at the plots of visibility residuals in phasor space (for all the baselines related to Los Alamos, these will be in the file $\texttt{BG251A_kcrossCalib_PolSolve_Residuals_AA.png}$) and the actual visibilities in the same space (file $\texttt{BG251A_kcrossCalib_PolSolve_Data_AA.png}$ for Los Alamos) and comment on the results.<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Phasors_3C279.jpg" alt="" /></span></div><br>
+
+ 
+</p>
+
+
+
+<hr/>
+<h3 class="alt">Using OJ287 as Polarization Calibrator</h3>
+
+<p class="alt"> 
+
+Open the script $\texttt{VLBA_ERIS2026_polsolve.py}$ in an editor and set $\texttt{field='OJ287'}$. Then, run the script. After setting the masks with $\texttt{iclean}$, the script will take a bit of time to recover D-term estimates that should be close to these ones:<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/VLBA_OJ287.gif" alt="" /></span></div><br>
+
+We can compare the D-terms estimated using 3C279 as calibrator to those using OJ287. In principle, if the calibration is OK, both sets of D-terms should be similar. Let us check this by running the function $\texttt{compareDterms}$ (from the $\texttt{poltools_helper}$ module), in a way similar to what we did with the <a href="polarisation_new.html#pointPol2">simulated data (CASE=3)</a>.<br>
+
+<pre>
+<code class="language-python">from poltools_helper import compareDterms
+compareDterms(dt1='3C279.polsolve-dterms',dt2='OJ287.polsolve-dterms')  </code>
+</pre>
+
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Dterms_3C-vs-OJ.png" alt="" /></span></div><br>
+
+There is definitely a correlation between the D-terms estimated using 3C279 and those estimated using OJ287. This is a good indicative that we are doing things properly!<br>
+
+</p>
+
+
+<hr/>
+<h3 class="alt">Using 3C84 as Polarization Calibrator</h3>
+
+<p class="alt"> 
+
+Even tough the D-terms using 3C279 and OJ287 look similar, the case of 3C84 is quite different. Run the calibration script using 3C84 as the $\texttt{field}$ and $\texttt{target_field}$. Then, generate the correlation plot between the D-terms using 3C84 and 3C279. It should be similar to this one:<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Dterms_3C279-vs-3C84.png" alt="" /></span></div><br>
+
+<strong>QUESTION:</strong> What could be the reason for such a big discrepancy between the D-terms using 3C84 and those using 3C279 and/or OJ287? A look at the plot of elevation (or feed angle) vs. time for all these sources may help you answer the question.<br><br>
+
+<strong>EXERCISE:</strong> 3C84 is quite compact (even with VLBI at 7mm) and basically unpolarized. Hence, we could run $\texttt{polsolve}$ by forcing the source model to be that of an unpolarized point source. With this assumption, just one scan of 3C84 should suffice to derive pretty decent D-terms. Let's do this with this line of code (the peak intensity of 3C84 is about 3.8 Jy; you can check it in different ways with CASA):<br>
+
+<pre>
+<code class="language-python">polsolve(vis='POLSIM_CASE-3.ms', caltable='3C84_unpol.polsolve',
+         CLEAN_models=[3.8], frac_pol=[0.0], EVPA=[0.0], PolSolve=[False])
+</code>
+</pre>
+
+This code asks $\texttt{polsolve}$ to fit only for the D-terms and force the source model to be fixed (i.e., $\texttt{PolSolve=[False]}$) and unpolarized (i.e., $\texttt{frac_pol=[0.0]}$). After running it, please generate the correlation plot between the new D-terms and those derived from 3C279 and/or OJ287. The plot should look like this one:
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/Dterms_3C279_vs_3C84unpol.png" alt="" /></span></div><br>
+
+Now, it doesn't look that bad!
+
+</p>
+
+
+<hr/>
+
+<h3 class="alt">Using M84 as Polarization Calibrator</h3>
+
+<p class="alt"> 
+
+If you plot some visibilities of M84, you will see that the SNR is quite low, compared to what a calibrator source should look like. Thus, we will not show the results for M84 in this tutorial, although you are encouraged to play with it, if you like. In any case, don't expect good results.
+
+</p>
+
+
+
+<hr/>
+
+<h3 class="alt">Using 3C279 and OJ287 simultaneously</h3>
+
+<p class="alt"> 
+By setting $\texttt{field='3C279,OJ287'}$ in the calibration script, we will use both calibrator sources simultaneously, in a self-consistent D-term fitting. Run the script in this mode and compare the D-terms to those estimated above.<br>
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/VLBA_3C279_OJ287.gif" alt="" /></span></div><br>
+
+<strong>EXERCISE:</strong> Plot the correlation between the D-terms calibrated in this section and the D-terms estimated using each calibrator independently. Is there any calibrator dominating the solution? Which one?<br>
+
+<strong>OPTIONAL EXTRA EXERCISE:</strong> Repeat the calibration by adding also 3C84 (and/or M84 as well). Does the addition of these sources affect the quality of the fit? Comment on the results.<br>
+
+
+</p>
+
+
+
+
+<hr/>
+
+<h3 class="alt">Absolute EVPA calibration</h3>
+
+<p class="alt"> 
+
+The only remaining quantity to be calibrated in our data is the absolute EVPA, which appears as a constant phase offset between the R and L polarization channels of all antennas (i.e., the same quantity has to be added to all baselines, in the exact same way). Therefore, all the polarization images generated in the previous steps have been more or less correct, regarding the polarization intensities and the <em>relative</em> polarization angles. However, all these EVPAs still have to be corrected by a <em>global</em> constant.<br> 
+
+If at least one of the observing antennas had a linear-polarization feed, the absolute EVPA would be automatically calibrated by just using that antenna as the reference in the process of fringe fitting (we wouldn't even need to calibrate the "$\texttt{KCROSS}$" cross-hand delay and phase!). This is the case of the Event Horizon Telescope (which uses ALMA as the reference antenna) and <a href="polarisation_new.html#M87EHT">the M87 data analyzed a few sections above</a>. However, all the VLBA antennas have circular feeds, so we need to estimate the absolute EVPA by comparison of the average polarization angle of a calibrator with some other independent measurement of the same source, close in both time and frequency. The source 3C279 is well monitored by the  <a href="https://www.bu.edu/blazars">Blazars Research Group</a> of Boston University. Indeed, their <a href="https://www.bu.edu/blazars/VLBA_GLAST/3c279.html"> monitoring of 3C279</a> at the wavelength of 7mm is pretty good. Their closest EVPA measurement to our epoch of observations gives a value of <em>52 degrees</em>.<br><br>
+
+<strong>EXERCISE:</strong> Get the average EVPA of 3C279 estimated by $\texttt{plotPolImage}$ from our data (i.e., the value $\texttt{EVPA(avg)}$ that was printed on the terminal and you wrote down a few minutes ago) and compute the difference between that value and the true EVPA of 3C279 (52 degrees). Then, use this difference to generate corrected EVPA images for 3C279 and OJ287. You can do this in different ways:<br><br>
+
+<ul>
+<li> Using $\texttt{CARTA}$. There is an option in the GUI that allows you to rotate all the EVPAs in a plot.</li>
+<li> Using $\texttt{plotPolImage}$ (from the $\texttt{poltools_helper}$ module). The keyword $\texttt{rotateEVPA}$ is what you need here. In this case, for 3C279, we will run these lines ($\texttt{EROT}$ is the EVPA rotation that we need to apply, in degrees):<br>
+
+<pre><code class="language-python">
+from poltools_helper import plotPolImage
+plotPolImage(img='3C279.image', mSigmaCut=1.25, SigmaCut=2.0,
+            dPol=20, lPol=0.05,
+            rotateEVPA = EROT)
+</code></pre><br></li>
+
+
+<li> Correcting the R-L phases of all baselines (either manually or via a $\texttt{CASA}$ table), to reflect this rotation in the data (this is the somewhat hardest way). If you prefer this option, these lines of code may help you ($\texttt{EROT_RAD}$ is the rotation angle, in radians):<br>
+
+<pre><code class="language-python">
+tb.open("BG251A_kcrossCalib.ms",nomodify=True)
+DATA = tb.getcol("DATA")
+DATA[1,:,:] *= np.exp(2.*1.j*EROT_RAD)  # This is RL
+DATA[2,:,:] *= np.exp(-2.*1.j*EROT_RAD) # This is LR
+tb.putcol("DATA",DATA)
+tb.close()
+</code></pre><br>
+
+After running these lines, the visibilities will be corrected for the absolute EVPA. Then, re-running the calibration and imaging scripts will give you the final images.</li>
+
+</ul>
+
+In any case, you should get images quite similar to these ones:
+
+<div class="col-12"><span class="image fit"><img src="plots/polarisation/3C279_OJ287_polImg.png" alt="" /></span></div><br>
+
+
+
+
+</p>
+
+
+
+	</section>
+	<hr/>
+
+
+<hr/>
+
+
+<h1 class="alt">Additional Material</h1>
+
+<hr/>
+
+
+
+
+
+
+
+
+
+							<hr/>
+							<section>
+								<h1 class="alt"><a name="additional"></a>Additional Activities</h1>
+								<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
+								<p>
+									Suggestions for further work:
+								</p>
+								<h4>A. These data:</h4>
+								<p class="alt">
+									<ol>
+										<li>Estimate the errors in the polarisation images of 3C279 and OJ287, from the images and/or analytically.</li>
+										<li>Experiment with the different weightings and imaging parameters as at the end of the imaging and self-calibration tutorials, but in full polarisation.</li>
+										
+									</ol>
+								</p>
+								<h4>B. Look at the polarisation CASA guides:</h4>
+								<p class="alt">
+									<ol>
+										<li><a href="https://casaguides.nrao.edu/index.php/Polarization_Calibration_based_on_CASA_pipeline_standard_reduction:_The_radio_galaxy_3C75" target="_blank">VLA (similar to e-MERLIN, but also outlines Rotation Measure analysis)</a></li>
+										<li><a href="https://casaguides.nrao.edu/index.php?title=3C286_Polarization" target="_blank">ALMA (linearly polarised feeds)</a></li>
+									</ol>
+								</p>
+							</section>
+						</div>
+					</section>
+			</div>
+		<hr/>
+
+
+
+
+
+
+
+		<section>
+<h1 class="alt"><a name="definitions"></a>Summary, definitions and symbols</h1>
+<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
+
+<h3> Summary of polarisation calibration for circular feeds</h3>
+<h4>Cross-hand delay</h4>
+<p>
+  Each antenna receives $R$ and $L$, and the correlator makes products $RR$, $RL$, $LR$, $LL$.<br/> 
+  Total intensity calibration using the bandpass calibrator, phase reference source etc. gives you corrected phases (for a point source at the phase centre):<br/>
+  $\phi^1_R(\nu) = \phi^{1, \mathrm{obs}}_R(\nu) + \epsilon^1_{\phi R}(\nu) = 0$
+  <br/>
+ $\phi^1_L(\nu) = \phi^{1, \mathrm{obs}}_L(\nu) + \epsilon^1_{\phi L}(\nu) = 0$
+  <br/>
+  for antenna 1, where $\epsilon$ is the correction derived by setting the reference antenna phases  $\phi^{\mathrm{refant}}_R(\nu) = 0$ and $\phi^{\mathrm{refant}}_L(\nu) = 0$<br/>
+  Thus, $\phi_{RR} = \phi_{LL} =0$<br/>
+  However,   $\phi^{\mathrm{refant}}_R(\nu)-\phi^{\mathrm{refant}}_L(\nu)$ is unknown and this leaves an arbitrary, frequency-dependent phase error in $\phi_{RL}$ and $\phi_{LR}$, the cross hand delay (KCROSS). This should be a single value for all baselines as long as the same reference antenna was used.
+</p>
+<h4> Leakage</h4>
+<p>
+In reality receivers do not separate polarisations perfectly and <br/>
+$ \phi^{1, \mathrm{obs}}_R(\nu) =  \phi^1_R(\nu) + \delta^1_L(\nu)$<br/>
+and similarly for $L$, and for amplitudes. The simplest way to correct this is by comparing the visibilities for an unpolarised source with a model of pure $LL$ and $RR$, here, 3C84. If a (linearly) polarised calibrator has to be used, if this is observed over enough hour angles (typically more than 3 hr) the feed parallactic angle rotation changes the source polarisation relative to the leakage by enough to solve simultaneously for source polarisation and leakage.
+</p>
+<h4> Polarisation angle</h4>
+<p>
+The image plane polarisation angle is half the visibility $R-L$ phase difference. But previous calibration takes the origin of phase independently for $R$ and $L$, as the initial (instrumental) phases of the reference antenna, with a random offset.  Luckily at cm wavelengths 3C286 has a stable polarisation angle so the $R-L$ phase difference is corrected to make this 66$^{\circ}$ in the visibilities, and 33$^{\circ}$ in its image.
+  </p>
+<p>
+									The symbols used in papers and textbooks and talks may differ from those used in code (e.g. avoiding subscripts) but also between different authors. 
+								</p>
+<h4>Stokes parameters and related quantities</h4>
+<table>
+<tr><th>Symbol</th><th>Definition</th></tr>
+<tr><td> $I$ </td><td> Total intensity </td></tr>
+<tr><td> $Q$ </td><td> Linear polarisation component </td></tr>	
+<tr><td> $U$ </td><td> Linear polarisation component </td></tr>	
+<tr><td> $V$ </td><td> Circular polarisation </td></tr>	
+	<tr><td> $P$ </td><td> (linear) polarised intensity $\sqrt{Q^2+U^2}$  </td></tr>	
+	<tr><td>$I_c$ or $m_{\mathrm c}$ </td><td>Fractional linear polarisation $V/I$ </td></tr>	
+	<tr><td>$I_p$ or $p$ or $m_{\mathrm l}$ </td><td>Fractional linear polarisation $P/I$ </td></tr>	
+	<tr><td>$\theta$ or $\chi$ </td><td> Polarisation angle $0.5 \arctan\left(\frac{U}{Q}\right)^*$ </td></tr>	
+</table>
+	$^*$ Use atan2 in calculations to get the sign right. Other Greek letters sometimes used.
+
+	<p/>
+<h4>Calibration terms</h4>
+<table>
+	<tr><td>$\psi$</td><td>Parallactic angle</td></tr>
+	<tr><td>$D_{RL}, D_{XY}$ or $D_{rl}, D_{xy}$</td><td>Leakage in the circular or linear basis</td></tr>
+	<tr><td>$K_{\mathrm C}$ or $K_{\mathrm {cross}}$</td><td>Cross-hand delay</td></tr>
+</table>
+	<p/>
+	<h4>Observational parameters</h4>
+	The correlated visibilities made from right hand circular polarised signals (RCP or RHC) from two antennas 1, 2  may be represented as $V_{RR}^{1,2}$  or $\langle R_1 R_2^{*}\rangle$ (denoting complex conjugation) or simply $RR$, and so on for the other hands of polarisation. $RR$, $LL$ are the parallel hands and  $RL$, $LR$ the cross hands, or $XX$, $YY$ and $XY$, $YX$ for linearly polarised feeds. These are related to the Stokes parameters (simplified, perfectly calibrated) as: 
+<table>
+<tr><th>Stokes </th> <th>Circular feeds</th><th>Linear feeds</th></tr>
+	<tr><td>$I$</td><td>($RR+LL$)/2</td><td>($XX+YY$)/2</td></tr>
+	<tr><td>$Q$</td><td>($RL+LR$)/2</td><td>($XX-YY$)/2</td></tr>
+	<tr><td>$U$</td><td>$i$($RL-LR$)/2</td><td>($XY+YX$)/2</td></tr>
+	<tr><td>$V$</td><td>($RR-LL$)/2</td><td>$i$($XY-YX$)/2</td></tr>
+</table>	
+	<p> Note that in some papers the factor "/2" is omitted and as another souce of  confusion in older papers $V$ may be defined as ($LL-RR$)/2. </p>
+		</section>
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
+
+	</body>
+</html>
