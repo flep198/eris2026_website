@@ -1,0 +1,554 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>ERIS2026 - Polarisation</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/prism.css">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap' rel='stylesheet'>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+		</script>
+		<script type="text/javascript">
+var pcs = document.lastModified.split(" ")[0].split("/");
+var date = pcs[1] + '/' + pcs[0] + '/' + pcs[2];
+onload = function(){
+    document.getElementById("lastModified").innerHTML = "Page last modified: " + date;
+}
+		</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">ERIS 2026 - Advanced tutorials</a>
+				<nav>
+					<ul>
+						<li><a href="index.html#five">Home</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+							<h1 class="major">Advanced Tutorial - Polarisation</h1>
+							<!-- Text -->
+							<section>
+								<h2 class="alt"><a name=""></a>Data required</h2>
+								<p>
+									This tutorial follows the initial calibration and imaging of e-MERLIN 5-GHz observations of 3C277.1 (see <a href="polarisation.html#3C277_full.html">here</a>.  For reminders about how to start CASA and run steps in a script, see these tutorials.
+								</p>
+								<p>
+									<ul>
+										<li>Before beginning, ensure that you have a directory made for this tutorial (e.g., named Polarisation) and that your computer has at least 7GB of space.</li>
+										<li>Next, use the link or command below to download the data to that folder:
+										<ul class="actions">
+											<li><a href="data/ERIS26_AT2_polarisation.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_AT2_polarisation.tar.gz (~1.6GB)</a></li>
+										</ul>
+										<pre><code class="language-bash">wget https://home.iaa.csic.es/~jmoldon/eris2024/data/ERIS26_AT2_polarisation.tar.gz</code></pre></li>
+										<li>Un-tar the download using <code class="language-bash">tar -xvf ERIS26_AT2_polarisation.tar.gz</code>
+									</ul>
+								</p>
+								<p>
+									You should find the following files in your folder:
+									<ol>
+										<li><code class="language-bash">all_avg_pol.ms</code> - measurement set that has all previous calibration (including self-calibration) applied from the main tutorials.</li>
+										<li><code class="language-bash">3C277.1_pol2026.py</code> - script for the polarisation tutorial</li>
+										<li><code class="language-bash">1331+3030_IQUV_5GHz.clean.model.tt0</code> and <code class="language-bash">1331+3030_IQUV_5GHz.clean.model.tt1</code> - polarised model for 3C286 (with two frequency terms)</li>
+									</ol>
+								</p>
+								<p>
+									This tutorial script does not have blanks as most parameter settings are unambiguous. Nonetheless, please be sure to read each step in the script before running it. Instead, there are a number of additional steps you could add at the end. There are also optional extra activities highlighted, if you have time.
+								</p>
+								<p>
+                                You can find a complete guide to display polarization information in CARTA here: <a href="carta_display_polarisation.pdf" target="_blank">Displaying polarisation in CARTA</a>
+								</p>
+							</section>
+							<hr/>
+							<section>
+								<h2>Table of contents</h2>
+								<p>
+									<b>Important:</b> The numbers in brackets respond to the steps in the accompanying python script.
+								</p>
+								<ol start="1">
+									<li><a href="polarisation.html#prepare">Prepare data set (0-1)</a></li>
+									<li><a href="polarisation.html#setmodel">Set models and inspect data (2-5)</a></li>
+									<li><a href="polarisation.html#calibrate">Derive corrections for cross-hand delay, leakage, polarisation angle and apply (6-9)</a></li>
+									<li><a href="polarisation.html#image">Image 3C286 in full polarisation and plot the polarised image (10-11)</a></li>
+									<li><a href="polarisation.html#imtarget">Apply calibration and image target in full polarisation, plot polarised image (12,13)</a></li>
+									<li><a href="polarisation.html#additional">Additional activities</a></li>
+									<li><a href="polarisation.html#definitions">Summary, definitions, symbols</a></li>
+								</ol>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="prepare"></a>1. Prepare the data set</h2>
+								<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									Some notes on the measurement set we are using, <code class="language-bash">all_avg_pol.ms</code>. This was made from <code class="language-bash">all_avg.ms</code> containing 3C277.1 and its calibrators, as from the total intensity calibration script, which was also flagged. All the calibration has been applied to the calibration sources. For the target, the self-calibration solutions were also applied while it was still in the data set with all the calibrators. The calibrated data are then split out, so that the $\texttt{CORRECTED_DATA}$ column in <code class="language-bash">all_avg.ms</code> becomes the $\texttt{DATA}$ column in <code class="language-bash">all_avg_pol.ms</code>
+								</p>
+								<p></p>
+
+								<h4 class="alt">Step 0</h4>
+								<p class="alt">
+									Do not run this step, it is there for information only.
+								</p>
+								<p></p>
+
+								<h4 class="alt">Step 1</h4>
+								<p class="alt">
+									This step lists the information on the measurement set. <code class="language-none">all_avg_pol.ms.listobs</code> should contain,
+
+<pre><code class="language-none">================================================================================
+	MeasurementSet Name:  /Users/jackradcliffe/Documents/ERIS26/ERIS26_polarisation/all_avg_pol.ms      MS Version 2
+================================================================================
+Observer: TS8004     Project: TS8004  
+Observation: e-MERLIN
+Data records: 259120       Total elapsed time = 79789.8 seconds
+Observed from   01-Aug-2019/23:20:10.5   to   02-Aug-2019/21:30:00.3 (UTC)
+
+ObservationID = 0         ArrayID = 0
+Date        Timerange (UTC)          Scan  FldId FieldName             nRows     SpwIds   Average Interval(s)    ScanIntent
+01-Aug-2019/23:20:10.5 - 00:00:00.2     1      3 0319+4130                 9000  [0,1,2,3]  [15.9, 15.9, 15.9, 15.9] 
+02-Aug-2019/00:00:04.0 - 00:00:07.0     2      2 1302+5748                   60  [0,1,2,3]  [3, 3, 3, 3] 
+			00:04:54.5 - 00:06:01.0     3      1 1252+5634                  240  [0,1,2,3]  [14.7, 14.7, 14.7, 14.7] 
+......... 
+			20:56:03.0 - 21:00:00.2   367      1 1252+5634                  880  [0,1,2,3]  [14.8, 14.8, 14.8, 14.8] 
+			21:00:03.0 - 21:30:00.3   368      0 1331+3030                 2752  [0,1,2,3]  [15.7, 15.7, 15.7, 15.7] 
+			(nRows = Total number of rows per scan) 
+Fields: 4
+	ID   Code Name                RA               Decl           Epoch        nRows
+	0    ACAL 1331+3030           13:31:08.287300 +30.30.32.95900 J2000        11748
+	1         1252+5634           12:52:26.285900 +56.34.19.48800 J2000       151728
+	2         1302+5748           13:02:52.465277 +57.48.37.60932 J2000        72400
+	3    CAL  0319+4130           03:19:48.160110 +41.30.42.10330 J2000        23244
+Spectral Windows:  (4 unique spectral windows and 1 unique polarization setups)
+	SpwID  Name   #Chans   Frame   Ch0(MHz)  ChanWid(kHz)  TotBW(kHz) CtrFreq(MHz)  Corrs          
+	0      none      16    GEO    4820.000      8000.000    128000.0   4880.0000   RR  RL  LR  LL
+	1      none      16    GEO    4948.000      8000.000    128000.0   5008.0000   RR  RL  LR  LL
+	2      none      16    GEO    5076.000      8000.000    128000.0   5136.0000   RR  RL  LR  LL
+	3      none      16    GEO    5204.000      8000.000    128000.0   5264.0000   RR  RL  LR  LL
+The SOURCE table is empty: see the FIELD table
+Antennas: 6:
+	ID   Name  Station   Diam.    Long.         Lat.                Offset from array center (m)                ITRF Geocentric coordinates (m)        
+																		East         North     Elevation               x               y               z
+	0    Mk2   Mk2       24.0 m   -002.18.14.1  +53.02.57.3      19618.7284    20856.7583     6908.7107  3822846.760000  -153802.280000  5086285.900000
+	1    Kn    Kn        25.0 m   -002.59.49.7  +52.36.17.2     -26823.2185   -28465.4973     7055.9694  3860084.921000  -202105.036000  5056568.917000
+	2    De    De        25.0 m   -002.08.40.0  +51.54.49.9      30300.7876  -105129.6730     7263.6278  3923442.718000  -146914.386000  5009755.292000
+	3    Pi    Pi        25.0 m   -002.26.43.3  +53.06.14.9      10141.4322    26944.5297     6845.6479  3817549.874000  -163031.121000  5089896.642000
+	4    Da    Da        25.0 m   -002.32.08.4  +52.58.17.2       4093.0417    12222.9915     6904.6753  3829087.869000  -169568.939000  5081082.350000
+	5    Cm    Cm        32.0 m   +000.02.13.7  +51.58.49.3     176453.7144   -97751.3908     7233.2945  3920356.264000     2541.973000  5014284.480000</code></pre>
+
+This lists the target and calibrator fields.  If you cannot remember the roles of these sources, consult the list starting line 53 of <code class="language-bash">3C277.1_pol2026.py</code>
+								</p>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="setmodel"></a>2. Set models and inspect data</h2>
+								<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									We split out the corrected column to make further calibration more convenient (why?) but this means that we have to re-insert models for the calibrators and in fact use a new, polarised model for 3C286 (1331+3030).
+								</p>
+								<p></p>
+								<h4 class="alt">Step 2</h4>
+								<p class="alt">
+									Uses the flux density provided for 0319+4130 and the flux density which you previously derived for the phase reference 1302+5748. <i>Tip:</i> If you need to find a previously-set flux density, you can do it like this in CASA:
+                   					<pre><code class="language-python">listhistory(vis = 'all_avg_pol.ms')</code></pre>and then search the logger output for <code class="language-bash">setjy</code> (you can do this for any task used on an MS).
+                   				</p>
+                   				<p>
+									Note: For both 0319+4130 and  1302+5748, we set only the Stokes $I$ flux (see above, where <code class="language-python">fluxdensity = [0.449, 0.0, 0.0, 0.0]</code> (you can also check for 0319+4130). These values are for Stokes [ $I$, $Q$, $U$, $V$]. The $Q$, $U$, $V$ are zero for different reasons: for the phase reference 1302+5748 we do not know the polarised flux density. For 0319+4130 (3C84) we do know - that it is indeed zero at this frequency range and resolution!
+								</p>
+								<p>
+									The flux density for 1331+3030 (3C286) is set by using a model derived from imaging, since it is both polarised and resolved. The task <code class="language-bash">ft</code> Fourier transforms the clean components and inserts them in the model column of the MS. You can check that 1331+3030_IQUV_5GHz.clean.model.tt0 has 4 Stokes planes either with task <code class="language-bash">imhead</code> or in the CASA viewer or Carta.
+								</p>
+								<p>
+									<b>Question:</b> In <code class="language-bash">ft</code>, why do we use <code class="language-bash">.tt0</code> and <code class="language-bash">.tt1</code> images and <code class="language-python">nterms=2</code>?
+								</p>
+								<p></p>
+								<h4 class="alt">Step 3</h4>
+								<p class="alt">
+									This step plots the model amplitude against uv distance for 3C286 so that you can see that it is about $11\%$ polarised. Interactively or by adding to the script, plot phase as well.  Note the values of RL and LR (green and purple) at the shortest uv distance, $\pm66$ degrees, or twice the map linear polarisation position angle (see previous talk). You might find the overall shape easier to understand if you plot phase against time and iterate through the baselines. You also could plot the models for the other calibration sources (they should be boring)
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step3_3C286_model.png" alt="" /></span></div>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step3_3C286_model_phase.png" alt="" /></span></div>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step3_3C84-phref_model.png" alt="" /></span></div>
+								
+								<p></p>
+								<h4 class="alt">Step 4</h4>
+								<p class="alt">
+									This step plots the phase reference $\texttt{DATA}$ phase against time to show parallactic angle rotation. 
+								</p>
+								<p>
+									<b>Questions:</b> This is for a long baseline, what would you expect it to look like on a shorter baseline? Check.  What would you expect a similar plot for the target to show (if it was bright enough)? 
+								</p> 
+								<p></p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step4_phref_parallacticA.png" alt="" /></span></div>
+
+								<p></p>
+								<h4 class="alt">Step 5</h4>
+								<p class="alt">
+									This step plots the uncorrected cross-hand delay, that is, the slope of phase with frequency.
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step5_3C286Xhand-delay.png" alt="" /></span></div>
+								<p>
+									Below, this is compared with the model phase - so we can be sure that the slope on the actual data is due to instrumental errors.  Recall that in deriving the initial calibration delay and bandpass corrections, the phase of Mk2 was held constant, but the errors in its cross-hands were thus never corrected and propagate to all the other antennas.  Hence the cross-hand delay correction should be the same for all antennas. Note that the model was observed at a different time from these data.
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step5_3C286Xhand-delayModel.png" alt="" /></span></div>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="calibrate"></a>3. Derive corrections for cross-hand delay, leakage, polarisation angle and apply</h2>
+								<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p></p>
+								<h4 class="alt">Step 6</h4>
+								<p class="alt">
+									In this step we derive the cross-hand delay correction using 1331+3030 as it has fairly strong (~0.6 Jy) emission in the cross hands.  As an instrumental correction, it is expected to be constant in time over the observing session, and as it is mainly due to the reference antenna it should be constant for all antennas, hence solint='inf', combine='scan'. 
+								</p>
+								<p>
+									<b>Question:</b>From the Mk2-Cm uncorrected delay, what do you expect to be the magnitude of the correction in nanoseconds?
+								</p>
+								<p>
+									Check this from the plot; the casalogger will give the plot range, too:
+<pre><code class="language-none">2022-09-09 16:28:21 INFO PlotMS	Delay:data: -0.451982 to 0 (unflagged); (no flagged data)</code></pre>
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step6_3C286Kcross.png" alt="" /></span></div>
+
+								<p></p>
+								<h4 class="alt">Step 7</h4>
+								<p class="alt">
+									Step derives the leakage corrections, that is, the leakage of receiver signal between the hands of polarisation due to imperfections in the waveguides, electronics etc. As noted, this is simple as we have a calibration source, 3C84, which is known to be unpolarised. 
+								</p>
+								<p>
+									<b>Question:</b>When applying <code class="language-bash">1331+3030.KCROSS</code>, we use <code class="language-python">spwmap=[0,0,0,0]</code>. Can you work out why?
+								</p>
+								<pre><code class="language-python">polcal(vis='all_avg_pol.ms',
+	   caltable= '0319+4130.D1',
+	   field='0319+4130',
+	   minblperant=2,
+	   minsnr=3,       
+	   refant=antref,
+	   poltype='Df',  # Leakage is frequency-dependent
+	   solint='inf',  # but constant in time for a given receiver
+	   combine='scan',
+	   preavg=120.0,  # pre-averaging time (s) (with ~constant parallactic angle)
+	   gaintable=['1331+3030.KCROSS'],
+	   spwmap=[0,0,0,0],
+	   interp='nearest' )</code></pre>
+
+
+								<p>
+									The pre-averaging is not strictly needed here but does no harm, see the extra activities at the end for its use.  Since we averaged all spectral windows in deriving <code class="language-bash">1331+3030.KCROSS</code>, there is only one spw entry in that table, so we use the <code class="language-bash">spwmap</code> parameter here to apply the one correction to all four spw present.<br/>
+									The leakage is pretty messy but should not exceed ~20% in amplitude at these frequencies.
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step7_3C84leakageD1amp.png" alt="" /></span></div>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step7_3C84leakageD1phase.png" alt="" /></span></div>
+
+
+								<p></p>
+								<h4 class="alt">Step 8</h4>
+								<p class="alt">
+									The final correction, derived in Step 8, is for polarisation angle $\chi$, which is derived from the R-L visibility phase offset (see talks).  $\chi = 0.5\arctan(U/Q)$.  3C286 has a well-known polarisation angle which is almost constant at 33 degrees (hence the $\pm$66 degree relationship between RL and LR).  Look at the script and check you understand the parameter settings.
+								</p>
+								<p>	
+									At around 5 GHz, the errors are constant in time for the duration of these observations, but see Michiel Brentjen's talk for the issues at lower frequencies.
+								</p>
+
+								<p></p>
+								<h4 class="alt">Step 9</h4>
+								<p class="alt">
+									Step 9 applies the polarisation corrections to 3C286 and 3C84 and plots the corrected visibilities for 3C286, showing the improvements before and after. Below is the uncorrected delay.
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step9_3C286uncorr_delay.png" alt="" /></span></div>
+								<p>
+									And the corrected delay:
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step9_3C286corr_delay.png" alt="" /></span></div>
+								
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="image"></a>4. Image 3C286 in full polarisation and plot the polarised image</h2>
+								<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p></p>
+								<h4 class="alt">Step 10</h4>
+								<p class="alt">
+									Before looking at Step 10, refresh your memory from the Imaging tutorial and think about what parameters you need to make a full polarisation image.
+								</p>
+								<div class="row">
+									<div class="column">
+										<b>Linux</b>
+										<pre><code class="language-python">	tclean(vis='all_avg_pol.ms',
+		   field='1331+3030',
+		   imagename='pol3C286',
+		   stokes='IQUV',
+		   threshold=0,
+		   specmode='mfs',
+		   restoringbeam='common',
+		   cell='0.005arcsec',
+		   imsize=200,
+		   uvtaper='0.07arcsec',
+		   interactive=True,
+		   niter=200)</code></pre>
+								</div>
+								<div class="column">
+									<b>Mac OS</b>
+									<pre><code class="language-python">	run_iclean(vis='all_avg_pol.ms',
+			   field='1331+3030',
+			   imagename='pol3C286',
+			   stokes='IQUV',
+			   threshold=0,
+			   specmode='mfs',
+			   restoringbeam='common',
+			   cell='0.005arcsec',
+			   imsize=200,
+			   niter=200)	</code></pre></div>
+								</div>
+         						<p>
+         							Some notes on these parameters:
+         							<ul>
+         								<li>The obvious one is <code class="language-python">stokes='IQUV'</code>.</li>
+         								<li><code class="language-python">restoringbeam='common'</code> is used because, if different Stokes parameters have been flagged differently, or even just due to the different orientations of the feeds, very slightly different beams may be fitted for the different Stokes.  Some later analysis tasks cannot cope with this, so we force the beam to be the same for each Stokes plane.  (This is also worth remembering for spectral cubes as long as the frequency range is not so great that you need a different beam).</li>
+         								<li><code class="language-python">uvtaper='0.07arcsec'</code> is used because 3C286 has a bright core but also weak and very extended emission which is resolved out by e-MERLIN, especially as the observation is very short. The effect of this taper is to apply a Gaussian weighting to the visibility data such that baseline lengths contributing 0.07 arcsec resolution (i.e., approximately the average of the naturally fitted beam) have half-weight, longer baselines have less weight etc. and the resulting beam is more circular and artefacts are reduced.</li>
+         							</ul>
+         						</p>
+         						<p>
+         							When imaging remember to mask 'all polarisations' as shown below (shift + a when adding regions for Mac users),
+         						</p>
+         						<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step10_3C286clean1.png" alt="" /></span></div>
+         						<p>
+         							At first you will see in the logger that clean components are only found for Stokes $I$, but $Q$ and $U$ should start to be cleaned as the threshold (as a fraction of the residuals) decreases.
+         						</p>
+         						<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step10_3C286clean_logger.png" alt="" /></span></div>
+         						<p>
+         							Keep cleaning until you get to the residuals that look like noise (see below) and stop cleaning
+         						</p>
+         						<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step10_3C286residual.png" alt="" /></span></div>
+         						<p>
+         							This should make images that look like those below
+         						</p>
+         						<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step10_3C286_IQUV.png" alt="" /></span></div>
+         						<p>
+         							This step also uses task <code class="language-bash">immath</code> to split out the planes of the cube, and then imstat to measure the peak and rms of each image.  The boxes are chosen to cover the centre of the image for the peak, and to exclude it for the rms. Values are printed out. I got these, but you might get different values depending on masking and how deeply you cleaned.
+         						</p>
+<pre><code class="language-none"># pol3C286I.image rms  56.080 mJy
+# pol3C286I.image peak 6260.000 mJy/bm
+# pol3C286Q.image rms   9.013 mJy
+# pol3C286Q.image peak 297.321 mJy/bm
+# pol3C286U.image rms   7.843 mJy
+# pol3C286U.image peak 710.796 mJy/bm
+# pol3C286V.image rms  16.035 mJy
+# pol3C286V.image peak  86.381 mJy/bm</code></pre>
+								<p>
+									<b>Question:</b> Why is the rms lower in $Q$ and $U$?
+								</p>
+								<p>
+									Note that $V$ should be zero, or at least compatible with noise; here it is about $5\sigma$ which shows that there is residual leakage, but at a similar level to the $I$ noise.
+								</p>
+
+								<p></p>
+								<h4 class="alt">Step 11</h4>
+								<p class="alt">
+									In this step, we will make polarisation products. First, polarised intensity $P$,
+								</p>
+								<p>
+									<b>Question:</b> What is the operation on the images used to make linear polarised intensity? 
+								</p>
+								<pre><code class="language-python">immath(imagename ='pol3C286image',
+         mode='lpoli',
+         sigma = '0.01Jy/beam',
+         outfile='pol3C286poli')</code></pre>
+         						<p>
+									The task forms $P = \sqrt{Q^2+U^2}$. However, such an image is entirely positive, but the noise in the original interferometry images is both positive and negative.  Hence, the calculated polarised intensity will be slightly too high unless it is debiased. The <code class="language-bash">sigma</code> parameter should be approximately the expected noise in $P$.  The exact relationship is more complicated, see the talk and references.
+								</p>
+								<p>
+									You can predict the error in the Poli ($P$) map by propagation of error, and use this to check or change the value set in the script for sigma in CASA:
+								</p>
+								<pre><code class="language-python">from math import *
+P = sqrt(Q**2+U**2) 
+Q = 297.321
+U = 710.796
+errQ= 9.013
+errU= 7.843
+errP=(sqrt(U**2*errU**2+Q**2*errQ**2))/P</code></pre>
+								<p>
+									Next, polarisation angle map Pola ($\chi$).  Here, <code class="language-bash">polithresh</code> is the limit of believable linear polarisation, about 3 $\times$ noise, check/change as needed.
+								</p>
+								<pre><code class="language-python">immath(imagename ='pol3C286image',
+         mode='pola',
+         polithresh='0.03Jy/beam',
+         outfile='pol3C286pola')</code></pre>
+         						<p>
+         							You can calculate the approximate polarisation angle at the peak in CASA:
+         						<pre><code class="language-python">POLA = 0.5*degrees(atan2(U, Q))</code></pre>
+
+         						<b>Question:</b> What value do you expect for 3C286?
+         						</p>
+         						<p>
+									NB: If you really want to check the error in $\arctan$, it is,
+									<pre><code class="language-python">errPOLA=degrees(0.5*sqrt((U**2*errQ**2 + Q**2*errU**2)/(U**2+Q**2)**2))</code></pre>
+										To inspect the images, load into the CASA viewer (see attached slides for Carta):
+									<ul>
+										<li>pol3C286I.image as raster</li>
+										<li>pol3C286poli as contour</li>
+										<li>pol3C286pola as vector</li>
+									</ul>
+									and adjust the settings.  You can increase the length of the vectors and also add an 'extra rotation' of $-33$ degrees. <b>Question:</b> What direction should the vectors now be pointing in?
+								</p>
+								<p>
+									Even better, it is possible to display the vectors' lengths proportional to the polarised intensity. In Step 11, this is done by making an image thus:
+								</p>
+								<pre><code class="language-python">po.open('pol3C286image')   # this is the 4-plane IQUV image
+po.complexlinpol('1331+3030.cmplxlinpol')
+po.close()</code></pre>
+								<p>
+									You can find more about the use of the <code class="language-bash">imagepol</code> tool in <a href="https://casadocs.readthedocs.io/en/stable/notebooks/image_analysis.html">https://casadocs.readthedocs.io/en/stable/notebooks/image_analysis.html</a> and <a href="https://casa.nrao.edu/docs/casaref/imagepol-Tool.html">https://casa.nrao.edu/docs/casaref/imagepol-Tool.html</a>
+								</p>
+								<p>
+									Then, as before, open the total intensity and Poli images, but then, instead of clicking on an image, just enter the following in the LEL box as shown below:
+									<pre><code class="language-python">'1331+3030.cmplxlinpol'['pol3C286poli'>0.25]</code></pre>
+									and click on 'vector image'
+								</p>
+								<p>
+									This means, open the cmplxlinpol image where the Poli image exceeds 0.25 Jy (change the threshold as wanted).
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step11_3C286_polvec.png" alt="" /></span></div>
+
+
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="imtarget"></a>5. Apply calibration, image target in full polarisation and plot the polarised image</h2>
+								<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									These are the same procedures as for calibrating and imaging 3C286, but you will need more clean iterations and masking (don't forget, all polarisations!) and different thresholds.
+								</p>
+								<p>
+									The final image will look something like this:
+								</p>
+								<div class="col-12"><span class="image fit"><img src="plots/polarisation/Step13_3C277.1_polvec.png" alt="" /></span></div>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="additional"></a>6. Additional activities</h2>
+								<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									Suggestions for further work:
+								</p>
+								<h4>A. These data:</h4>
+								<p class="alt">
+									<ol>
+										<li>Estimate the errors in the polarisation images of 3C277.1, from the images and/or analytically</li>
+										<li>Experiment with the different weightings and imaging parameters as at the end of the imaging and self-calibration tutorials, but in full polarisation.</li>
+										<li>Image 3C84 in polarisation and use it to estimate residual leakage error</li>
+										<li>Rewrite step 7 to use the phase calibrator as a leakage calibrator. In this case, we do not know the source polarisation in advance, but the observations are more than 3 hr. Thus , use  poltype = 'D+QU' to solve simultaneously for source polarisation and leakage, using the property that the source polarisation angle will rotate with the sky but the leakage will be fixed to the telescope orientation.  This means that, given a long enough observation, the (analytically known) parallactic angle rotation can be used to separate these properties. Then apply the calibration and image the phase reference in polarisation.</li>
+									</ol>
+								</p>
+								<h4>B. Look at the polarisation CASA guides:</h4>
+								<p class="alt">
+									<ol>
+										<li><a href="https://casaguides.nrao.edu/index.php/Polarization_Calibration_based_on_CASA_pipeline_standard_reduction:_The_radio_galaxy_3C75" target="_blank">VLA (similar to e-MERLIN, but also outlines Rotation Measure analysis)</a></li>
+										<li><a href="https://casaguides.nrao.edu/index.php?title=3C286_Polarization" target="_blank">ALMA (linearly polarised feeds)</a></li>
+									</ol>
+								</p>
+							</section>
+						</div>
+					</section>
+			</div>
+		<hr/>
+		<section>
+<h2 class="alt"><a name="definitions"></a>7. Summary, definitions and symbols</h2>
+<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+
+<h3> Summary of polarisation celibration for circular feeds</h3>
+<h4>Cross-hand delay</h4>
+<p>
+  Each antenna receives $R$ and $L$, and the correlator makes products $RR$, $RL$, $LR$, $LL$.<br/> 
+  Total intensity calibration using the bandpass calibrator, phase reference source etc. gives you corrected phases (for a point source at the phase centre):<br/>
+  $\phi^1_R(\nu) = \phi^{1, \mathrm{obs}}_R(\nu) + \epsilon^1_{\phi R}(\nu) = 0$
+  <br/>
+ $\phi^1_L(\nu) = \phi^{1, \mathrm{obs}}_L(\nu) + \epsilon^1_{\phi L}(\nu) = 0$
+  <br/>
+  for antenna 1, where $\epsilon$ is the correction derived by setting the reference antenna phases  $\phi^{\mathrm{refant}}_R(\nu) = 0$ and $\phi^{\mathrm{refant}}_L(\nu) = 0$<br/>
+  Thus, $\phi_{RR} = \phi_{LL} =0$<br/>
+  However,   $\phi^{\mathrm{refant}}_R(\nu)-\phi^{\mathrm{refant}}_L(\nu)$ is unknown and this leaves an arbitrary, frequency-dependent phase error in $\phi_{RL}$ and $\phi_{LR}$, the cross hand delay (KCROSS). This should be a single value for all baselines as long as the same reference antenna was used.
+</p>
+<h4> Leakage</h4>
+<p>
+In reality receivers do not separate polarisations perfectly and <br/>
+$ \phi^{1, \mathrm{obs}}_R(\nu) =  \phi^1_R(\nu) + \delta^1_L(\nu)$<br/>
+and similarly for $L$, and for amplitudes. The simplest way to correct this is by comparing the visibilities for an unpolarised source with a model of pure $LL$ and $RR$, here, 3C84. If a (linearly) polarised calibrator has to be used, if this is observed over enough hour angles (typically more than 3 hr) the feed parallactic angle rotation changes the source polarisation relative to the leakage by enough to solve simultaneously for source polarisation and leakage.
+</p>
+<h4> Polarisation angle</h4>
+<p>
+The image plane polarisation angle is half the visibility $R-L$ phase difference. But previous calibration takes the origin of phase independently for $R$ and $L$, as the initial (instrumental) phases of the reference antenna, with a random offset.  Luckily at cm wavelengths 3C286 has a stable polarisation angle so the $R-L$ phase difference is corrected to make this 66$^{\circ}$ in the visibilities, and 33$^{\circ}$ in its image.
+  </p>
+<p>
+									The symbols used in papers and textbooks and talks may differ from those used in code (e.g. avoiding subscripts) but also between different authors. 
+								</p>
+<h4>Stokes parameters and related quantities</h4>
+<table>
+<tr><th>Symbol</th><th>Definition</th></tr>
+<tr><td> $I$ </td><td> Total intensity </td></tr>
+<tr><td> $Q$ </td><td> Linear polarisation component </td></tr>	
+<tr><td> $U$ </td><td> Linear polarisation component </td></tr>	
+<tr><td> $V$ </td><td> Circular polarisation </td></tr>	
+	<tr><td> $P$ </td><td> (linear) polarised intensity $\sqrt{Q^2+U^2}$  </td></tr>	
+	<tr><td>$I_c$ or $m_{\mathrm c}$ </td><td>Fractional linear polarisation $V/I$ </td></tr>	
+	<tr><td>$I_p$ or $p$ or $m_{\mathrm l}$ </td><td>Fractional linear polarisation $P/I$ </td></tr>	
+	<tr><td>$\theta$ or $\chi$ </td><td> Polarisation angle $0.5 \arctan\left(\frac{U}{Q}\right)^*$ </td></tr>	
+</table>
+	$^*$ Use atan2 in calculations to get the sign right. Other Greek letters sometimes used.
+
+	<p/>
+<h4>Calibration terms</h4>
+<table>
+	<tr><td>$\psi$</td><td>Parallactic angle</td></tr>
+	<tr><td>$D_{RL}, D_{XY}$ or $D_{rl}, D_{xy}$</td><td>Leakage in the circular or linear basis</td></tr>
+	<tr><td>$K_{\mathrm C}$ or $K_{\mathrm {cross}}$</td><td>Cross-hand delay</td></tr>
+</table>
+	<p/>
+	<h4>Observational parameters</h4>
+	The correlated visibilities made from right hand circular polarised signals (RCP or RHC) from two antennas 1, 2  may be represented as $V_{RR}^{1,2}$  or $\langle R_1 R_2^{*}\rangle$ (denoting complex conjugation) or simply $RR$, and so on for the other hands of polarisation. $RR$, $LL$ are the parallel hands and  $RL$, $LR$ the cross hands, or $XX$, $YY$ and $XY$, $YX$ for linearly polarised feeds. These are related to the Stokes parameters (simplified, perfectly calibrated) as: 
+<table>
+<tr><th>Stokes </th> <th>Circular feeds</th><th>Linear feeds</th></tr>
+	<tr><td>$I$</td><td>($RR+LL$)/2</td><td>($XX+YY$)/2</td></tr>
+	<tr><td>$Q$</td><td>($RL+LR$)/2</td><td>($XX-YY$)/2</td></tr>
+	<tr><td>$U$</td><td>$i$($RL-LR$)/2</td><td>($XY+YX$)/2</td></tr>
+	<tr><td>$V$</td><td>($RR-LL$)/2</td><td>$i$($XY-YX$)/2</td></tr>
+</table>	
+	<p> Note that in some papers the factor "/2" is omitted and as another souce of  confusion in older papers $V$ may be defined as ($LL-RR$)/2. </p>
+		</section>
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
+
+	</body>
+</html>
