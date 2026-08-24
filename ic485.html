@@ -1,51 +1,68 @@
 <!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-<head>
-<title>ERIS2026 - TW Hya Spectral Line Tutorial</title>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<link rel="stylesheet" href="assets/css/main.css" />
-<link rel="stylesheet" href="assets/css/prism.css" />
-<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-</head>
-<body class="is-preload">
-<header id="header">
-<a href="index.html" class="title">ERIS 2026 - Tutorials</a>
-<nav><ul>
-<li><a href="index.html#five">Home</a></li>
-<li><a href="spectral_lines.html">Spectral Lines</a></li>
-<li><a href="twhya.html" class="active">TW Hya</a></li>
-</ul></nav></header>
-<div id="wrapper"><section id="main" class="wrapper"><div class="inner">
+	<head>
+		<title>ERIS2026 - Spectral lines</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/prism.css">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap' rel='stylesheet'>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+		</script>
+		<script type="text/javascript">
+var pcs = document.lastModified.split(" ")[0].split("/");
+var date = pcs[1] + '/' + pcs[0] + '/' + pcs[2];
+onload = function(){
+    document.getElementById("lastModified").innerHTML = "Page last modified: " + date;
+}
+		</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">ERIS 2026 - Advanced tutorials</a>
+				<nav>
+					<ul>
+						<li><a href="index.html#five">Home</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
 
 <h1 class="major">IC 485: H₂O Maser Imaging</h1>
 
 <section>
 
-<h2>Data</h2>
+<h2 class="alt">Data</h2>
 
 <p>
-In this final tutorial we will work on yet another type of spectral-line
-source: an H₂O maser associated with IC 485.
-</p>
-
-<p>
-The observations were obtained using the Very Long Baseline Array (VLBA)
-at K-band and represent the highest spatial-resolution dataset of the
-three spectral-line tutorials.
+In this final tutorial, we will work on yet another kind of source: an H2O maser, IC 485. The data are obtained using the Very Long Baseline Array (VLBA) at K-band and are published in Ladu et al. 2024. These are the highest spatial resolution data of the three data sets we have used.
 </p>
 
 <p>
 The data are already self-calibrated and can be downloaded from:
+<br>
+[DOWNLOAD LINK]
 </p>
 
 <p>
-<strong>[DOWNLOAD LINK]</strong>
-</p>
-
-<p>
-After downloading the data, verify that the measurement set is available
-in your working directory before proceeding.
+After downloading the data, verify that the measurement set is available in your working directory before proceeding.
 </p>
 
 </section>
@@ -54,53 +71,18 @@ in your working directory before proceeding.
 
 <section>
 
-<h2>Table of Contents</h2>
-
-<ol>
-<li>Maser Lines</li>
-<li>Importing into CASA</li>
-<li>Inspect the Data</li>
-<li>Determine the Channels Containing the Line Feature</li>
-<li>Phase Shift the Data</li>
-<li>Average the Channels</li>
-<li>Parameters Related to Velocity and Reference Frames</li>
-<li>Creating a Dirty Cube</li>
-<li>Inspecting the Cube</li>
-<li>Mask Creation</li>
-<li>Producing the Final Cube</li>
-<li>Analysing the Final Cube</li>
-<li>Moment Maps</li>
-<li>Analysis Using the Cube</li>
-<li>Exporting the Results</li>
-</ol>
-
-</section>
-
-<hr/>
-
-<section>
-
-<h2>Maser Lines</h2>
+<h2 class="alt">Maser Lines</h2>
 
 <p>
-Maser emission is produced when radiation is amplified through stimulated
-emission in molecular gas. Unlike ordinary thermal spectral-line emission,
-masers can reach extremely high brightness temperatures and are among the
-brightest radio spectral-line sources known.
+Maser emission is produced when radiation is amplified through stimulated emission in molecular gas. Unlike ordinary thermal spectral-line emission, masers can reach extremely high brightness temperatures and are among the brightest radio spectral-line sources known.
 </p>
 
 <p>
-Because of their high brightness, masers can be observed at extremely high
-angular resolution using VLBI arrays, allowing the structure and
-kinematics of the emitting gas to be investigated on very small spatial
-scales.
+Because of their high brightness, masers can be observed at extremely high angular resolution using VLBI arrays, allowing the structure and kinematics of the emitting gas to be investigated on very small spatial scales.
 </p>
 
 <p>
-In this tutorial we study H₂O maser emission from IC 485. Unlike the
-absorption observed in NGC 660 or the thermal molecular emission observed
-in TW Hya, the signal in this dataset is dominated by strong maser
-emission.
+In this tutorial we study H₂O maser emission from IC 485. Unlike the absorption observed in NGC 660 or the thermal molecular emission observed in TW Hya, the signal in this dataset is dominated by strong maser emission.
 </p>
 
 </section>
@@ -109,18 +91,17 @@ emission.
 
 <section>
 
-<h2>Importing into CASA</h2>
+<h2 class="alt">Importing into CASA</h2>
 
 <p>
-The data were calibrated using AIPS and therefore must first be imported
-into CASA.
+The data were calibrated in another software called AIPS. So first we shall import the data into CASA.
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-importuvfits(
-    fitsfile='IC485.CUBO.1',
-    vis='IC485.ms'
+<pre class="line-numbers"><code class="language-python">importuvfits(
+fitsfile='IC485.uvfits',
+vis='ic485.ms'
 )
 </code></pre>
 
@@ -130,11 +111,10 @@ importuvfits(
 
 <section>
 
-<h2>Inspect the Data</h2>
+<h2 class="alt">Inspect the data</h2>
 
 <p>
-Before imaging any spectral-line dataset it is important to understand the
-structure of the observations.
+Before imaging any spectral-line dataset it is important to understand the data. The first step is therefore to inspect the measurement set and determine:
 </p>
 
 <ul>
@@ -142,21 +122,22 @@ structure of the observations.
 <li>The number of spectral windows.</li>
 <li>The total number of channels.</li>
 <li>The central observing frequency.</li>
-<li>The antenna configuration.</li>
+<li>The antenna configuration (how many antennas are present?).</li>
 </ul>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+Some of this information will be useful for the subsequent steps.
+</p>
 
-listobs(
-    vis='ic485.ms',
+<h3>In CASA</h3>
+
+<pre class="line-numbers"><code class="language-python">listobs(
+vis='ic485.ms',
 )
 </code></pre>
 
 <p>
-Did you notice the reference frame reported by <code>listobs</code>?
-The spectral axis is already in the barycentric reference frame. This is
-because the correction for the Earth's motion around the Sun was applied
-during the calibration in AIPS.
+Did you notice the FRAME in listobs output? It is already set to BARY. This is because the correction for the movement of earth around the sun was already applied to the dataset in the initial calibrations steps in AIPS.
 </p>
 
 </section>
@@ -165,40 +146,33 @@ during the calibration in AIPS.
 
 <section>
 
-<h2>Determine the Channels Containing the Line Feature</h2>
+<h2 class="alt">Determine the channels containing the line feature</h2>
 
 <p>
-Before producing a spectral cube we must determine which channels contain
-the emission line.
+Before producing a spectral cube we must determine which channels contain the emission line. We also need to identify channels that are free of line emission because these will later be used to fit and subtract the continuum.
 </p>
 
 <p>
-As before, we begin by plotting an averaged spectrum.
+A convenient way to do this is to average the visibilities and plot amplitude as a function of channel number/frequency/velocity (i.e. a spectrum).
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-plotms(
-    vis='ic485.ms',
-    xaxis='channel',
-    yaxis='amp',
-    avgspw=False,
-    avgtime='1e9',
-    avgscan=True,
-    avgbaseline=True,
-    scalar=False,
-    showgui=True,
+<pre class="line-numbers"><code class="language-python">plotms(
+vis='ic485.ms',
+xaxis='channel',
+yaxis='amp',
+avgspw=False,
+avgtime='1e9',
+avgscan=True,
+avgbaseline=True,
+scalar=False,
+showgui=True,
 )
 </code></pre>
 
 <p>
-What do you see?
-</p>
-
-<p>
-The spectral line is extremely weak and is not easily visible. Try
-averaging several channels together within the plotms GUI and see whether
-the line becomes apparent. To do that, enter the number of channels to be averaged in the 'data' panel under 'averaging'
+What do you see? The spectral line is evidently too weak to show up in a plot like this. On plotms window, in data panel you can try averaging the channels. Do you see any sign of emission when you average a few channels together?
 </p>
 
 </section>
@@ -207,48 +181,36 @@ the line becomes apparent. To do that, enter the number of channels to be averag
 
 <section>
 
-<h2>Phase Shift the Data</h2>
+<h2 class="alt">Phase shift the data</h2>
 
 <p>
-One reason that the line is difficult to detect is that the source is not
-located exactly at the phase centre used during the observations.
+One of the reasons why the line is not visible in plotms is because the coordinates of the source used for observations were based on not-so-precise optical observations.
 </p>
 
 <p>
-The coordinates used during the observations were:
-</p>
-
-<pre><code>
-RA  08:00:19.76000
-Dec +26:42:05.100
-</code></pre>
-
-<p>
-More accurate radio observations using the Very Large Array (VLA) by Donald et al. 2017 place the maser centroid at:
-</p>
-
-<pre><code>
-RA  08:00:19.75249
-Dec +26:42:05.053
-</code></pre>
-
-<p>
-The maser is therefore offset from the phase centre by approximately
-0.1 arcsec.
+If you run listobs again, you will find that the phase center (the coordinates used to point the VLBA telescopes) is:
+<br>
+RA 08:00:19.76000       Dec. +26.42.05.100
 </p>
 
 <p>
-To correct for this, we shift the phase centre to the maser position.
+New radio observations using the Very Large Array (VLA) by Darling (2017) tell us that the position fo the maser centroid is
+<br>
+RA 08:00:19.75249       Dec. +26.42.05.053
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+Thus, the maser is offset by  ~ -0.10" (RA) and ~ -0.05" (Dec.) from the phase centre. We will first shift the phase centre to the maser centroid and then proceed with the next steps.
+</p>
 
-os.system('rm -rf ic485shift.ms')
+<h3>In CASA</h3>
+
+<pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485shift.ms')
 
 phaseshift(
-    vis='ic485.ms',
-    outputvis='ic485shift.ms',
-    phasecenter='J2000 08h00m19.75249s +26d42m05.053s'
+vis='ic485.ms',
+outputvis='ic485shift.ms',
+phasecenter='J2000 08h00m19.75249s +26d42m05.053s'
 )
 </code></pre>
 
@@ -258,31 +220,32 @@ phaseshift(
 
 <section>
 
-<h2>Inspecting the Phase-Shifted Data</h2>
+<h2 class="alt">Inspect the phase-shifted data</h2>
 
 <p>
-Plot the spectrum again after applying the phase shift.
+Let us now check if the emission lines are visible in the phase-shifted data:
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-plotms(
-    vis='ic485shift.ms',
-    xaxis='channel',
-    yaxis='amp',
-    avgspw=False,
-    avgtime='1e9',
-    avgscan=True,
-    avgbaseline=True,
-    scalar=False,
-    showgui=True,
+<pre class="line-numbers"><code class="language-python">plotms(
+vis='ic485shift.ms',
+xaxis='channel',
+yaxis='amp',
+avgspw=False,
+avgtime='1e9',
+avgscan=True,
+avgbaseline=True,
+scalar=False,
+showgui=True,
 )
 </code></pre>
 
 <p>
-The emission line is now clearly visible even without any additional
-averaging and is much stronger after averaging.
+The emission line is now clearly visible even without averaging any channels.
+Zoom-in to see the actual width of the line. It is about 200 channels wide!
 </p>
+
 
 <div style="text-align:center;">
     <img src="plots/spectral_line/ic485_plotms.jpeg"
@@ -291,8 +254,11 @@ averaging and is much stronger after averaging.
 </p>
 
 <p>
-Also notice that there is essentially no continuum emission in this
-dataset. Unlike TW Hya and NGC 660, no continuum subtraction is required.
+listobs showed us that the dataset has over 2000 channels. Since the line is wide, we could average by 4 channels to reduce computation time.
+</p>
+
+<p>
+Before proceeding, did you notice that there is no continuum emission in this dataset? So we will not be doing the continuum subtraction like we did for the other two sources!
 </p>
 
 </section>
@@ -301,30 +267,23 @@ dataset. Unlike TW Hya and NGC 660, no continuum subtraction is required.
 
 <section>
 
-<h2>Average the Channels</h2>
+<h2 class="alt">Average the channels</h2>
 
-<p>
-The dataset contains more than 2000 spectral channels.
-Since the emission line is broad, we can safely average neighbouring
-channels to reduce computation time. Let us average 4 channels together.
-</p>
+<h3>In CASA</h3>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
-
-os.system('rm -rf ic485shift.ave4.ms')
+<pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485shift.ave4.ms')
 
 mstransform(
-    vis='ic485shift.ms',
-    outputvis='ic485shift.ave4.ms',
-    datacolumn='all',
-    chanaverage=True,
-    chanbin=4
+vis='ic485shift.ms',
+outputvis='ic485shift.ave4.ms',
+datacolumn='all',
+chanaverage=True,
+chanbin=4
 )
 </code></pre>
 
 <p>
-What is the velocity resolution of the dataset now? 
-We will use this averaged dataset for the remainder of the tutorial.
+We shall use this dataset for further reduction.
 </p>
 
 </section>
@@ -333,26 +292,24 @@ We will use this averaged dataset for the remainder of the tutorial.
 
 <section>
 
-<h2>Parameters Related to Velocity and Reference Frames</h2>
+<h2 class="alt">Parameters related to velocity and reference frames</h2>
 
 <p>
-Like NGC 660, IC 485 is an extragalactic source. We therefore use:
+Just like NGC 660, IC 485 is an extragalactic source, and we therefore use
+<code>outframe='BARY'</code> and <code>veltype='optical'</code>.
 </p>
-
-<pre><code>
-outframe='BARY'
-veltype='optical'
-</code></pre>
 
 <p>
-However, unlike the NGC 660 dataset, the velocity axis has already been
-shifted into the rest frame of the galaxy during the calibration process in AIPS (using the task CVEL).
-Therefore the rest frequency corresponds directly to the H₂O transition.
+However, unlike the NGC 660 dataset, these data were already shifted to the barycentric frame during the initial calibration. If the redshifted frequency of the line is supplied as the rest frequency, then 0 km/s corresponds to the systemic velocity of the galaxy. If instead the laboratory transition frequency is used, the velocity axis will include the galaxy's recession velocity, and the systemic velocity will correspond to the recession velocity of the galaxy.
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+For NGC 660, we chose to set the systemic velocity to 0 km/s by using the redshifted line frequency. For IC 485, we will instead recover the galaxy's recession velocity by using the laboratory transition frequency of the water maser line.
+</p>
 
-rstfrq='22.2350798GHz'
+<h3>In CASA</h3>
+
+<pre class="line-numbers"><code class="language-python">rstfrq='22.2350798GHz'
 </code></pre>
 
 </section>
@@ -361,60 +318,57 @@ rstfrq='22.2350798GHz'
 
 <section>
 
-<h2>Creating a Dirty Cube</h2>
+<h2 class="alt">Creating a Dirty Cube</h2>
 
 <p>
-Before performing any deconvolution it is useful to examine the dirty
-cube.
+Now we are ready to image the cube. Many of the parameters used for creating a cube are similar to what you used while creating a continuum image. The main difference is, while creating the continuum image you averaged all the channels together. However, here you are going to make an image of each channel (or a few channels averaged together) to obtain a three dimensional data product where the third dimension is the velocity axis. In the previous step we have already averaged the channels to produce an averaged visibility dataset. So we don't have to do that now.
 </p>
 
 <p>
-A dirty cube is produced by Fourier transforming the visibilities without
-applying any CLEAN iterations.
+Before performing any deconvolution it is often useful to examine the 'dirty cube'.
+</p>
+
+<p>
+A dirty cube is produced by Fourier transforming the visibilities without applying any CLEAN iterations. Many of the parameters used for creating a cube are similar to what you used while creating a continuum image. The main difference is, while creating the continuum image you averaged all the channels together. However, here you are going to make an image of each channel (or a few channels averaged together) to obtain a three dimensional data product where the third dimension is the velocity axis.
+</p>
+
+<p>
+This allows us to:
 </p>
 
 <ul>
 <li>Estimate the image noise.</li>
 <li>Inspect the quality of the data.</li>
-<li>Identify all channels containing emission.</li>
-<li>Determine an appropriate cleaning strategy.</li>
+<li>Determine which channels contain emission (even the weak emission channels we may have missed in the plotms inspection earlier).</li>
+<li>Decide on an appropriate cleaning strategy.</li>
 </ul>
 
 <p>
-Can you explain why we have chosen:
+The logic behind choosing a few parameters used below such as the 'imsize' and 'cell' are the same as what you learnt in continuum imaging. Can you tell us why we have chosen <code>cell=0.00015arcsec</code>? What about the choice of <code>imsize</code>?
 </p>
 
-<pre><code>
-cell='0.00015arcsec'
-imsize=[250,250]
-</code></pre>
+<h3>In CASA</h3>
 
-<p>
-based on what you learnt during the continuum-imaging exercises?
-</p>
-
-<pre class="line-numbers"><code class="language-python"># In CASA
-
-os.system('rm -rf ic485.dirty.cube*')
+<pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485.dirty.cube.*')
 
 tclean(
-    vis='ic485shift.ave4.ms',
-    imagename='ic485.dirty.cube',
-    imsize=[250,250],
-    cell='0.00015arcsec',
-    perchanweightdensity=True,
-    specmode='cube',
-    start=0,
-    width=1,
-    outframe='BARY',
-    veltype='optical',
-    restfreq=rstfrq,
-    restoringbeam='common',
-    pbcor=True,
-    weighting='briggsbwtaper',
-    robust=0.5,
-    niter=0,
-    interactive=False
+vis='ic485shift.ave4.ms',
+imagename='ic485.dirty.cube',
+imsize=[250, 250],
+cell='0.00015arcsec',
+perchanweightdensity=True,
+specmode='cube',
+start=0,
+width=1,
+outframe='BARY',
+veltype='optical',
+restfreq=rstfrq,
+restoringbeam='common',
+pbcor=True,
+weighting='briggsbwtaper',
+robust=0.5,
+niter=0,
+interactive=False
 )
 </code></pre>
 
@@ -424,80 +378,73 @@ tclean(
 
 <section>
 
-<h2>Inspecting the Cube</h2>
+<h2 class="alt">Inspecting the cube</h2>
 
 <p>
-First we would like to check the beam size, velocity resolution and other
-basic properties of the cube.
+First we would like to check the beam size, velocity resolution and other parameters of the cube.
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-imhead(
-    imagename='ic485.dirty.cube.image.pbcor',
+<pre class="line-numbers"><code class="language-python">imhead(
+imagename='ic485.dirty.cube.image.pbcor',
 )
 </code></pre>
 
 <p>
-What is the beam size? What spatial scale does it correspond to at the
-distance of IC 485? These observations provide extraordinarily high
-spatial resolution compared to the previous tutorials.
+What is the beam size? What spatial scale does it correspond to at the redshift of IC 485? This is indeed extremely high spatial resolution!
 </p>
 
 <p>
-Next we estimate the RMS noise in line-free channels. This provides a
-quantitative measure of the sensitivity of the observations and will guide
-our choice of cleaning threshold.
+Next we check the RMS noise in the line free channels. This provides a quantitative estimate of the sensitivity of the observations and will guide the choice of stopping threshold during CLEANing.
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+The imstat task calculates basic statistical properties of an image, including the mean, maximum value and RMS noise.
+</p>
 
-imstat(
-    'ic485.dirty.cube.image',
-    chans='1~200'
-)
+<h3>In CASA</h3>
+
+<pre class="line-numbers"><code class="language-python">imstat('ic485.dirty.cube.image', chans='1~200')
 </code></pre>
 
 <p>
-Measure the RMS in several line-free channels or channel ranges. The
-values should be broadly consistent.
+Measure the RMS noise in several more channels or channel ranges that appear free of emission. The values should be broadly consistent from channel to channel.
+</p>
+
+<h3>In CARTA</h3>
+
+<p>
+Open the dirty cube in CARTA and examine the emission channel by channel just like you did for TW Hya in the previous exercise.
 </p>
 
 <p>
-The RMS noise measured for this dataset is approximately:
-</p>
-
-<pre><code>RMS ≈ 2.8 mJy beam⁻¹</code></pre>
-
-<p>
-Open the dirty cube in CARTA and inspect the emission channel by channel.
-</p>
-
-<p>
-Consider the following questions:
+Questions to consider:
 </p>
 
 <ul>
 <li>In which channels is the emission visible?</li>
 <li>Is the emission compact or extended?</li>
 <li>Is the emission detected at high significance?</li>
-<li>Does the morphology change across the line profile?</li>
 </ul>
 
 <p>
-The answers to these questions will guide the cleaning strategy and mask
-placement.
+The answers to the above questions will help determine the cleaning strategy and mask placement.
 </p>
 
 <p>
-Because the line is very strong, we will adopt:
+A common approach, when the spectral line is strong, is to clean to approximately three times the RMS noise level. A threshold significantly above the noise may leave emission in the residual image, while cleaning too deeply risks introducing artefacts. If the line is very weak, we do not clean at all.
 </p>
 
-<pre><code>threshold = 3 × RMS = 8.4 mJy beam⁻¹</code></pre>
+<p>
+Since the line is very strong, in this tutorial we adopt:
+<br>
+<code>threshold = 3 × RMS = 8.4 mJy (for an RMS of 2.8 mJy/beam)</code>
+</p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-thrshld='8.4mJy'
+<pre class="line-numbers"><code class="language-python">thrshld='8.4mJy'
 </code></pre>
 
 </section>
@@ -506,24 +453,12 @@ thrshld='8.4mJy'
 
 <section>
 
-<h2>Mask Creation</h2>
+<h2 class="alt">Mask creation</h2>
 
 <p>
-Before producing the final cube we create a mask defining the region to
-be cleaned.
+One last step before producing the final cube is to create a mask to define the region to be cleaned. This is similar to how we created the mask for TW Hya. With the cube open in CARTA, draw a small region around the emission region. Be careful to exclude the sidelobes. Save this region file as: ic485.clean.mask.
 </p>
 
-<p>
-This is similar to the procedure used for TW Hya. With the dirty cube open
-in CARTA, draw a region tightly encompassing the maser emission while
-excluding any sidelobes.
-</p>
-
-<p>
-Save the resulting region file as:
-</p>
-
-<pre><code>ic485.clean.mask</code></pre>
 
 <div style="text-align:center;">
     <img src="plots/spectral_line/ic485_mask.png"
@@ -531,73 +466,62 @@ Save the resulting region file as:
          style="width:40%;">
 </div>
 
-
-
-<p>
-The CLEAN mask will be used during deconvolution of the final cube.
-</p>
-
 </section>
 
 <hr/>
 
 <section>
 
-<h2>Producing the Final Cube</h2>
+<h2 class="alt">Producing the Final Cube</h2>
 
 <p>
-Having inspected the dirty cube, estimated the RMS noise and identified
-the emission channels, we can now perform a full deconvolution.
+Having inspected the dirty cube, estimated the noise level and identified the emission channels, we can now perform a full deconvolution.
 </p>
 
 <p>
-You may have noticed that the emission is confined to the central region
-of the image and occupies only a subset of the available channels.
-Therefore we can reduce the image size and restrict the channel range,
-substantially reducing the computation time.
+We will use non-interactive cleaning here using the threshold and a common mask created using CARTA. It works very well in this case as the spatial distribution is simple (it is unresolved). In case more more complicated spatial structures, it is recommended to use a good mask.
 </p>
 
 <p>
-We therefore image only channels 250-650 by setting:
+For those cases, if you are running CASA on a Linux machine, you may choose <code>interactive=True</code> in tclean and draw the masks specifically around the regions of emission in the viewer (see the video in TW Hya).
 </p>
 
-<pre><code>
-start=250
-nchan=400
-</code></pre>
+<p>
+Unfortunately, this feature is no longer available for MacOS users. It is possible to generate more sophisticated masks for CLEANing on MacOS using other softwares and then use it in such cases. Ask the tutors if you want to know more about it!
+</p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+You may have noticed in the dirty cube that the emission is only in the very centre of the cube. So we could try to reduce the imsize for the final cube. Furthermore, the emission is seen in channels 400 to 500 and the total number of channels are ~900. Therefore, we could also try to exclude more edge channels and image only channels 250 to 650. This gives us enough line-free channels to characterise the emission itself while also reducing the computation time. We shall do that by setting <code>start = 250</code>, <code>nchan=400</code>.
+</p>
 
-os.system('rm -rf ic485.final.cube*')
+<h3>In CASA</h3>
+
+<pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485.final.cube.*')
 
 tclean(
-    vis='ic485shift.ave4.ms',
-    imagename='ic485.final.cube',
-    imsize=[150,150],
-    cell='0.00015arcsec',
-    specmode='cube',
-    perchanweightdensity=True,
-    start=250,
-    nchan=400,
-    width=1,
-    outframe='BARY',
-    veltype='optical',
-    restfreq=rstfrq,
-    restoringbeam='common',
-    pbcor=True,
-    deconvolver='hogbom',
-    weighting='briggsbwtaper',
-    robust=0.5,
-    niter=100000,
-    threshold=thrshld,
-    mask='ic485.clean.mask',
-    interactive=False
+vis='ic485shift.ave4.ms',
+imagename='ic485.final.cube',
+imsize=[150, 150],
+cell='0.00015arcsec',
+specmode='cube',
+perchanweightdensity=True,
+start=250,
+nchan=400,
+width=1,
+outframe='BARY',
+veltype='optical',
+restfreq=rstfrq,
+restoringbeam='common',
+pbcor=True,
+deconvolver='hogbom',
+weighting='briggsbwtaper',
+robust=0.5,
+niter=100000,
+threshold=thrshld,
+mask='ic485.clean.mask',
+interactive=False
 )
 </code></pre>
-
-<p>
-After cleaning is complete, inspect the final cube in CARTA.
-</p>
 
 </section>
 
@@ -605,48 +529,41 @@ After cleaning is complete, inspect the final cube in CARTA.
 
 <section>
 
-<h2>Analysing the Final Cube</h2>
+<h2 class="alt">Analysing the Final Cube</h2>
 
 <p>
-The final science product is:
+The final science product is the primary-beam-corrected cube:
+<br>
+ic485.final.cube.image.pbcor
 </p>
-
-<pre><code>ic485.final.cube.image.pbcor</code></pre>
 
 <p>
-Use <code>imhead()</code> to inspect the basic properties of the final
-cube.
+Once again check that the properties of the cube are as desired. Use imhead to inspect the basic properties of the cube (resolution, velocity resolution, number of channels, velocity type, etc).
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-imhead(
-    imagename='ic485.final.cube.image.pbcor',
+<pre class="line-numbers"><code class="language-python">imhead(
+imagename='ic485.final.cube.image.pbcor',
 )
 </code></pre>
 
 <p>
-Verify that the velocity axis, channel spacing, number of channels and
-image size are as expected.
+Begin by measuring the RMS noise in several line-free channels.
 </p>
 
 <p>
-Next, inspect the cube in CARTA.
+Next, inspect the cube in CARTA. Explore the data both spatially and spectrally:
 </p>
 
 <ul>
-<li>Step through the channels using the animator.</li>
-<li>Determine the velocity range containing maser emission.</li>
-<li>Examine whether the emission changes spatially with velocity.</li>
-<li>Extract spectra from individual pixels.</li>
-<li>Extract spectra from larger regions and compare them.</li>
-<li>Measure the integrated emission profile.</li>
+<li>Use animator to look at the cube through different channels.</li>
+<li>Does the emission vary spatially as you move through different channels?</li>
+<li>Is the emission spatially resolved?</li>
+<li>Extract spectra from different pixels, from different regions using shapes (or boxes) and then also extract the integrated emission profile.</li>
+<li>Identify the velocity range of emission.</li>
+<li>Does the spectral profile changes spatially or does it remain the same?</li>
 </ul>
-
-<p>
-Does the spectral profile vary spatially, or does it remain broadly
-consistent across the source?
-</p>
 
 </section>
 
@@ -654,49 +571,46 @@ consistent across the source?
 
 <section>
 
-<h2>Moment Maps</h2>
+<h2 class="alt">Moment Maps</h2>
 
 <p>
-You have already learnt two methods for generating moment maps:
-</p>
-
-<ul>
-<li>Using CASA (<code>immoments</code>) in the TW Hya tutorial.</li>
-<li>Using CARTA in the NGC 660 tutorial.</li>
-</ul>
-
-<p>
-Feel free to use either approach for this dataset.
+You have already learnt to generate moments using the CASA task immoments (TW Hya) and using CARTA. Generate the moment maps using the method of your preference (or both!).
 </p>
 
 <p>
-If you choose to use CASA:
+Also see the <a href="https://carta.readthedocs.io/en/latest/moment_generator.html">CARTA moment map documentation</a> for more details.
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+If you choose to use CASA, you could do this:
+</p>
 
-os.system('rm -rf ic485.mom*')
+<h3>In CASA</h3>
+
+<pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485.mom*')
 
 immoments(
-    'ic485.final.cube.image.pbcor',
-    outfile='ic485.mom',
-    includepix=[8e-3,100],
-    mask='ic485.final.cube.mask',
-    chans='155~242',
-    moments=[0,1,2]
+'ic485.final.cube.image.pbcor',
+outfile='ic485.mom',
+includepix=[8e-3, 100],
+mask='ic485.final.cube.mask',
+chans='155~242',
+moments=[0,1,2]
 )
 </code></pre>
 
 <p>
-The file <code>ic485.final.cube.mask</code> is produced by
-<code>tclean</code> and is useful for restricting the moment-map
-calculation to regions of genuine emission.
+ic485.final.cube.mask was created by tclean while making the final cube based on the region file we had provided and is useful for creating the moment maps.
 </p>
 
 <p>
-If you prefer CARTA, follow the procedure demonstrated in the NGC 660
-tutorial.
+If you choose CARTA, you could refer to the demonstration video for NGC 660. In this case, create a region around the emission and use that to define the boundaries while generating the maps.
 </p>
+
+<p>
+View the moment maps in CARTA.
+</p>
+
 
 <div style="text-align:center;">
     <img src="plots/spectral_line/ic485_moments.png"
@@ -704,9 +618,6 @@ tutorial.
          style="width:70%;">
 </div>
 
-<p>
-Inspect the resulting moment maps in CARTA.
-</p>
 
 </section>
 
@@ -714,34 +625,42 @@ Inspect the resulting moment maps in CARTA.
 
 <section>
 
-<h2>Analysis Using the Cube</h2>
+<h2 class="alt">Analysis using the cube</h2>
 
 <p>
-The final cube can now be used for a variety of scientific measurements.
-</p>
-
-<p>
-Some possible investigations include:
+Let us do some analysis using the final cube we have generated.
 </p>
 
 <ul>
-<li>Fit a two-dimensional Gaussian to the emission.</li>
-<li>Measure the integrated line intensity.</li>
-<li>Estimate the brightness temperature.</li>
-<li>Calculate the isotropic maser luminosity.</li>
+<li>Smooth the spectrum</li>
 </ul>
 
+
 <div style="text-align:center;">
-    <img src="plots/spectral_line/ic485_spectrum_smoothing.png"
+    <img src="plots/spectral_line/ic485_smoothing.png"
          alt="IC485 spectrum smoothing"
 	 style="width:90%; height:auto;" />
+</div>
 </p>
 
 
-<p>
-These quantities can be compared with values reported in the literature
-for other extragalactic H₂O masers.
+<ul>
+<li>Fit a 2D Gaussian to the spectral profile.</li>
+</ul>
+
+
+<div style="text-align:center;">
+    <img src="plots/spectral_line/ic485_fitting.png"
+         alt="IC485 spectrum fitting"
+	 style="width:90%; height:auto;" />
+</div>
 </p>
+
+<ul>
+<li>Extract the integrated spectrum and estimate the integrated intensity.</li>
+<li>Calculate the brightness temperature.</li>
+<li>Calculate the isotropic luminosity of the source.</li>
+</ul>
 
 </section>
 
@@ -749,31 +668,30 @@ for other extragalactic H₂O masers.
 
 <section>
 
-<h2>Exporting the Results</h2>
+<h2 class="alt">Exporting the Results</h2>
 
 <p>
-As with the previous tutorials, export the final products to FITS format
-for further analysis in external software packages.
+As with the previous tutorials, export the final data products to FITS format.
 </p>
 
-<pre class="line-numbers"><code class="language-python"># In CASA
+<h3>In CASA</h3>
 
-exportfits(
-    imagename='ic485.final.cube.image.pbcor',
-    fitsimage='ic485_final_cube.fits',
-    velocity=True,
-    overwrite=True,
+<pre class="line-numbers"><code class="language-python">exportfits(
+imagename='ic485.final.cube.image.pbcor',
+fitsimage='ic485_final_cube.fits',
+velocity=True,
+overwrite=True,
 )
 </code></pre>
 
 <p>
-Similarly export any moment maps that you wish to use for publication,
-archiving or additional analysis.
+Similarly export the moment maps.
 </p>
 
 </section>
 
-</div></section></div>
-<footer id="footer" class="wrapper alt"><div class="inner"><ul class="menu"><li>&copy; Jack Radcliffe</li></ul></div></footer>
-<script src="assets/js/jquery.min.js"></script><script src="assets/js/prism.js"></script>
-</body></html>
+<p id="lastModified"></p>
+
+								
+	</body>
+</html>
