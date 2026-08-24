@@ -1,617 +1,553 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>ERIS2026 - NGC 660 Absorption Line Tutorial</title>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="assets/css/main.css" />
-	<link rel="stylesheet" href="assets/css/prism.css" />
-	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-	<header id="header">
-	<a href="index.html" class="title">ERIS 2026 - Tutorials</a>
-	<nav><ul>
-	<li><a href="index.html#five">Home</a></li>
-	<li><a href="spectral_line.html">Spectral Lines</a></li>
-	<li><a href="ngc660.html" class="active">NGC 660</a></li>
-	</ul></nav></header>
-	<div id="wrapper"><section id="main" class="wrapper"><div class="inner">
-	<h1 class="major">NGC 660: HI Absorption Imaging</h1>
-
-
-	<section>
-
-	<h2>Data</h2>
-
-	<p>
-	In this tutorial we will image absorption from the central region of the
-	nearby starburst galaxy NGC 660 at z = 0.002842.
-	</p>
-
-	<p>
-	The data were obtained using the European VLBI Network (EVN). We shall use
-	the self-calibrated dataset for this tutorial since you have already learnt
-	continuum imaging and self-calibration in the previous tutorials.
-	</p>
-
-	<p>
-	One important point to remember when imaging continuum emission from
-	spectral-line datasets is that strong line channels should be excluded from
-	the continuum model. If the spectral line is clearly visible in a standard
-	plotms inspection, those channels should not be included when constructing
-	the continuum image.
-	</p>
-
-	</section>
-
-	<hr/>
-
-	<section>
-
-	<h2>Table of Contents</h2>
-
-	<ol>
-	<li>Data</li>
-	<li>Absorption Lines</li>
-	<li>HI 21-cm Line</li>
-	<li>Inspect the Data</li>
-	<li>Determine the Channels Containing the Line Feature</li>
-	<li>Continuum Subtraction</li>
-	<li>Parameters Related to Velocity and Reference Frames</li>
-	<li>Creating a Dirty Cube</li>
-	<li>Inspecting the Cube</li>
-	<li>Mask Creation</li>
-	<li>Producing the Final Cube</li>
-	<li>Analysing the Final Cube</li>
-	<li>Moment Maps</li>
-	<li>Position-Velocity Diagrams</li>
-	<li>Exporting the Results</li>
-	</ol>
-
-	</section>
-
-	<hr/>
-
-	<section>
-
-	<h2>Absorption Lines</h2>
-
-	<p>
-	Unlike TW Hya, this dataset contains a spectral line seen in absorption
-	rather than emission.
-	</p>
-
-	<p>
-	For an absorption line to be observed, a bright background continuum source
-	must be present. The foreground gas absorbs a fraction of the background
-	continuum emission at frequencies corresponding to the spectral transition.
-	</p>
-
-	<p>
-	In extragalactic radio astronomy the continuum source is often associated
-	with AGN activity in the central regions of galaxies. In the case of
-	NGC 660, the compact radio source is particularly interesting because it
-	appeared only after 2008, suggesting the recent onset of nuclear activity.
-	</p>
-
-	<p>
-	The EVN observations used in this tutorial were reported by Argo et al.
-	(2015), who used HI absorption to study the gas surrounding this newly
-	active radio source.
-	</p>
-
-	</section>
-
-	<hr/>
+<title>ERIS2026 - NGC 660 Absorption Line Tutorial</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<link rel="stylesheet" href="assets/css/main.css" />
+<link rel="stylesheet" href="assets/css/prism.css" />
+<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+<header id="header">
+<a href="index.html" class="title">ERIS 2026 - Tutorials</a>
+<nav><ul>
+<li><a href="index.html#five">Home</a></li>
+<li><a href="spectral_line.html">Spectral Lines</a></li>
+<li><a href="ngc660.html" class="active">NGC 660</a></li>
+</ul></nav></header>
+<div id="wrapper"><section id="main" class="wrapper"><div class="inner">
+<h1 class="major">NGC 660: HI Absorption Imaging</h1>
+
+
+<section>
+
+<h2>Data</h2>
+
+<p>
+In this tutorial we will image absorption from the central region of the
+nearby starburst galaxy NGC 660 at z = 0.002842.
+</p>
+
+<p>
+The data were obtained using the European VLBI Network (EVN). We shall use
+the self-calibrated dataset for this tutorial since you have already learnt
+continuum imaging and self-calibration in the previous tutorials.
+</p>
+
+<p>
+One important point to remember when imaging continuum emission from
+spectral-line datasets is that strong line channels should be excluded from
+the continuum model. If the spectral line is clearly visible in a standard
+plotms inspection, those channels should not be included when constructing
+the continuum image.
+</p>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2>Table of Contents</h2>
+
+<ol>
+<li>Data</li>
+<li>Absorption Lines</li>
+<li>HI 21-cm Line</li>
+<li>Inspect the Data</li>
+<li>Determine the Channels Containing the Line Feature</li>
+<li>Continuum Subtraction</li>
+<li>Parameters Related to Velocity and Reference Frames</li>
+<li>Creating a Dirty Cube</li>
+<li>Inspecting the Cube</li>
+<li>Mask Creation</li>
+<li>Producing the Final Cube</li>
+<li>Analysing the Final Cube</li>
+<li>Moment Maps</li>
+<li>Position-Velocity Diagrams</li>
+<li>Exporting the Results</li>
+</ol>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2>Absorption Lines</h2>
+
+<p>
+Unlike TW Hya, this dataset contains a spectral line seen in absorption
+rather than emission.
+</p>
+
+<p>
+For an absorption line to be observed, a bright background continuum source
+must be present. The foreground gas absorbs a fraction of the background
+continuum emission at frequencies corresponding to the spectral transition.
+</p>
+
+<p>
+In extragalactic radio astronomy the continuum source is often associated
+with AGN activity in the central regions of galaxies. In the case of
+NGC 660, the compact radio source is particularly interesting because it
+appeared only after 2008, suggesting the recent onset of nuclear activity.
+</p>
+
+<p>
+The EVN observations used in this tutorial were reported by Argo et al.
+(2015), who used HI absorption to study the gas surrounding this newly
+active radio source.
+</p>
+
+</section>
+
+<hr/>
 
-	<section>
+<section>
 
-	<h2>HI 21-cm Line</h2>
+<h2>HI 21-cm Line</h2>
 
-	<p>
-	Neutral atomic hydrogen (HI) is the most abundant element in galaxies and
-	serves as one of the most important tracers of the interstellar medium.
-	The HI 21-cm line is produced when the spins of the proton and electron
-	flip from a parallel to an anti-parallel configuration.
-	</p>
+<p>
+Neutral atomic hydrogen (HI) is the most abundant element in galaxies and
+serves as one of the most important tracers of the interstellar medium.
+The HI 21-cm line is produced when the spins of the proton and electron
+flip from a parallel to an anti-parallel configuration.
+</p>
 
-	<p>
-	The rest frequency of the HI line is 1420.405751 MHz. HI observations have
-	been used to map gas distributions in galaxies, measure galaxy rotation
-	curves and study galaxy interactions.
-	</p>
+<p>
+The rest frequency of the HI line is 1420.405751 MHz. HI observations have
+been used to map gas distributions in galaxies, measure galaxy rotation
+curves and study galaxy interactions.
+</p>
 
-	<p>
-	For NGC 660, the HI absorption arises against a compact radio source at the
-	galaxy centre. By imaging the absorption as a function of velocity, we can
-	investigate the structure and dynamics of the neutral atomic gas in the
-	nuclear region.
-	</p>
+<p>
+For NGC 660, the HI absorption arises against a compact radio source at the
+galaxy centre. By imaging the absorption as a function of velocity, we can
+investigate the structure and dynamics of the neutral atomic gas in the
+nuclear region.
+</p>
 
-	<p>
-	<strong>[DOWNLOAD LINK]</strong>
-	</p>
+<p>
+<strong>[DOWNLOAD LINK]</strong>
+</p>
 
-	</section>
+</section>
 
-	<hr/>
+<hr/>
 
-	<section>
+<section>
 
-	<h2>Inspect the Data</h2>
+<h2>Inspect the Data</h2>
 
-	<p>
-	Before imaging any spectral-line dataset it is important to understand the
-	structure of the observations.
-	</p>
+<p>
+Before imaging any spectral-line dataset it is important to understand the
+structure of the observations.
+</p>
 
-	<ul>
-	<li>The science target.</li>
-	<li>The number of spectral windows.</li>
-	<li>The total number of channels.</li>
-	<li>The central observing frequency.</li>
-	<li>The antenna configuration.</li>
-	</ul>
+<ul>
+<li>The science target.</li>
+<li>The number of spectral windows.</li>
+<li>The total number of channels.</li>
+<li>The central observing frequency.</li>
+<li>The antenna configuration.</li>
+</ul>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
-
-	listobs(
-	    vis='ngc660.ms',
-	)
-	</code></pre>
-
-	</section>
-
-	<hr/>
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+listobs(
+    vis='ngc660.ms',
+)
+</code></pre>
+
+</section>
+
+<hr/>
 
-	<section>
+<section>
 
-	<h2>Determine the Channels Containing the Line Feature</h2>
+<h2>Determine the Channels Containing the Line Feature</h2>
 
-	<p>
-	Before producing a spectral cube we must determine which channels contain
-	the absorption line and identify line-free channels that can be used to
-	fit and subtract the continuum.
-	</p>
+<p>
+Before producing a spectral cube we must determine which channels contain
+the absorption line and identify line-free channels that can be used to
+fit and subtract the continuum.
+</p>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	plotms(
-	    vis='ngc660.ms',
-	    xaxis='channel',
-	    yaxis='amp',
-	    avgspw=False,
-	    avgtime='1e9',
-	    avgscan=True,
-	    avgbaseline=True,
-	    scalar=True,
-	    showgui=True,
-	)
-	</code></pre>
+plotms(
+    vis='ngc660.ms',
+    xaxis='channel',
+    yaxis='amp',
+    avgspw=False,
+    avgtime='1e9',
+    avgscan=True,
+    avgbaseline=True,
+    scalar=True,
+    showgui=True,
+)
+</code></pre>
 
-	<p>
-	The spectral line appears as a dip with respect to the continuum level.
-	Notice that the line spans roughly 50 channels and that the edge channels
-	show non-linear behaviour.
-	</p>
+<p>
+The spectral line appears as a dip with respect to the continuum level.
+Notice that the line spans roughly 50 channels and that the edge channels
+show non-linear behaviour.
+</p>
 
-	<div style="text-align:center;">
-	    <img src="plots/spectral_line/ngc660_plotms.jpeg"
-		 alt="NGC 660 spectrum"
-		 style="width:70%; height:auto;" />
-	</div>
+<div style="text-align:center;">
+    <img src="plots/spectral_line/ngc660_plotms.jpeg"
+	 alt="NGC 660 spectrum"
+	 style="width:70%; height:auto;" />
+</div>
 
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	linefree='0:250~450;550~700'
-	</code></pre>
+linefree='0:250~450;550~700'
+</code></pre>
 
-	<p>
-	These line-free channels will be used for continuum subtraction.
-	</p>
+<p>
+These line-free channels will be used for continuum subtraction.
+</p>
 
-	</section>
+</section>
 
-	<hr/>
+<hr/>
 
-	<section>
+<section>
 
-	<h2>Continuum Subtraction</h2>
+<h2>Continuum Subtraction</h2>
 
-	<p>
-	To study the absorption line, we first subtract the continuum emission
-	from the data. In this case we use a first-order polynomial
-	(<code>fitorder=1</code>) to account for the continuum slope.
-	</p>
+<p>
+To study the absorption line, we first subtract the continuum emission
+from the data. In this case we use a first-order polynomial
+(<code>fitorder=1</code>) to account for the continuum slope.
+</p>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	os.system('rm -rf ngc660.contsub*')
+os.system('rm -rf ngc660.contsub*')
 
-	uvcontsub(
-	    vis='ngc660.ms',
-	    outputvis='ngc660.contsub.ms',
-	    datacolumn='data',
-	    fitspec=linefree,
-	    fitorder=1,
-	    writemodel=False,
-	)
-	</code></pre>
+uvcontsub(
+    vis='ngc660.ms',
+    outputvis='ngc660.contsub.ms',
+    datacolumn='data',
+    fitspec=linefree,
+    fitorder=1,
+    writemodel=False,
+)
+</code></pre>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	plotms(
-	    vis='ngc660.contsub.ms',
-	    xaxis='channel',
-	    yaxis='real',
-	    avgspw=False,
-	    avgtime='1e9',
-	    avgscan=True,
-	    avgbaseline=True,
-	    showgui=True,
-	    scalar=False,
-	    spw='0:250~700',
-	)
-	</code></pre>
+plotms(
+    vis='ngc660.contsub.ms',
+    xaxis='channel',
+    yaxis='real',
+    avgspw=False,
+    avgtime='1e9',
+    avgscan=True,
+    avgbaseline=True,
+    showgui=True,
+    scalar=False,
+    spw='0:250~700',
+)
+</code></pre>
 
-	<p>
-	After continuum subtraction, the line appears as a negative feature.
-	Plotting the amplitude would remove the sign information and make the
-	absorption resemble emission.
-	</p>
+<p>
+After continuum subtraction, the line appears as a negative feature.
+Plotting the amplitude would remove the sign information and make the
+absorption resemble emission.
+</p>
 
-	</section>
+</section>
 
-	<hr/>
+<hr/>
 
-	<section>
+<section>
 
-	<h2>Parameters Related to Velocity and Reference Frames</h2>
+<h2>Parameters Related to Velocity and Reference Frames</h2>
 
-	<h3>Rest Frequency</h3>
+<h3>Rest Frequency</h3>
 
-	<p>
-	For extragalactic sources we use the redshifted HI frequency rather than
-	the laboratory frequency.
-	</p>
+<p>
+For extragalactic sources we use the redshifted HI frequency rather than
+the laboratory frequency.
+</p>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	rstfrq='1416.380396911976MHz'
-	</code></pre>
+rstfrq='1416.380396911976MHz'
+</code></pre>
 
-	<h3>Velocity Reference Frame</h3>
-
-	<p>
-	We adopt the barycentric reference frame because NGC 660 is an
-	extragalactic source and we wish to remove the effect of the Earth's
-	orbital motion around the Sun.
-	</p>
-
-	<pre><code>outframe='BARY'</code></pre>
-
-	<h3>Velocity Type: Optical</h3>
-
-	<p>
-	Systemic velocities for galaxies are conventionally quoted using the
-	optical velocity convention. Throughout this tutorial, velocities should
-	be interpreted as optical velocities in the barycentric reference frame.
-	</p>
-
-	</section>
-
-	<hr/>
-
-	<section>
+<h3>Velocity Reference Frame</h3>
 
-	<h2>Creating a Dirty Cube</h2>
+<p>
+We adopt the barycentric reference frame because NGC 660 is an
+extragalactic source and we wish to remove the effect of the Earth's
+orbital motion around the Sun.
+</p>
 
-	<p>
-	The absorption line spans roughly 50 channels. To reduce computation
-	time we average neighbouring channels and image only the useful channel
-	range.
-	</p>
+<pre><code>outframe='BARY'</code></pre>
 
-	<p>
-	The restoring beam should match the continuum image since absorption is
-	always measured with respect to the background continuum emission.
-	</p>
+<h3>Velocity Type: Optical</h3>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<p>
+Systemic velocities for galaxies are conventionally quoted using the
+optical velocity convention. Throughout this tutorial, velocities should
+be interpreted as optical velocities in the barycentric reference frame.
+</p>
 
-	imhead(
-	    imagename='ngc660.cont.image'
-	)
-	</code></pre>
+</section>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<hr/>
 
-	beam=['0.0285065arcsec',
-	      '0.0159238arcsec',
-	      '-25.9153deg']
-	</code></pre>
+<section>
 
-	<div class="row">
+<h2>Creating a Dirty Cube</h2>
 
-	<div class="col-6 col-12-medium">
+<p>
+The absorption line spans roughly 50 channels. To reduce computation
+time we average neighbouring channels and image only the useful channel
+range.
+</p>
 
-	<h3>Linux</h3>
+<p>
+The restoring beam should match the continuum image since absorption is
+always measured with respect to the background continuum emission.
+</p>
 
-	<pre class="line-numbers"><code class="language-python">tclean(
-	    vis='ngc660.contsub.ms',
-	    imagename='ngc660.dirty.cube',
-	    spw='0',
-	    specmode='cube',
-	    perchanweightdensity=True,
-	    nchan=225,
-	    start=250,
-	    width=2,
-	    outframe='BARY',
-	    restfreq=rstfrq,
-	    veltype='optical',
-	    deconvolver='hogbom',
-	    gridder='standard',
-	    imsize=[320,320],
-	    cell='0.0018arcsec',
-	    weighting='briggsbwtaper',
-	    robust=0.5,
-	    restoringbeam=beam,
-	    interactive=False,
-	    niter=0,
-	    pbcor=True
-	)
-	</code></pre>
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	</div>
+imhead(
+    imagename='ngc660.cont.image'
+)
+</code></pre>
 
-	<div class="col-6 col-12-medium">
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	<h3>Mac OS</h3>
+beam=['0.0285065arcsec',
+      '0.0159238arcsec',
+      '-25.9153deg']
+</code></pre>
 
-	<pre class="line-numbers"><code class="language-python">iclean(
-	    vis='ngc660.contsub.ms',
-	    imagename='ngc660.dirty.cube',
-	    spw='0',
-	    specmode='cube',
-	    perchanweightdensity=True,
-	    nchan=225,
-	    start=250,
-	    width=2,
-	    outframe='BARY',
-	    restfreq=rstfrq,
-	    veltype='optical',
-	    deconvolver='hogbom',
-	    gridder='standard',
-	    imsize=[320,320],
-	    cell='0.0018arcsec',
-	    weighting='briggsbwtaper',
-	    robust=0.5,
-	    restoringbeam=beam,
-	    niter=0,
-	    pbcor=True
-	)
-	</code></pre>
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	</div>
+os.system('rm -rf ngc660.dirty.cube*')
 
-	</div>
+tclean(
+    vis='ngc660.contsub.ms',
+    imagename='ngc660.dirty.cube',
+    spw='0',
+    specmode='cube',
+    perchanweightdensity=True,
+    nchan=225,
+    start=250,
+    width=2,
+    outframe='BARY',
+    restfreq=rstfrq,
+    veltype='optical',
+    deconvolver='hogbom',
+    gridder='standard',
+    imsize=[320,320],
+    cell='0.0018arcsec',
+    weighting='briggsbwtaper',
+    robust=0.5,
+    restoringbeam=beam,
+    interactive=False,
+    niter=0,
+    pbcor=True
+)
+</code></pre>
 
-	</section>
+</div>
 
-	<hr/>
+</div>
 
-	<section>
+</section>
 
-	<h2>Inspecting the Cube</h2>
+<hr/>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<section>
 
-	imhead(
-	    imagename='ngc660.dirty.cube.image.pbcor',
-	)
-	</code></pre>
+<h2>Inspecting the Cube</h2>
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	imstat(
-	    'ngc660.dirty.cube.image',
-	    chans='1~20'
-	)
-	</code></pre>
-
-	<p>
-	Measure the RMS noise in several line-free channels and determine an
-	appropriate cleaning threshold.
-	</p>
-
-	<pre class="line-numbers"><code class="language-python"># In CASA
-
-	thrshld='1.8mJy'
-	</code></pre>
-
-	</section>
-
-	<hr/>
-
-	<section>
-
-	<h2>Mask Creation</h2>
-
-	<p>
-	Load the continuum image into CARTA and create a region encompassing the
-	outermost continuum contour. Since absorption is only observed against the
-	continuum source, this region can be used as the CLEAN mask.
-	</p>
+imhead(
+    imagename='ngc660.dirty.cube.image.pbcor',
+)
+</code></pre>
 
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	<div class="col-12">
-	    <video width="90%" autoplay loop muted playsinline controls>
-		    <source src="plots/spectral_line/ngc660_mask_creation.mp4"
-		Your browser does not support the video tag.
-	    </video>
-	</div>
+imstat(
+    'ngc660.dirty.cube.image',
+    chans='1~20'
+)
+</code></pre>
 
+<p>
+Measure the RMS noise in several line-free channels and determine an
+appropriate cleaning threshold.
+</p>
 
-	</section>
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	<hr/>
+thrshld='1.8mJy'
+</code></pre>
 
-	<section>
-
-	<h2>Producing the Final Cube</h2>
-
-	<p>
-	We now perform a non-interactive CLEAN using the threshold and mask
-	defined above.
-	</p>
+</section>
 
-	<div class="row">
+<hr/>
 
-	<div class="col-6 col-12-medium">
+<section>
 
-	<h3>Linux</h3>
+<h2>Mask Creation</h2>
 
-	<pre class="line-numbers"><code class="language-python">tclean(
-	    vis='ngc660.contsub.ms',
-	    imagename='ngc660.final.cube',
-	    spw='0',
-	    specmode='cube',
-	    perchanweightdensity=True,
-	    nchan=225,
-	    start=250,
-	    width=2,
-	    outframe='BARY',
-	    restfreq=rstfrq,
-	    veltype='optical',
-	    deconvolver='hogbom',
-	    gridder='standard',
-	    imsize=[320,320],
-	    cell='0.0018arcsec',
-	    weighting='briggsbwtaper',
-	    robust=0.5,
-	    restoringbeam=beam,
-	    interactive=False,
-	    niter=100000,
-	    threshold=thrshld,
-	    mask='ngc660.cube.mask',
-	    pbcor=True
-	)
-	</code></pre>
+<p>
+Load the continuum image into CARTA and create a region encompassing the
+outermost continuum contour. Since absorption is only observed against the
+continuum source, this region can be used as the CLEAN mask.
+</p>
 
-	</div>
 
-	<div class="col-6 col-12-medium">
+<div class="col-12">
+    <video width="90%" autoplay loop muted playsinline controls>
+	    <source src="plots/spectral_line/ngc660_mask_creation.mp4"
+		    Your browser does not support the video tag.>
+    </video>
+</div>
 
-	<h3>Mac OS</h3>
 
-	<pre class="line-numbers"><code class="language-python">iclean(
-	    vis='ngc660.contsub.ms',
-	    imagename='ngc660.final.cube',
-	    spw='0',
-	    specmode='cube',
-	    perchanweightdensity=True,
-	    nchan=225,
-	    start=250,
-	    width=2,
-	    outframe='BARY',
-	    restfreq=rstfrq,
-	    veltype='optical',
-	    deconvolver='hogbom',
-	    gridder='standard',
-	    imsize=[320,320],
-	    cell='0.0018arcsec',
-	    weighting='briggsbwtaper',
-	    robust=0.5,
-	    restoringbeam=beam,
-	    niter=100000,
-	    threshold=thrshld,
-	    mask='ngc660.cube.mask',
-	    pbcor=True
-	)
-	</code></pre>
+</section>
 
-	</div>
+<hr/>
 
-	</div>
+<section>
 
-	</section>
+<h2>Producing the Final Cube</h2>
 
-	<hr/>
+<p>
+We now perform a non-interactive CLEAN using the threshold and mask
+defined above.
+</p>
 
-	<section>
 
-	<h2>Analysing the Final Cube</h2>
+<pre class="line-numbers"><code class="language-python"># In CASA
 
-	<pre class="line-numbers"><code class="language-python"># In CASA
 
-	imhead(
-	    imagename='ngc660.final.cube.image.pbcor'
-	)
-	</code></pre>
+os.system('rm -rf ngc660.final.cube*')
 
-	<p>
-	Explore the cube in CARTA and investigate:
-	</p>
+tclean(
+    vis='ngc660.contsub.ms',
+    imagename='ngc660.final.cube',
+    spw='0',
+    specmode='cube',
+    perchanweightdensity=True,
+    nchan=225,
+    start=250,
+    width=2,
+    outframe='BARY',
+    restfreq=rstfrq,
+    veltype='optical',
+    deconvolver='hogbom',
+    gridder='standard',
+    imsize=[320,320],
+    cell='0.0018arcsec',
+    weighting='briggsbwtaper',
+    robust=0.5,
+    restoringbeam=beam,
+    interactive=False,
+    niter=100000,
+    threshold=thrshld,
+    mask='ngc660.cube.mask',
+    pbcor=True
+)
+</code></pre>
 
-	<ul>
-	<li>Velocity range of absorption.</li>
-	<li>Spatial extent of the absorption.</li>
-	<li>Variation of the spectral profile across the source.</li>
-	<li>Integrated absorption profile.</li>
-	</ul>
+</div>
 
-	</section>
+</div>
 
-	<hr/>
+</section>
 
-	<section>
+<hr/>
 
-	<h2>Moment Maps</h2>
+<section>
 
-	<p>
-	Generate moment maps using the CARTA Moment Generator tool. First
-	determine the absorption velocity range and the threshold to be applied.
-	</p>
+<h2>Analysing the Final Cube</h2>
 
+<pre class="line-numbers"><code class="language-python"># In CASA
 
+imhead(
+    imagename='ngc660.final.cube.image.pbcor'
+)
+</code></pre>
 
-	<div class="col-12">
-	    <video width="90%" autoplay loop muted playsinline controls>
-		    <source src="plots/spectral_line/ngc660_moment_maps.mp4"
-		Your browser does not support the video tag.
-	    </video>
-	</div>
+<p>
+Explore the cube in CARTA and investigate:
+</p>
 
+<ul>
+<li>Velocity range of absorption.</li>
+<li>Spatial extent of the absorption.</li>
+<li>Variation of the spectral profile across the source.</li>
+<li>Integrated absorption profile.</li>
+</ul>
 
-	<p>
-	See the CARTA documentation for further details on moment-map generation.
-	</p>
+</section>
 
-	</section>
+<hr/>
 
-	<hr/>
+<section>
 
-	<section>
+<h2>Moment Maps</h2>
 
-	<h2>Position-Velocity Diagrams</h2>
+<p>
+Generate moment maps using the CARTA Moment Generator tool. First
+determine the absorption velocity range and the threshold to be applied.
+</p>
 
-	<p>
-	Position-Velocity (PV) diagrams are powerful tools for investigating gas
-	kinematics when the source is spatially resolved.
-	</p>
 
-	<p>
-	Create a line region through the source and generate a PV diagram using
-	the CARTA PV tool.
-	</p>
 
+<div class="col-12">
+    <video width="90%" autoplay loop muted playsinline controls>
+	    <source src="plots/spectral_line/ngc660_moment_maps.mp4"
+		    Your browser does not support the video tag.>
+    </video>
+</div>
 
-	<div class="col-12">
+
+<p>
+See the CARTA documentation for further details on moment-map generation.
+</p>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2>Position-Velocity Diagrams</h2>
+
+<p>
+Position-Velocity (PV) diagrams are powerful tools for investigating gas
+kinematics when the source is spatially resolved.
+</p>
+
+<p>
+Create a line region through the source and generate a PV diagram using
+the CARTA PV tool.
+</p>
+
+
+<div class="col-12">
     <video width="90%" autoplay loop muted playsinline controls>
 	    <source src="plots/spectral_line/ngc660_pv_diag.mp4"
-        Your browser does not support the video tag.
+		    Your browser does not support the video tag.>
     </video>
 </div>
 

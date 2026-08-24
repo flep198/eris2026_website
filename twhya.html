@@ -17,15 +17,74 @@
 <li><a href="twhya.html" class="active">TW Hya</a></li>
 </ul></nav></header>
 <div id="wrapper"><section id="main" class="wrapper"><div class="inner">
+
 <h1 class="major">TW Hya: N₂H⁺ Spectral Line Imaging</h1>
-<section><h2>Data</h2><p>We shall use the self-calibrated data from ALMA Project 2011.0.00340.S, “Searching for H2D+ in the disk of TW Hya”. These data are also used in the ALMA CASA Guides. The self-calibrated measurement set can be downloaded from the tutorial data repository.</p></section>
+
+<section>
+
+<h2>Data</h2>
+
+<p>
+In this tutorial we will image emission from the N₂H⁺ (J=4-3) transition
+in the protoplanetary disc surrounding TW Hya. TW Hya is one of the nearest
+and best-studied planet-forming discs and has therefore become an important
+benchmark for studies of disc chemistry and structure.
+</p>
+
+<p>
+We shall use self-calibrated ALMA observations from Project 2011.0.00340.S,
+"Searching for H₂D⁺ in the disk of TW Hya" (PI: Chunhua Qi). These data are
+also used in the official ALMA imaging tutorials.
+</p>
+
+<p>
+The calibrated measurement set can be downloaded here:
+</p>
+
+<p>
+<strong>[DOWNLOAD LINK]</strong>
+</p>
+
+<p>
+After downloading the data, verify that the measurement set is available in
+your working directory before proceeding.
+</p>
+
+</section>
+
 <hr/>
-<section><h2>Table of Contents</h2><ol><li>Inspecting the data</li><li>Identifying the line channels</li><li>Continuum subtraction</li><li>Dirty cube</li><li>Final cube</li><li>Moment maps</li><li>Exporting to FITS</li></ol></section>
+
+<section>
+
+<h2>Table of Contents</h2>
+
+<ol>
+<li>Inspect the Data</li>
+<li>Determine the Channels Containing the Line Feature</li>
+<li>Continuum Subtraction</li>
+<li>Creating a Dirty Cube</li>
+<li>Inspecting the Cube</li>
+<li>Producing the Final Cube</li>
+<li>Moment Maps</li>
+<li>Analysing the Final Cube</li>
+<li>Exporting the Results</li>
+</ol>
+
+</section>
+
 <hr/>
-<section><h2>1. Inspecting the Data</h2><p>
-Before imaging any spectral-line dataset it is important to understand
-the structure of the observations. The first step is therefore to inspect
-the measurement set and determine:
+
+<section>
+
+<h2>Inspect the Data</h2>
+
+<p>
+Before imaging any spectral-line dataset it is important to understand the
+structure of the observations.
+</p>
+
+<p>
+The first step is therefore to inspect the measurement set and determine:
 </p>
 
 <ul>
@@ -39,10 +98,14 @@ the measurement set and determine:
 <p>
 This information will be useful later when choosing imaging parameters.
 </p>
+
 <pre class="line-numbers"><code class="language-python"># In CASA
+
 listobs(
-    vis='twhya_selfcal.ms',
-)</code></pre>
+    vis='twhya.ms',
+)
+</code></pre>
+
 <p>
 Take a few minutes to inspect the output. In particular identify:
 </p>
@@ -57,21 +120,31 @@ Take a few minutes to inspect the output. In particular identify:
 <p>
 These quantities will be needed throughout the reduction process.
 </p>
+
+</section>
+
 <hr/>
-<section><h2>2. Determine the Line Channels</h2><p>
+
+<section>
+
+<h2>Determine the Channels Containing the Line Feature</h2>
+
+<p>
 Before producing a spectral cube we must determine which channels contain
-spectral-line emission. We also need to identify channels that are free of
-line emission because these will later be used to fit and subtract the
+spectral-line emission. We also need to identify channels that are free
+of line emission because these will later be used to fit and subtract the
 continuum.
 </p>
 
 <p>
 A convenient way to do this is to average the visibilities and plot
-amplitude as a function of channel number.
+amplitude as a function of channel number, frequency or velocity.
 </p>
+
 <pre class="line-numbers"><code class="language-python"># In CASA
+
 plotms(
-    vis='twhya_selfcal.ms',
+    vis='twhya.ms',
     xaxis='channel',
     yaxis='amp',
     field='5',
@@ -80,369 +153,562 @@ plotms(
     avgscan=True,
     avgbaseline=True,
     showgui=True,
-)</code></pre>
-<div class="col-12">
-<span class="image fit">
-<"_spectrum.png" alt="TW Hya channel spectrum" />
-<p>
-The spectral line appears as a deviation from the continuum level.
-Identify the channel range occupied by the line emission and determine
-which channels appear free of line emission on either side of the feature.
-</p>
+)
+</code></pre>
 
-<p>
-These line-free channels will be used to construct the continuum model
-in the next section.
-</p>
-</span>
+<div style="text-align:center;">
+     <img src="plots/spectral_line/twhya_plotms.jpg"
+	  alt= "TW Hya spectrum"
+	  style="width:70%; height:auto;" />
 </div>
-<hr/>
-<section><h2>3. Continuum Subtraction</h2><p>
-The measured visibilities contain contributions from both continuum
-emission and spectral-line emission.
+
+<p>
+The spectral line appears as a deviation from the continuum level. Note the
+channel range occupied by the line emission and identify channels that appear
+free of line emission on either side of the feature.
 </p>
 
 <p>
-For many scientific applications we are interested only in the spectral
-line itself. We therefore fit a continuum model using the line-free
-channels identified above and subtract this model directly from the
-visibilities.
+To zoom in on the line, use in the Data panel of the plotms window:
+</p>
+
+<pre class="line-numbers"><code class="language-python">spw='0:220~320'
+</code></pre>
+
+<p>
+These channels clearly show the N₂H⁺ emission line.
+</p>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+linefree='0:0~239;281~383'
+</code></pre>
+
+<p>
+These line-free channels will form the basis for continuum subtraction
+performed in the next step.
+</p>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2>Continuum Subtraction</h2>
+
+<p>
+The measured visibilities contain contributions from both continuum
+emission and line emission.
+</p>
+
+<p>
+For many scientific applications we are interested only in the spectral line
+itself. We therefore fit a continuum model using the line-free channels
+identified above and subtract this model directly in the visibility domain.
 </p>
 
 <p>
 Performing the subtraction in visibility space is generally preferred
-because it avoids imaging artefacts and provides a cleaner isolation
-of the spectral-line signal.
+because it avoids imaging artefacts and provides a cleaner isolation of
+the spectral-line signal.
 </p>
+
 <pre class="line-numbers"><code class="language-python"># In CASA
-os.system('rm -rf twhya_selfcal.ms.contsub')
+
+os.system('rm -rf twhya.contsub.ms')
+
 uvcontsub(
- vis='twhya_selfcal.ms',
- field='5',
- fitspec='0:0~239;281~383',
- fitorder=0,
- outputvis='twhya_selfcal.ms.contsub',
-)</code></pre>
+    vis='twhya.ms',
+    field='5',
+    fitspec=linefree,
+    fitorder=0,
+    outputvis='twhya.contsub.ms',
+)
+</code></pre>
+
 <pre class="line-numbers"><code class="language-python"># In CASA
+
 plotms(
- vis='twhya_selfcal.ms.contsub',
- xaxis='channel',
- yaxis='amp',
- field='5',
- avgspw=False,
- avgtime='1e9',
- avgscan=True,
- avgbaseline=True,
- showgui=True,
-)</code></pre>
+    vis='twhya.contsub.ms',
+    xaxis='channel',
+    yaxis='amp',
+    field='5',
+    avgspw=False,
+    avgtime='1e9',
+    avgscan=True,
+    avgbaseline=True,
+    showgui=True,
+)
+</code></pre>
+
 <p>
 The continuum-subtracted data should now have an average amplitude close
 to zero in the line-free channels.
 </p>
+
 </section>
+
 <hr/>
-<section><h2>4. Imaging the Spectral Line: Dirty Cube</h2><p>
-Before performing any deconvolution it is useful to examine the dirty
-cube.
+
+<section>
+
+<h2>Creating a Dirty Cube</h2>
+
+<p>
+Before performing any deconvolution it is often useful to examine the
+dirty cube.
 </p>
 
 <p>
 A dirty cube is produced by Fourier transforming the visibilities without
-applying any CLEAN iterations. This allows us to:
+applying any CLEAN iterations.
+</p>
+
+<p>
+This allows us to:
 </p>
 
 <ul>
 <li>Estimate the image noise.</li>
-<li>Inspect the quality of the data.</li>
 <li>Determine which channels contain emission.</li>
+<li>Identify weak emission channels.</li>
 <li>Decide on an appropriate cleaning strategy.</li>
 </ul>
 
 <p>
-The dirty cube therefore serves as an important diagnostic before
-investing time in a full deconvolution.
+The <code>restoringbeam='common'</code> option ensures that every channel
+in the cube has the same restoring beam.
 </p>
-<div class="row"><div class="col-6 col-12-medium"><h3>Linux</h3><pre class="line-numbers"><code class="language-python">restfreq='372.67249GHz'
+
+<p>
+The parameters <code>nchan</code>, <code>start</code> and
+<code>width</code> determine the extent and velocity resolution of the
+spectral cube. These can also be used to average channels together when
+appropriate.
+</p>
+
+<p>
+The choice of velocity frame and velocity convention is also important.
+For Galactic studies it is standard practice to image cubes using the
+Local Standard of Rest Kinematic frame:
+</p>
+
+<pre><code>outframe='LSRK'</code></pre>
+
+<p>
+This removes velocity shifts caused by the Earth's motion and allows line
+velocities to be compared consistently with other Galactic observations.
+</p>
+
+<p>
+We also use the radio velocity convention for Galactic sources:
+</p>
+
+<pre><code>veltype='radio'</code></pre>
+
+<p>
+The rest frequency is simply the laboratory transition frequency of the
+line under investigation.
+</p>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+rstfrq='372.67249GHz'
+</code></pre>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+os.system('rm -rf twhya.dirty.cube*')
 
 tclean(
- vis='twhya_selfcal.ms.contsub',
- imagename='twhya_dirty',
- field='5',
- spw='0',
- specmode='cube',
- perchanweightdensity=True,
- nchan=15,
- start='0.0km/s',
- width='0.5km/s',
- outframe='LSRK',
- restfreq=restfreq,
- deconvolver='hogbom',
- gridder='standard',
- imsize=[250,250],
- cell='0.1arcsec',
- weighting='briggsbwtaper',
- robust=0.5,
- restoringbeam='common',
- interactive=True,
- niter=0,
- pbcor=True)
-</code></pre></div><div class="col-6 col-12-medium"><h3>Mac OS</h3><pre class="line-numbers"><code class="language-python">restfreq='372.67249GHz'
+    vis='twhya.contsub.ms',
+    imagename='twhya.dirty.cube',
+    field='5',
+    spw='0',
+    specmode='cube',
+    perchanweightdensity=True,
+    nchan=15,
+    start='0.0km/s',
+    width='0.5km/s',
+    outframe='LSRK',
+    restfreq=rstfrq,
+    veltype='radio',
+    deconvolver='hogbom',
+    gridder='standard',
+    imsize=[250,250],
+    cell='0.1arcsec',
+    weighting='briggsbwtaper',
+    robust=0.5,
+    restoringbeam='common',
+    interactive=False,
+    niter=0,
+    pbcor=True
+)
+</code></pre>
 
-iclean(
- vis='twhya_selfcal.ms.contsub',
- imagename='twhya_dirty',
- field='5',
- spw='0',
- specmode='cube',
- perchanweightdensity=True,
- nchan=15,
- start='0.0km/s',
- width='0.5km/s',
- outframe='LSRK',
- restfreq=restfreq,
- deconvolver='hogbom',
- gridder='standard',
- imsize=[250,250],
- cell='0.1arcsec',
- weighting='briggsbwtaper',
- robust=0.5,
- restoringbeam='common',
- niter=0,
- pbcor=True)
-</code></pre></div></div>
+</div>
+
+</div>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2>Inspecting the Cube</h2>
+
+<p>
+Before proceeding to a full CLEAN, we first inspect the dirty cube and
+measure the image noise.
+</p>
+
+<p>
+Check the spatial resolution of the cube, velocity resolution, number of
+channels and other image properties.
+</p>
+
 <pre class="line-numbers"><code class="language-python"># In CASA
-imstat('twhya_dirty.image', chans='0~4')</code></pre>
+
+imhead(
+    imagename='twhya.dirty.cube.image.pbcor'
+)
+</code></pre>
+
 <p>
-The <code>imstat</code> task calculates basic statistical properties of
-an image such as the mean, maximum intensity and RMS noise.
+The RMS noise provides a quantitative estimate of the sensitivity of the
+observations and will guide the choice of stopping threshold during
+CLEANing.
 </p>
 
 <p>
-Measure the RMS noise in several channels that appear free of emission.
-The values should be broadly consistent from channel to channel.
+The <code>imstat</code> task calculates basic statistical properties of an
+image, including the mean, maximum value and RMS noise.
 </p>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+imstat(
+    'twhya.dirty.cube.image.pbcor',
+    chans='0~1'
+)
+</code></pre>
+
+<p>
+Note down the RMS value reported by CASA.
+</p>
+
 <h3>Inspecting the Cube in CARTA</h3>
 
+<div style="text-align:center;">
+    <video width="75%" autoplay loop muted playsinline controls>
+           <source src="plots/spectral_line/twhya_CARTA_loading_cube.mp4"
+		   Your browser does not support the video tag.>
+    </video>
+</div>
+
 <p>
-Open the dirty cube in CARTA and step through the channels. Note how the
-emission morphology changes between channels and identify which channels
-contain significant line emission.
+Open the dirty cube in CARTA and examine the emission channel by channel.
 </p>
 
-<div class="col-12">
-    <video width="100%" autoplay loop muted playsinline>
-        <source src="videos/CARTA_loading_cube_2x.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
 <p>
-As you inspect the cube, consider the following questions:
+Consider the following questions:
 </p>
 
 <ul>
 <li>In which channels is the emission visible?</li>
 <li>Is the emission compact or extended?</li>
-<li>Does the morphology change from channel to channel?</li>
-<li>Which channels contain genuine signal?</li>
+<li>Is the emission detected at high significance?</li>
 </ul>
 
 <p>
-These observations will guide the cleaning strategy.
+We find that the emission is extended and exhibits a ring-like morphology.
+These observations will help determine the cleaning strategy and mask
+placement.
 </p>
-</div>
+
+<p>
+Now draw a circular or rectangular region around the bright central
+emission and use the Statistics widget in CARTA to measure the RMS in
+several line-free channels.
+</p>
+
+<p>
+You should find that the RMS is lower than the value obtained with
+<code>imstat</code>. This is because CASA measured the statistics over the
+entire image whereas CARTA is measuring only the source region.
+</p>
+
+<p>
+For this tutorial we adopt:
+</p>
+
+<pre><code>RMS = 30 mJy beam⁻¹</code></pre>
+
+<p>
+and therefore:
+</p>
+
+<pre><code>threshold = 3 × RMS = 90 mJy beam⁻¹</code></pre>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+thrshld='90mJy'
+</code></pre>
+
+</section>
+
 <hr/>
-<section><h2>5. Final Cleaned Cube</h2><p>
-Having inspected the dirty cube and estimated the noise level, we can now
-perform a full deconvolution.
+
+<section>
+
+<h2>Mask Creation</h2>
+
+<p>
+The dirty cube revealed that the emission is extended and changes
+morphology from channel to channel. In such cases it is beneficial to
+provide a CLEAN mask to guide the deconvolution.
 </p>
 
 <p>
-A common approach is to clean down to approximately three times the RMS
-noise:
+Linux users can use:
 </p>
 
-<pre><code>threshold = 3 × RMS</code></pre>
+<pre><code>interactive=True</code></pre>
 
 <p>
-During the interactive CLEAN process we will construct masks around
-regions of genuine emission. These masks guide the deconvolution
-algorithm and prevent CLEAN components from being placed on noise peaks.
+and draw masks directly in the CASA viewer.
 </p>
-<div class="row"><div class="col-6 col-12-medium"><h3>Linux</h3><pre class="line-numbers"><code class="language-python">tclean(
- vis='twhya_selfcal.ms.contsub',
- imagename='twhya_final_cube',
- field='5',
- spw='0',
- specmode='cube',
- perchanweightdensity=True,
- nchan=15,
- start='0.0km/s',
- width='0.5km/s',
- outframe='LSRK',
- restfreq=restfreq,
- deconvolver='hogbom',
- gridder='standard',
- imsize=[250,250],
- cell='0.1arcsec',
- weighting='briggsbwtaper',
- robust=0.5,
- restoringbeam='common',
- interactive=True,
- niter=100000,
- threshold=threshold,
- pbcor=True)
-</code></pre></div><div class="col-6 col-12-medium"><h3>Mac OS</h3><pre class="line-numbers"><code class="language-python">iclean(
- vis='twhya_selfcal.ms.contsub',
- imagename='twhya_final_cube',
- field='5',
- spw='0',
- specmode='cube',
- perchanweightdensity=True,
- nchan=15,
- start='0.0km/s',
- width='0.5km/s',
- outframe='LSRK',
- restfreq=restfreq,
- deconvolver='hogbom',
- gridder='standard',
- imsize=[250,250],
- cell='0.1arcsec',
- weighting='briggsbwtaper',
- robust=0.5,
- restoringbeam='common',
- niter=100000,
- threshold=threshold,
- pbcor=True)
-</code></pre></div></div>
-<h3>Interactive Cleaning</h3>
 
 <p>
-During the CLEAN process, create masks around regions of genuine emission
-and continue cleaning until the residuals become noise-like.
+Unfortunately this functionality is no longer available on MacOS.
+Instead, we shall generate a region in CARTA and use it as a CLEAN mask.
 </p>
 
-<div class="col-12">
-    <video width="100%" autoplay loop muted playsinline controls>
-	    <source src="videos/CASA_channel_cleaning_4x.mp4" type="video/mp4">
-        Your browser does not support the video tag.
+<div style="text-align:center;">
+    <video width="75%" autoplay loop muted playsinline controls>
+           <source src="plots/spectral_line/twhya_macOS_CARTA_mask.mp4"
+		   Your browser does not support the video tag.>
     </video>
+</div>
+
+<p>
+Save the region as:
+</p>
+
+<pre><code>twhya.clean.mask</code></pre>
+
+<p>
+We shall use this mask when producing the final cube.
+</p>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2>Producing the Final Cube</h2>
+
+<p>
+Having inspected the dirty cube, estimated the noise level and identified
+the emission channels, we can now perform a full deconvolution.
+</p>
+
+<p>
+The CLEAN mask generated in CARTA will guide the deconvolution algorithm
+and prevent CLEAN components from being placed on noise peaks.
+</p>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+os.system('rm -rf twhya.final.cube*')
+
+tclean(
+    vis='twhya.contsub.ms',
+    imagename='twhya.final.cube',
+    field='5',
+    spw='0',
+    specmode='cube',
+    perchanweightdensity=True,
+    nchan=15,
+    start='0.0km/s',
+    width='0.5km/s',
+    outframe='LSRK',
+    restfreq=rstfrq,
+    veltype='radio',
+    deconvolver='hogbom',
+    gridder='standard',
+    imsize=[250,250],
+    cell='0.1arcsec',
+    weighting='briggsbwtaper',
+    robust=0.5,
+    restoringbeam='common',
+    interactive=False,
+    niter=100000,
+    threshold=thrshld,
+    mask='twhya.clean.mask',
+    pbcor=True
+)
+</code></pre>
+
+<h3>Channel-by-Channel CLEANing</h3>
+
+<div style="text-align:center;">
+    <video width="75%" autoplay loop muted playsinline controls>
+           <source src="plots/spectral_line/twhya_CASA_channel_cleaning.mp4"
+		   Your browser does not support the video tag.>
+    </video>
+</div>
+
 <p>
 Continue cleaning until the residual image appears noise-like and no
 significant emission remains in the residuals.
 </p>
 
-<p>
-The resulting cube should provide a much more faithful representation of
-the underlying source structure.
-</p>
-</div>
+</section>
+
 <hr/>
-<h3>Extracting Spectra in CARTA</h3>
+
+<section>
+
+<h2>Moment Maps</h2>
 
 <p>
-Spectral profiles can be extracted interactively from selected regions
-of the cube using CARTA.
-</p>
-
-<p>
-The final science product is:
-</p>
-
-<pre><code>twhya_final_cube.image.pbcor</code></pre>
-
-<p>
-Begin by measuring the RMS noise in several line-free channels and compare
-the values with those obtained for the dirty cube.
-</p>
-
-<p>
-Next inspect the cube in CARTA and explore the data both spatially and
-spectrally:
-</p>
-
-<ul>
-<li>Step through the channels.</li>
-<li>Extract spectra from different regions.</li>
-<li>Identify the velocity range of emission.</li>
-<li>Examine the spatial distribution as a function of velocity.</li>
-</ul>
-<div class="col-12">
-    <video width="100%" autoplay loop muted playsinline>
-	    <source src="videos/CARTA_spec_extraction_2x.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-</div>
-<hr/>
-<section><h2>7. Moment Maps</h2><p>
 Moment maps provide a compact way of summarising information contained
 within a spectral cube.
 </p>
 
 <ul>
-<li><b>Moment 0:</b> Integrated intensity map.</li>
-<li><b>Moment 1:</b> Intensity-weighted velocity field.</li>
-<li><b>Moment 2:</b> Velocity dispersion map.</li>
+<li><b>Moment 0 (Integrated Intensity)</b>: Total line emission integrated over velocity.</li>
+<li><b>Moment 1 (Intensity-Weighted Velocity)</b>: Mean velocity of the emitting gas.</li>
+<li><b>Moment 2 (Velocity Dispersion)</b>: Width of the velocity distribution.</li>
 </ul>
 
 <p>
-Moment maps are powerful diagnostic tools but can be sensitive to noise.
-It is therefore important to restrict the calculation to channels
+Moment maps are powerful tools but are also sensitive to noise.
+It is therefore important to restrict their calculation to the channels
 containing genuine emission.
 </p>
+
 <pre class="line-numbers"><code class="language-python"># In CASA
+
+os.system('rm -rf twhya.mom.trial*')
+
 immoments(
- 'twhya_final_cube.image.pbcor',
- outfile='twhya_mom_trial',
- moments=[0,1,2]
-)</code></pre>
-<pre class="line-numbers"><code class="language-python"># In CASA
-immoments(
- 'twhya_n2hp.image',
- outfile='twhya_n2hp.mom0',
- includepix=[60e-3,100],
- chans='4~12',
- moments=[0,1,2]
-)</code></pre>
+    'twhya.final.cube.image.pbcor',
+    outfile='twhya.mom.trial',
+    moments=[0,1,2]
+)
+</code></pre>
+
 <p>
-Inspect the resulting moment maps in CARTA.
+Inspect the resulting maps in CARTA.
 </p>
 
 <p>
-Compare the maps generated using the full cube with those produced using
-the restricted channel range and threshold. How does the noise behaviour
-change?
+We can improve the maps by limiting the velocity range and applying a
+threshold.
 </p>
-<p>[INSERT MOMENT MAP FIGURES]</p></section>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+os.system('rm -rf twhya.n2hp.mom*')
+
+immoments(
+    'twhya.final.cube.image.pbcor',
+    outfile='twhya.n2hp.mom',
+    includepix=[90e-3,100],
+    chans='4~12',
+    moments=[0,1,2]
+)
+</code></pre>
+
+<div style="text-align:center;">
+    <img src="plots/spectral_line/twhya_moments.png"
+	 alt="TW Hya moment maps"
+	 style="width:70%; height:auto;" />
+</div>
+
+</section>
+
 <hr/>
-<section><h2>8. Export to FITS</h2><p>
-Although CASA stores images in its own native format, FITS remains the
-standard format used by most astronomical software.
+
+<section>
+
+<h2>Analysing the Final Cube</h2>
+
+<p>
+The primary science product is:
+</p>
+
+<pre><code>twhya.final.cube.image.pbcor</code></pre>
+
+<p>
+Begin by measuring the RMS noise in several line-free channels and compare
+the values with those obtained from the dirty cube.
 </p>
 
 <p>
-Exporting the continuum image, spectral cube and moment maps to FITS
-allows the products to be:
+Next, inspect the cube in CARTA and explore the data both spatially and
+spectrally:
 </p>
 
 <ul>
-<li>Shared with collaborators.</li>
-<li>Used in other software packages.</li>
-<li>Included in publications.</li>
-<li>Archived for future use.</li>
+<li>Play through the channels.</li>
+<li>Extract spectra from different regions.</li>
+<li>Identify the velocity range of emission.</li>
+<li>Examine the spatial distribution as a function of velocity.</li>
 </ul>
-<pre class="line-numbers"><code class="language-python"># In CASA
-exportfits(
- imagename='twhya_cont.image',
- fitsimage='twhya_cont.fits',
- overwrite=True,
-)</code></pre>
-<pre class="line-numbers"><code class="language-python"># In CASA
-exportfits(
- imagename='twhya_n2hp.image',
- fitsimage='twhya_n2hp.fits',
- velocity=True,
- overwrite=True,
-)</code></pre>
+
+<div style="text-align:center;">
+    <video width="75%" autoplay loop muted playsinline controls>
+           <source src="plots/spectral_line/twhya_CARTA_spec_extraction.mp4"
+		   Your browser does not support the video tag.>
+    </video>
+</div>
+
+<p>
+Try extracting spectra from different regions of the disc and compare them
+with the integrated spectrum.
+</p>
+
 </section>
+
+<hr/>
+
+<section>
+
+<h2>Exporting the Results</h2>
+
+<p>
+Although CASA stores images in its own native format, FITS remains the
+most widely used standard in astronomy.
+</p>
+
+<p>
+Exporting the spectral cube and moment maps to FITS allows the data to be
+analysed using external software packages, archived and shared with
+collaborators.
+</p>
+
+<pre class="line-numbers"><code class="language-python"># In CASA
+
+exportfits(
+    imagename='twhya.final.cube.image.pbcor',
+    fitsimage='twhya.n2hp.fits',
+    velocity=True,
+    overwrite=True,
+)
+</code></pre>
+
+<p>
+Similarly export the moment maps for use in other software packages.
+</p>
+
+</section>
+
 </div></section></div>
 <footer id="footer" class="wrapper alt"><div class="inner"><ul class="menu"><li>&copy; Jack Radcliffe</li></ul></div></footer>
 <script src="assets/js/jquery.min.js"></script><script src="assets/js/prism.js"></script>
