@@ -52,7 +52,7 @@ onload = function(){
 <h2 class="alt">Data</h2>
 
 <p>
-In this final tutorial, we will work on yet another kind of source: an H2O maser, IC 485. The data are obtained using the Very Long Baseline Array (VLBA) at K-band and are published in Ladu et al. 2024. These are the highest spatial resolution data of the three data sets we have used.
+In this final tutorial, we will work on yet another kind of source: an H2O maser, IC 485. The data are obtained using the Very Long Baseline Array (VLBA) at K-band under the project code BT142  are published in Ladu et al. 2024. These are the highest spatial resolution data of the three data sets we have used.  The data are calibrated with AIPS (another software for processing radio astronomical data). This calibration process is similar (although not exact) to what you learnt in the imaging tutorials. We will import the uvfits file in CASA for imaging and analysis.
 </p>
 
 <p>
@@ -86,6 +86,30 @@ In this tutorial we study H₂O maser emission from IC 485. Unlike the absorptio
 </section>
 
 <hr/>
+
+
+<hr/>
+
+<section>
+
+<h2 class="alt">IC 485: H₂O Water Maser</h2>
+
+<img src="plots/spectral_line/ic485_image.jpg"
+     alt="IC485"
+     style="float:right; width:20%; margin-left:20px; margin-bottom:10px;" />
+
+<p>
+Located at a distance of 122 Mpc (the linear scale is ∼600 pc/"), IC 485 is a spiral galaxy  showing a triple-peak profile (Pesce et al. 2015; the image on the left).
+</p>
+
+<p>
+The sensitive single-dish spectrum together with the accurate position of the maser spots determined through 22 GHz VLBI observations indicate that the maser emission might be produced (at least in part) in an edge-on accrection disk oriented north-south, with a radius of ∼0.24 pc (Ladu et al. 2024).
+</p>
+
+<div style="clear:both;"></div>
+
+</section>
+
 
 <section>
 
@@ -637,32 +661,108 @@ Let us do some analysis using the final cube we have generated.
 <div style="text-align:center;">
     <img src="plots/spectral_line/ic485_smoothing.png"
          alt="IC485 spectrum smoothing"
-	 style="width:90%; height:auto;" />
+	 style="width:50%; height:auto;" />
 </div>
-</p>
 
 
 <ul>
-<li>Fit a 2D Gaussian to the spectral profile.</li>
+<li>Fit a 1D Gaussian to the spectral profile.</li>
 </ul>
 
 
 <div style="text-align:center;">
     <img src="plots/spectral_line/ic485_fitting.png"
          alt="IC485 spectrum fitting"
-	 style="width:90%; height:auto;" />
+	 style="width:50%; height:auto;" />
 </div>
+
+<ul>
+<li>Fit a 2D Gaussian to the source using the moment-0 (integrated intensity) map</li>
+</ul>
+
+
+<div style="text-align:center;">
+    <img src="plots/spectral_line/ic485_spatial_fitting.png"
+         alt="IC485 spectrum fitting"
+	 style="width:50%; height:auto;" />
+</div>
+
+<ul>
+<li>Extract the integrated spectrum.</li>
+</ul>
+
+<h3>Estimating Physical Properties</h3>
+
+<p>
+
+</ul>
+<li>Estimate the integrated intensity of the source.</li>
+<li>Calculate the isotropic luminosity of the source.</li>
+<li>Calculate the brightness temperature.</li>
+</ul>
+
+<p>
+The integrated intensity (\(\int S\,dv)\) is simply the area under the Gaussian profile
+fitted to the spectrum in units of Jy km/s.
+</p>
+
+<p>
+The isotropic H<sub>2</sub>O maser luminosity can be estimated using
+(Castangia et al. 2008):
+</p>
+
+<p>
+<p>
+\[
+L_{\rm H_2O} =
+0.023
+\left(\frac{\int S\,dv}{\rm Jy\,km\,s^{-1}}\right)
+\left(\frac{D}{\rm Mpc}\right)^2
+\]
+</p>
+
+<p>
+where:
 </p>
 
 <ul>
-<li>Extract the integrated spectrum and estimate the integrated intensity.</li>
-<li>Calculate the brightness temperature.</li>
-<li>Calculate the isotropic luminosity of the source.</li>
+<li><b>L<sub>H2O</sub></b> is the isotropic maser luminosity in units of L<sub>☉</sub>.</li>
+<li><b>\(\int S\,dv\)</b> is the integrated intensity in Jy km/s.</li>
+<li><b>D</b> is the distance to the source in Mpc.</li>
+</ul>
+
+<p>
+The brightness temperature can be estimated using:
+</p>
+
+<p>
+T = 1.36 × λ² / (θ<sub>min</sub> × θ<sub>max</sub>) × S<sub>peak</sub>
+</p>
+
+<p>
+where:
+</p>
+
+<ul>
+<li><b>T</b> is the brightness temperature in K.</li>
+<li><b>λ</b> is the wavelength of the line in cm.</li>
+<li><b>θ<sub>min</sub></b> and <b>θ<sub>max</sub></b> are the FWHM major and FWHM minor axes of the 2D gaussian fit to the source structure.</li>
+<li><b>S<sub>peak</sub></b> is the peak flux density in mJy beam<sup>−1</sup>.</li>
+</ul>
+
+<p>
+Using the measurements from this tutorial, you should find (your estimates may differ slightly depending on your fit values):
+</p>
+
+<ul>
+<li><b>L<sub>H2O</sub> ≈ 550 L<sub>☉</sub></b></li>
+<li><b>T ≈ 3 × 10<sup>9</sup> K</b></li>
 </ul>
 
 </section>
 
 <hr/>
+
 
 <section>
 
@@ -683,7 +783,7 @@ overwrite=True,
 </code></pre>
 
 <p>
-Similarly export the moment maps.
+Similarly export the moment maps and any other data products you created using CASA or CARTA.
 </p>
 
 </section>
