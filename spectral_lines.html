@@ -165,32 +165,25 @@ Final images and cubes are often exported to FITS format for further analysis, p
 <h2 class="alt">A note on rest frequency, reference frames and velocity types</h2>
 
 <p>
-The interpretation of the results greatly depends on the choice of these three parameters. So let us first discuss them before proceeding further with the tutorials.
+The interpretation of the results greatly depends on the choice of these three parameters. In CASA, you will find these parameters as <code>restfreq</code>, <code>outframe</code> and <code>veltype</code> respectively. Let us first discuss them before proceeding further with the tutorials.
 </p>
 
 <h3>Rest Frequency</h3>
 
 <p>
-For Galactic sources, the rest frequency is simply the laboratory frequency of the spectral transition under study.
+For Galactic sources, <code>restfreq</code> is simply the laboratory frequency of the spectral transition under study.
 </p>
 
 <p>
-For extragalactic sources, the choice of rest frequency deserves more care. If the data have not already been transformed into the rest frame of the target galaxy, it is often convenient to use the observed (redshifted) frequency of the spectral line. Combined with an appropriate choice of velocity type and reference frame, this allows the velocity axis of the final cube to be expressed relative to the systemic velocity of the galaxy.
+For extragalactic sources, the choice of <code>restfreq</code> deserves more care. If you want the final velocities to include the recession velocity of the source, then simply use the laboratory frequency of the spectral transition. In some cases it is more convenient to have the velocties in the rest frame of the target (i.e. the systemic velocity is 0 km/s). In those cases, use the redshifted frequency of the spectral line. 
 </p>
 
-<p>
-In some datasets, however, the transformation to the galaxy rest frame has already been performed during earlier calibration or processing steps. In such cases, the rest frequency should remain the laboratory frequency of the transition.
-</p>
-
-<p>
-It is therefore important to know how the dataset has been processed before choosing the value of restfreq. We will deal with all three cases in our tutorials.
-</p>
 
 <h3>Reference frame (outframe in CASA)</h3>
 
 
 <p>
-When measuring spectral-line velocities, it is necessary to specify the reference frame against which those velocities are measured. In CASA, this is controlled by the outframe parameter when imaging spectral cubes.
+When measuring spectral-line velocities, it is necessary to specify the reference frame against which those velocities are measured. In CASA, this is controlled by the <code>outframe</code> parameter when imaging spectral cubes.
 </p>
 
 <p>
@@ -260,7 +253,7 @@ For extragalactic sources, however, recession velocities can reach thousands of 
 </p>
 
 <p>
-Throughout these tutorials, the adopted velocity convention follows standard practice in each field: radio velocities are used for Galactic molecular line studies, while optical velocities are used for extragalactic studies.
+Throughout these tutorials, the choice of rest frequency, reference frame and velocity convention follows standard practice in each field. For Galactic sources, we use the laboratory transition frequency, the LSRK reference frame and the radio velocity convention. For extragalactic sources, we use the barycentric (BARY) reference frame and the optical velocity convention. However, for these sources, the rest frequency may be either the laboratory transition frequency or the redshifted frequency of the spectral line depending on the science case. In the case of NGC 660, we shall use the redshifted frequency and for IC 485 we shall use the laboratory frequency following the standard practice in the fields of AGN feedback and Maser studies. 
 </p>
 
 </section>

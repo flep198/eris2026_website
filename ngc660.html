@@ -302,7 +302,7 @@ Here we plot the Real component of the visibility rather than the amplitude. Try
 <h2 class="alt">Rest frequency, reference frame and velocity type</h2>
 
 <p>
-The rest frequency of the HI-21cm line is 1420.405751768 MHz. Although CASA parameter in tclean is called restfrequency, for extragalactic sources like in our case we would actually input the redshifted line frequency. In our case, NGC 660 has z=0.002842 and the corresponding redshifted HI-21cm frequency is <code>1420.40575/(1+z)= 1416.380396911976 MHz</code>. After this choice, 0 km/s in the spectrum/cube represents the systemic velocity of the galaxy. If we are to choose the laboratory transition frequency, the velocities we obtain will include the recession velocity (we will do that in the next tutorial).
+The rest frequency of the HI-21cm line is 1420.405751768 MHz. Although CASA parameter in tclean is called <code>restfreq</code>, for HI absorption studies of such sources, the standard practice is to input the redshifted line frequency. In our case, NGC 660 has z=0.002842 and the corresponding redshifted HI-21cm frequency is <code>1420.40575/(1+z)= 1416.380396911976 MHz</code>. After this choice, 0 km/s in the spectrum/cube represents the systemic velocity of the galaxy. If we are to choose the laboratory transition frequency, the velocities we obtain will include the recession velocity (we will do that in the next tutorial).
 </p>
 
 <h3>In CASA</h3>
