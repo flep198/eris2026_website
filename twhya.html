@@ -254,7 +254,7 @@ The logic behind choosing a few parameters used below such as the 'imsize' and '
 </p>
 
 <p>
-We use veltype='radio'and outframe='LSRK' for Galactic studies and the rest frequency is simply the transition frequency of the line in question, in this case, the N2H+ line. See the introduction page for an explanation of different velocity types, reference frames and choice of rest frequencies.
+We use veltype='radio' and outframe='LSRK' for Galactic studies and the rest frequency is simply the transition frequency of the line in question, in this case, the N₂H⁺ line. See the introduction page for an explanation of different velocity types, reference frames and choice of rest frequencies.
 </p>
 
 <h3>In CASA</h3>
@@ -360,7 +360,7 @@ We find that the emission is extended and appears to have a ring-like morphology
 </p>
 
 <p>
-Now, in CARTA, draw a rectangular or circular region covering only the central portion and measure the RMS at various line-free channels using the statistics widget in the menu bar (the calculator symbol). Do you notice that the RMS is lower than what you obtained using imstat? This is because imstat considered the entire image and the RMS is expceted to be much higher as we move to the outer edges. We shall use rms=30 mJy/beam
+Now, in CARTA, draw a rectangular or circular region covering only the central portion and measure the RMS at various line-free channels using the statistics widget in the menu bar (the calculator symbol). Do you notice that the RMS is lower than what you obtained using imstat? This is because imstat considered the entire image and the RMS is expected to be much higher as we move to the outer edges. We shall use RMS=30 mJy/beam
 </p>
 
 <p>
@@ -388,7 +388,7 @@ threshold = 3 × RMS
 <h2 class="alt">Producing the Final Cube</h2>
 
 <p>
-Having inspected the dirty cube, estimated the noise level and identified the emission channels, we can now perform a full deconvolution. The dirty cube already showed us that the emission is extended and is different in different channels. In such cases it is best to provide tclean with a mask to guide the deconvolution algorithm and prevent CLEAN components from being placed on noise peaks. For Linux users this can be accomplished by setting interactive=True in tclean and then setting the mask by hand. However, this is not possible in MacOS anymore. Therefore, for uniformity, we shall create a mask in CARTA, save it as a region file and use it in CASA. The next section is a demonstation of how to create channel-wise maps while cleaning when CASA is run on a Linux machine.
+Having inspected the dirty cube, estimated the noise level and identified the emission channels, we can now perform a full deconvolution. The dirty cube already showed us that the emission is extended and is different in different channels. In such cases it is best to provide tclean with a mask to guide the deconvolution algorithm and prevent CLEAN components from being placed on noise peaks. For Linux users this can be accomplished by setting interactive=True in tclean and then setting the mask by hand. However, this is not possible in MacOS anymore. Therefore, for uniformity, we shall create a mask in CARTA, save it as a region file and use it in CASA. The next section demonstrates how to create channel-wise masks while cleaning when CASA is run on a Linux machine.
 </p>
 
 <br>

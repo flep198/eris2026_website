@@ -52,7 +52,7 @@ onload = function(){
 <h2 class="alt">Data</h2>
 
 <p>
-In this final tutorial, we will work on yet another kind of source: an H2O maser, IC 485. The data are obtained using the Very Long Baseline Array (VLBA) at K-band under the project code BT142  are published in Ladu et al. 2024. These are the highest spatial resolution data of the three data sets we have used.  The data are calibrated with AIPS (another software for processing radio astronomical data). This calibration process is similar (although not exact) to what you learnt in the imaging tutorials. We will import the uvfits file in CASA for imaging and analysis.
+In this final tutorial, we will work on yet another kind of source: an H₂O maser, IC 485. The data were obtained using the Very Long Baseline Array (VLBA) at K-band under the project code BT142 and are published in Ladu et al. (2024). These are the highest spatial resolution data of the three data sets we have used.  The data are calibrated with AIPS (another software for processing radio astronomical data). This calibration process is similar (although not exact) to what you learnt in the imaging tutorials. We will import the uvfits file in CASA for imaging and analysis.
 </p>
 
 <p>
@@ -99,11 +99,11 @@ In this tutorial we study H₂O maser emission from IC 485. Unlike the absorptio
      style="float:right; width:20%; margin-left:20px; margin-bottom:10px;" />
 
 <p>
-Located at a distance of 122 Mpc (the linear scale is ∼600 pc/"), IC 485 is a spiral galaxy  showing a triple-peak profile (Pesce et al. 2015; the image on the left).
+Located at a distance of 122 Mpc (the linear scale is ∼600 pc/"), IC 485 is a spiral galaxy  showing a triple-peak profile (Pesce et al. 2015; the image on the right).
 </p>
 
 <p>
-The sensitive single-dish spectrum together with the accurate position of the maser spots determined through 22 GHz VLBI observations indicate that the maser emission might be produced (at least in part) in an edge-on accrection disk oriented north-south, with a radius of ∼0.24 pc (Ladu et al. 2024).
+The sensitive single-dish spectrum together with the accurate position of the maser spots determined through 22 GHz VLBI observations indicate that the maser emission might be produced (at least in part) in an edge-on accretion disk oriented north-south, with a radius of ∼0.24 pc (Ladu et al. 2024).
 </p>
 
 <div style="clear:both;"></div>
@@ -159,7 +159,7 @@ vis='ic485.ms',
 </code></pre>
 
 <p>
-Did you notice the FRAME in listobs output? It is already set to BARY. This is because the correction for the movement of earth around the sun was already applied to the dataset in the initial calibrations steps in AIPS.
+Did you notice the FRAME in listobs output? It is already set to BARY. This is because the correction for the Earth's rotation and motion around the Sun was already applied to the dataset during the initial calibration steps in AIPS.
 </p>
 
 </section>
@@ -171,7 +171,7 @@ Did you notice the FRAME in listobs output? It is already set to BARY. This is b
 <h2 class="alt">Determine the channels containing the line feature</h2>
 
 <p>
-Before producing a spectral cube we must determine which channels contain the emission line. We also need to identify channels that are free of line emission because these will later be used to fit and subtract the continuum.
+Before producing a spectral cube we must determine which channels contain the emission line. In addition, we must determine if there is continuum emission and if yes, we need to identify channels that are free of line emission to be used later to fit and subtract the continuum.
 </p>
 
 <p>
@@ -194,7 +194,7 @@ showgui=True,
 </code></pre>
 
 <p>
-What do you see? The spectral line is evidently too weak to show up in a plot like this. On plotms window, in data panel you can try averaging the channels. Do you see any sign of emission when you average a few channels together?
+What do you see? The spectral line is evidently too weak to show up in a plot like this. In the plotms window, use the Data panel to average the channels. Do you see any sign of emission when you average a few channels together? Unlikely!
 </p>
 
 </section>
@@ -206,7 +206,7 @@ What do you see? The spectral line is evidently too weak to show up in a plot li
 <h2 class="alt">Phase shift the data</h2>
 
 <p>
-One of the reasons why the line is not visible in plotms is because the coordinates of the source used for observations were based on not-so-precise optical observations.
+The line is not visible in plotms because the coordinates of the source used for observations were based on not-so-precise optical observations.
 </p>
 
 <p>
@@ -216,7 +216,7 @@ RA 08:00:19.76000       Dec. +26.42.05.100
 </p>
 
 <p>
-New radio observations using the Very Large Array (VLA) by Darling (2017) tell us that the position fo the maser centroid is
+New radio observations using the Very Large Array (VLA) by Darling (2017) tell us that the position of the maser centroid is
 <br>
 RA 08:00:19.75249       Dec. +26.42.05.053
 </p>
@@ -267,6 +267,7 @@ showgui=True,
 The emission line is now clearly visible even without averaging any channels.
 Zoom-in to see the actual width of the line. It is about 200 channels wide!
 </p>
+<br>
 
 
 <div style="text-align:center;">
@@ -322,7 +323,7 @@ Just like NGC 660, IC 485 is an extragalactic source, and we therefore use
 </p>
 
 <p>
-For NGC 660, we chose to set the systemic velocity to 0 km/s by using the redshifted line frequency. For IC 485, we will instead recover the galaxy's recession velocity by using the laboratory transition frequency of the water maser line, following the standard practice in the field of Maser studies.
+For NGC 660, we chose to set the systemic velocity to 0 km/s by using the redshifted line frequency. For IC 485, we will instead recover the galaxy's recession velocity by using the laboratory transition frequency of the water maser line, following standard practice in maser studies.
 </p>
 
 <h3>In CASA</h3>
@@ -432,7 +433,7 @@ Measure the RMS noise in several more channels or channel ranges that appear fre
 
 <h3>In CARTA</h3>
 
-<p>
+</p>
 Open the dirty cube in CARTA and examine the emission channel by channel just like you did for TW Hya in the previous exercise.
 </p>
 
@@ -474,7 +475,7 @@ Since the line is very strong, in this tutorial we adopt:
 <h2 class="alt">Mask creation</h2>
 
 <p>
-One last step before producing the final cube is to create a mask to define the region to be cleaned. This is similar to how we created the mask for TW Hya. With the cube open in CARTA, draw a small region around the emission region. Be careful to exclude the sidelobes. Save this region file as: ic485.clean.mask.
+One last step before producing the final cube is to create a mask to define the region to be cleaned. This is similar to how we created the mask for TW Hya. With the dirty cube open in CARTA, draw a small region around the emission region. Be careful to exclude the sidelobes. Save this region file as: ic485.clean.mask.
 </p>
 
 
@@ -497,7 +498,7 @@ Having inspected the dirty cube, estimated the noise level and identified the em
 </p>
 
 <p>
-We will use non-interactive cleaning here using the threshold and a common mask created using CARTA. It works very well in this case as the spatial distribution is simple (it is unresolved). In case more more complicated spatial structures, it is recommended to use a good mask.
+We will use non-interactive cleaning here using the threshold and a common mask created using CARTA. It works very well in this case as the spatial distribution is simple (it is unresolved). In case of more complicated spatial structures, it is recommended to use a good mask.
 </p>
 
 <p>
@@ -505,7 +506,7 @@ For those cases, if you are running CASA on a Linux machine, you may choose <cod
 </p>
 
 <p>
-Unfortunately, this feature is no longer available for MacOS users. It is possible to generate more sophisticated masks for CLEANing on MacOS using other softwares and then use it in such cases. Ask the tutors if you want to know more about it!
+Unfortunately, this feature is no longer available for MacOS users. It is possible to generate more sophisticated masks for CLEANing on MacOS as well as Linux using other software packages and then use it in such cases. Ask the tutors if you want to know more!
 </p>
 
 <p>
@@ -552,7 +553,7 @@ interactive=False
 <p>
 The final science product is the primary-beam-corrected cube:
 <br>
-ic485.final.cube.image.pbcor
+<code>ic485.final.cube.image.pbcor</code>
 </p>
 
 <p>
@@ -576,11 +577,10 @@ Next, inspect the cube in CARTA. Explore the data both spatially and spectrally:
 
 <ul>
 <li>Use animator to look at the cube through different channels.</li>
-<li>Does the emission vary spatially as you move through different channels?</li>
-<li>Is the emission spatially resolved?</li>
+<li>Does the emission vary spatially as you move through different channels? Is the emission spatially resolved? </li>
 <li>Extract spectra from different pixels, from different regions using shapes (or boxes) and then also extract the integrated emission profile.</li>
-<li>Identify the velocity range of emission.</li>
-<li>Does the spectral profile changes spatially or does it remain the same?</li>
+<li>Identify the velocity range of the emission.</li>
+<li>Does the spectral profile change spatially or does it remain the same?</li>
 </ul>
 
 </section>
@@ -592,7 +592,7 @@ Next, inspect the cube in CARTA. Explore the data both spatially and spectrally:
 <h2 class="alt">Moment Maps</h2>
 
 <p>
-You have already learnt to generate moments using the CASA task immoments (TW Hya) and using CARTA. Generate the moment maps using the method of your preference (or both!).
+You have already learnt to generate moments using the CASA task <code>immoments</code> (TW Hya) and using CARTA. Generate the moment maps using the method of your preference (or both!).
 </p>
 
 <p>

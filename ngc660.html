@@ -52,11 +52,11 @@ onload = function(){
 <h2 class="alt">Data</h2>
 
 <p>
-In this tutorial we will image absorption from the central region of a nearby starburst galaxy NGC 660 at z=0.002842.
+In this tutorial we will image absorption from the central region of a nearby starburst galaxy NGC 660.
 </p>
 
 <p>
-The data we use are taken using the European VLBI Network (EVN) telescopes under the project code: EA054. We shall use the self-calibrated data for this tutorial since you have learnt imaging and self-calibrating the continuum data in the previous tutorials.
+The data we use are taken using the European VLBI Network (EVN) telescopes under the project code: EA054. We shall use the self-calibrated data for this tutorial since you have learnt imaging and self-calibrating the continuum data in the previous tutorials. The steps followed for self-calibration are similar to (although not exact) what you learnt in the imaging tutorials.
 </p>
 
 <p>
@@ -84,7 +84,7 @@ Unlike TW Hya, this dataset contains a spectral line observed in absorption rath
 </p>
 
 <p>
-Observing an absorption line requires the presence of a bright background continuum source. Continuum imaging is therefore often an essential first step in absorption-line studies. The foreground gas absorbs a fraction of the background continuum emission at frequencies corresponding to the spectral transition, producing the absorption feature. In extragalactic radio astronomy, the continuum source is often associated with AGN activity in the central regions of galaxies. </p>
+Observing an absorption line requires the presence of a bright background continuum source. Continuum imaging is therefore often an essential first step in absorption-line studies. The foreground gas absorbs a fraction of the background continuum emission at frequencies corresponding to the spectral transition, producing the absorption feature. In extragalactic radio astronomy, the continuum source is often a radio source associated with AGN activity (jets, lobes or the core). </p>
 
 
 </section>
@@ -128,7 +128,7 @@ In active galaxies, HI absorption studies have become an important tool for inve
 
 
 <p>
-NGC 660, the target we will work on, is a very rare polar-ring galaxy located in Pisces constellation. the HI absorption arises against a compact radio source at the galaxy centre. The centre of this source has intense star forming activity, so intense that the  is classified as a star-burst galaxy. Recently, in 2008, a radio source appeared in the nuclear region, suggesting an onset of AGN activity. The EVN observations you will work on were made to study the gas surrounding this newly active radio source. The data are published by Argo et al. (2015). 
+NGC 660, the target we will work on, is a very rare polar-ring galaxy located in the Pisces constellation. The HI absorption arises against a compact radio source at the galaxy centre. The centre of this source has intense star forming activity, so intense that the galaxy is classified as a star-burst galaxy. Recently, in 2008, a radio source appeared in the nuclear region, suggesting an onset of AGN activity. The EVN observations you will work on were made to study the gas surrounding this newly active radio source. The data are published by Argo et al. (2015). 
 
 </p>
 
@@ -290,7 +290,7 @@ The continuum-subtracted data should now have an average amplitude close to zero
 </p>
 
 <p>
-Here we plot the Real component of the visibility rather than the amplitude. Try plotting <code>'amp'</code> along y-axis instead and compare the resulting spectrum. What information is lost? An absorption feature appears as a negative contribution to the the visibility. Plotting the amplitude would remove the sign information and make absorption appear as emission!
+Here we plot the Real component of the visibility rather than the amplitude. Try plotting <code>'amp'</code> along y-axis instead and compare the resulting spectrum. What information is lost? An absorption feature appears as a negative contribution to the visibility. Plotting the amplitude would remove the sign information and make absorption appear as emission!
 </p>
 
 </section>
@@ -493,7 +493,7 @@ One last step before producing the final cube is to create a mask to define the 
 </p>
 
 <p>
-You have the continuum image of NGC660: <code>ngc660.cont.image</code>. Load that in CARTA, create contours and then create a region defining the outmost contour. Demonstation shown in the video below:
+You have the continuum image of NGC660: <code>ngc660.cont.image</code>. Load that in CARTA, create contours and then create a region defining the outmost contour. Demonstration shown in the video below:
 </p>
 
 
@@ -517,7 +517,7 @@ Having inspected the dirty cube, estimated the noise level and identified the ab
 </p>
 
 <p>
-We will use non-interactive cleaning here using the threshold and a common mask created using CARTA. It works very well in this case as the spatial distribution is simple (it is almost unresolved). In case more more complicated spatial structures, it is recommended to use a good mask.
+We will use non-interactive cleaning here using the threshold and a common mask created using CARTA. It works very well in this case as the spatial distribution is simple (it is almost unresolved). In case of more complicated spatial structures, it is recommended to use a good mask.
 </p>
 
 <p>
@@ -532,7 +532,7 @@ in tclean and draw the masks specifically around the regions of absorption in th
 </p>
 
 <p>
-Unfortunately, this feature is no longer available for MacOS users. It is possible to generate more sophisticated masks for CLEANing on MacOS using other softwares and then use it in such cases. Ask the tutors if you want to know more about it!
+Unfortunately, this feature is no longer available for MacOS users. It is possible to generate more sophisticated masks for CLEANing on MacOS as well as Linux using other software packages and then use it in such cases. Ask the tutors if you want to know more!
 </p>
 
 <h3>In CASA</h3>
@@ -600,11 +600,10 @@ Next, inspect the cube in CARTA. Explore the data both spatially and spectrally:
 
 <ul>
 <li>Use animator to look at the cube through different channels.</li>
-<li>Does the absorption vary spatially as you move through different channels?</li>
-<li>Is the absorption spatially resolved?</li>
+<li>Does the absorption vary spatially as you move through different channels? Is the absorption spatially resolved?</li> 
 <li>Extract spectra from different pixels, from different regions using shapes (or boxes) and then also extract the integrated absorption profile.</li>
 <li>Identify the velocity range of absorption.</li>
-<li>Does the spectral profile changes spatially or does it remain the same?</li>
+<li>Does the spectral profile change spatially or does it remain the same?</li>
 </ul>
 
 <p>
@@ -638,7 +637,7 @@ First determine the maximum depth of absorption and the velocity range containin
 
 
 <p>
-Also the <a href="https://carta.readthedocs.io/en/latest/moment_generator.html">CARTA moment map documentation</a> for more details.
+Also see the <a href="https://carta.readthedocs.io/en/latest/moment_generator.html">CARTA moment map documentation</a> for more details.
 </p>
 
 </section>
@@ -650,7 +649,7 @@ Also the <a href="https://carta.readthedocs.io/en/latest/moment_generator.html">
 <h2 class="alt">Position-Velocity (PV) diagrams</h2>
 
 <p>
-PV diagrams are powerful tools to determine gas kinematics when the gas is spatially resolved. These plot the velocity of gas measured along any axis we define. To generate a PV diagram in CASA, first load the cube and then draw the axis along which you want to extract the diagram. Then uset he PV option on the menu bar and generate the diagram.
+PV diagrams are powerful tools to determine gas kinematics when the gas is spatially resolved. These plot the velocity of gas measured along any axis we define. To generate a PV diagram in CASA, first load the cube and then draw the axis along which you want to extract the diagram. Then use the PV option on the menu bar and generate the diagram.
 </p>
 
 <p>
@@ -686,7 +685,7 @@ Exporting the continuum image, spectral cube and moment maps to FITS allows the 
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">exportfits(
-    imagename='ngc660.cont.image'
+    imagename='ngc660.cont.image',
     fitsimage='ngc660_cont.fits',
     overwrite=True,
 )
@@ -703,7 +702,7 @@ Exporting the continuum image, spectral cube and moment maps to FITS allows the 
 </code></pre>
 
 <p>
-Similarly export the moment maps and the pv diagrams.
+Similarly export the moment maps and the PV diagrams.
 </p>
 
 
@@ -711,7 +710,6 @@ Similarly export the moment maps and the pv diagrams.
 
 <section>
 
-<section>
 
 <h2 class="alt">Other Related Pages</h2>
 
