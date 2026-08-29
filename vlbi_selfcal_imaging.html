@@ -1,0 +1,631 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>ERIS2026 - VLBI selfcal and imaging</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/prism.css">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML">
+		</script>
+		<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap' rel='stylesheet'>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+		</script>
+		<script type="text/javascript">
+var pcs = document.lastModified.split(" ")[0].split("/");
+var date = pcs[1] + '/' + pcs[0] + '/' + pcs[2];
+onload = function(){
+    document.getElementById("lastModified").innerHTML = "Page last modified: " + date;
+}
+		</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">ERIS 2026 - Tutorials</a>
+				<nav>
+					<ul>
+						<li><a href="index.html#four">Home</a></li>
+						<li><a href="intro_data.html">Intro. to data</a></li>
+						<li><a href="calibration.html">Calibration</a></li>
+						<li><a href="imaging.html" >Imaging</a></li>
+						<li><a href="selfcalibration.html">Self calibration</a></li>
+						<li><a href="adv_imaging.html">Advanced imaging</a></li>
+						<li><a href="vlbi_selfcal_imaging.html" class="active">VLBI</a></li>
+						<li><a href="3C277_full.html">Full tutorial</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+
+							<h1 class="major">VLBI Self-calibration & Imaging</h1>
+							<section>
+								<p>For this section, we will work with a dataset from the European VLBI Network (EVN),
+									observed under project code RSM07 on 16 September 2025 at L-band (1.67 GHz).
+									The general calibration and imaging steps required for VLBI data are similar to
+									what was covered in the previous tutorial about
+									<a href="calibration.html">calibration</a>,
+									<a href="imaging.html">imaging</a> and
+									<a href="selfcalibration.html">self-calibration</a>.
+									However, there are some important differences
+									that will be pointed out in this tutorial.</p>
+							</section>
+							<hr/>
+							<section>
+									<h2 class="alt"><a name=""></a>A few words about VLBI Calibration</h2>
+									<p> For the sake of time, we will not cover VLBI calibration in detail. If you are interested
+										in the details of VLBI calibration, please have a look at this
+										<a href="https://evlbi.org/evn-data-reduction-and-imaging-tutorial">EVN tutorial</a>,
+										where all required calibration steps are explained. One important difference to the
+										previous calibration tutorial is that fringe-fitting is an integral part of VLBI
+										phase calibration, as independent clocks from antennas that are thousands of kilometers
+										apart from each other have to be aligned. If you are interested in performing the
+										calibration yourself, you can simply download the raw data for RSM07 from the
+										<a href="https://archive.jive.nl/scripts/arch.php?exp=RSM07">EVN archive</a>
+										(under "Fitsfiles") and execute the
+										<a href="plots/vlbi/calibrate.py" download>calibration script</a>
+										that we have prepared for you in CASA.
+									</p>
+										<pre class="line-numbers" data-start="1">
+										<code class="language-python">execfile('calibrate.py')</code></pre></li>
+
+
+							</section>
+							<hr/>
+
+							<section>
+								<h2 class="alt"><a name=""></a>Data required</h2>
+									<p>
+										For this tutorial, you require the following files,
+										downloadable directly <a href="plots/vlbi/VLBI_Imaging_Selfcal.zip" download>here</a> as one zip-archive.
+										Alternatively, you can also
+										<ol>
+											<li><code class="language-bash">J1848+3219_calibrated.ms</code> - measurement set containing the calibrated visibilities of the phase reference calibrator (J1848+3219).</li>
+											<li><code class="language-bash">3C395_calibrated.ms</code> - measurement set containing just the calibrated visibilities of the phase reference target (3C395).</li>
+										</ol>
+									</p>
+							</section>
+							<hr/>
+							<section>
+								<h2>Table of contents</h2>
+								<ol start="1">
+									<li><a href="vlbi_selfcal_imaging.html#inspect">Inspect the data</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#phase_cal_image">Imaging the phase calibrator</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#phase_cal_selfcal">Self-calibrate the phase calibrator</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#phase_cal_image2">Iterative self-cal and imaging (hybrid imaging)</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#target_image">Apply solutions to target and image</a></li>
+								</ol>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="inspect"></a>1. Inspect the data</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p><strong>ADD SOME PLOT HERE SHOWING THE PHASE REF OBS STRATEGY!!</strong></p>
+								<p>In order to familiarize yourself with the data it is a good idea to execute some of the standard
+								procedures shown in the <a href="intro_data.html">introduction tutorial</a>. We will not replicate all steps here,
+								but let's at least have a look at the uv-coverages of both sources and the amplitudes and phases vs. uv-distance.</p>
+
+
+
+								<ul>
+									<li>First let's have a look at the uv-coverage for both sources, using <code class="language-bash">plotms()</code>
+									<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="3C395_calibrated.ms/",
+	xaxis="uwave",
+	yaxis="vwave",
+	coloraxis="spw"
+	)</code></pre>
+									</li>
+									<div class="row">
+										<div class="col-6"><h3>3C395 (target)</h3><span class="image fit"><img src="plots/vlbi/3C395_uv.png"/></span></div>
+										<div class="col-6"><h3>J1848+3219 (phase calibrator)</h3><span class="image fit"><img src="plots/vlbi/J1848_uv.png"/></span></div>
+									</div>
+
+									<li>Then let us check the visibility amplitudes vs. uv-distance, with 10s-time averaging
+									<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="3C395_calibrated.ms/",
+	xaxis="uvdist",
+	yaxis="amp",
+	avgtime="10",
+	correlation="rr,ll"
+	)</code></pre>
+									</li>
+									<div class="row">
+										<div class="col-6"><h3>3C395 (target)</h3><span class="image fit"><img src="plots/vlbi/3C395_amp_uvdist.png"/></span></div>
+										<div class="col-6"><h3>J1848+3219 (phase calibrator)</h3><span class="image fit"><img src="plots/vlbi/J1848_amp_uvdist.png"/></span></div>
+									</div>
+
+									<li>And finally the visibility phase vs. uv-distance
+									<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="3C395_calibrated.ms/",
+	xaxis="uvdist",
+	yaxis="phase",
+	avgtime="10",
+	correlation="rr,ll"
+	)</code></pre>
+									</li>
+									<div class="row">
+										<div class="col-6"><h3>3C395 (target)</h3><span class="image fit"><img src="plots/vlbi/3C395_phase_uvdist.png"/></span></div>
+										<div class="col-6"><h3>J1848+3219 (phase calibrator)</h3><span class="image fit"><img src="plots/vlbi/J1848_phase_uvdist.png"/></span></div>
+									</div>
+
+								</ul>
+
+								<p>You can clearly see that the scatter in phase and amplitudes is still quite high,
+								which we will try to improve through self-calibration in the following steps.</p>
+
+								<p><strong>Note:</strong> For typical VLBI data, you will likely have to go through some additional flagging.
+								We have already taken care of flagging the data provided here, so you can skip the flagging process.</p>
+
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="phase_cal_image"></a>2. Imaging the phase calibrator</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+
+								<p>Before we can perform any kind of self-calibration, we first need to obtain an initial image.
+								For this VLBI observation, we will start with imaging the phase calibrator, which we will later also use
+								to derive the self-calibration solutions and apply them to the target source.</p>
+
+								<p>
+								<ul>
+									<li> Let's recall the <code class="language-bash">tclean</code> task from the previous tutorials
+										(or <code class="language-bash">iclean</code> for MacOS), to create a first image of the phase calibrator.
+
+										<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_first_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_first_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="J1848+3219_calibrated.ms/",
+	model="J1848+3219_first_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li><p>Let's start with a first clean mask similar to this</p>
+										<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/first_cal_clean_mask.png" alt="" /></span></div>
+									</p></li>
+
+									<li><p>Keep cleaning and adjusting the mask (if required) until your residual map looks
+									similar to this (the bright spots are likely artifacts, so it is best not to put clean windows there):</p>
+									<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/first_cal_clean_mask2.png"/></span></div></p></li>
+
+									<li>Now you can close the <code class="language-bash">tclean</code> window by clicking on the large <b>X</b>.
+									It may take some time as CASA is loading your model into the measurement set. Once this process has finished
+									it is a good idea to check that the CLEAN model that was created describes the data reasonably well.
+									Unfortunately, there is no built-in CASA plot function to do this, but we have created a short
+									<a href="plots/vlbi/compare_model_data.py" download>plotting script</a>
+									that you may run on your measurement set to compare its model and data visibilities.
+
+									<pre class="line-numbers" data-start="1"><code class="language-python">execfile("compare_model_data.py")</code></pre>
+										<p>The output should look something like this and the CLEAN model should describe the data reasonably well.
+										<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/data_model_uvwave.png"/></span></div></p>
+										</p>
+									</li>
+
+								</ul>
+
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="phase_cal_selfcal"></a>3. Self-calibrate the phase calibrator</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									Once you are satisfied with your initial CLEAN image of the phase calibrator and the
+									model visibilities describe the data as good as possible, we can start with deriving
+									self-calibration solutions.
+								</p>
+
+								<ul>
+									<li>
+										First, we will start with a phase self-calibration and use a long solution interval
+										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
+	vis="J1848+3219_calibrated.ms/",
+	calmode="p", #use "p" to calibrate phases only or "ap" for amplitude and phase
+	caltable="J1848+3219-sc-p1",
+	field="J1848+3219",
+	solint="10min",
+	refant="EF",
+	minblperant=3,
+	minsnr=5
+	)</code></pre>
+									</li>
+
+									<li>
+										Now that we created a first phase self-calibration table, we can plot it
+										and look at the suggested corrections
+										<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="J1848+3219-sc-p1",
+	gridcols=2,
+	gridrows=3,
+	xaxis="time",
+	yaxis="phase",
+	iteraxis="antenna",
+	coloraxis="spw",
+	plotrange=[-1,-1,-180,180]
+	)</code></pre>
+
+									<p>The plot should look similar to the one shown below. Note that the corrections are typically small.
+										Additionally, for some antennas the solution is missing because they have no data or were already flagged.
+										This is fine and you do not have to worry about it.</p>
+									<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/first_phase_selfcal_solution.png"/></span></div></p>
+									</li>
+
+									<li>
+										<p>Finally, the self-calibration needs to be applied to the measurement set, using the <code class="language-bash">applycal</code> task
+										<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="J1848+3219_calibrated.ms/",
+	gaintable=["J1848+3219-sc-p1"],
+	)</code></pre>
+									</p></li>
+
+								</ul>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="phase_cal_image2"></a>4. Iterative self-cal and imaging (hybrid imaging)</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									After applying the first phase self-calibration, you should go back to <a href="vlbi_selfcal_imaging.html#phase_cal_image">step 2</a>
+									and create a new image of the phase calibrator (ideally, use a different <code class="language-bash">imagename</code>
+									value for <code class="language-bash">tclean</code>, otherwise you will run into an error).
+									Once this is done, you can perform self calibration in phase again, but with a shortened solution interval
+									(2min, as you do not expect faster changes due to the atmosphere).
+									After another imaging round, if the solutions (in plots) seem to converge to just small improvements,
+									one can run the self-calibration in amplitude and phase (using <code class="language-bash">calmode="ap"</code> in
+									<code class="language-bash">gaincal</code>).
+									For amplitude self-calibration, you do not expect fast changes, but only on the order of ~30 min or more for this dataset.
+									Therefore, a longer solution interval of half an hour or one hour is sufficient. Below, we provide a short summary of these steps
+								</p>
+
+								<ul>
+									<li>
+										<p>Image the phase calibrator again</p>
+<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_second_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_second_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="J1848+3219_calibrated.ms/",
+	model="J1848+3219_second_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li>
+										Compare model with data
+										<pre class="line-numbers" data-start="1"><code class="language-python">execfile("compare_model_data.py")</code></pre>
+									</li>
+
+									<li>
+										Generate phase calibration table with shorter solution interval of 2 minutes.
+										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
+	vis="J1848+3219_calibrated.ms/",
+	calmode="p", #use "p" to calibrate phases only or "ap" for amplitude and phase
+	caltable="J1848+3219-sc-p2",
+	field="J1848+3219",
+	solint="2min",
+	gaintable="J1848+3219-sc-p1",
+	interp=["linear"],
+	refant="EF",
+	minblperant=3,
+	minsnr=5
+	)</code></pre>
+									</li>
+
+									<li>
+										Apply both phase calibration tables to the data
+										<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="J1848+3219_calibrated.ms/",
+	gaintable=["J1848+3219-sc-p1","J1848+3219-sc-p2"],
+	)</code></pre>
+									</li>
+
+																		<li>
+										<p>Image the phase calibrator again</p>
+<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_third_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_third_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="J1848+3219_calibrated.ms/",
+	model="J1848+3219_third_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li>
+										Compare model with data
+										<pre class="line-numbers" data-start="1"><code class="language-python">execfile("compare_model_data.py")</code></pre>
+									</li>
+
+									<li>
+										Generate phase calibration table with shorter solution interval of 2 minutes.
+										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
+	vis="J1848+3219_calibrated.ms/",
+	calmode="ap", #use "p" to calibrate phases only or "ap" for amplitude and phase
+	caltable="J1848+3219-sc-ap",
+	field="J1848+3219",
+	solint="30min",
+	gaintable=["J1848+3219-sc-p1","J1848+3219-sc-p2"],
+	interp=["linear","linear"],
+	refant="EF",
+	minblperant=3,
+	minsnr=5
+	)</code></pre>
+									</li>
+
+									<li>
+										Apply all self-calibration tables to the data
+										<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="J1848+3219_calibrated.ms/",
+	gaintable=["J1848+3219-sc-p1","J1848+3219-sc-p2","J1848+3219-sc-ap"],
+	)</code></pre>
+									</li>
+
+									<li>
+										Finally, you can image the phase calibrator one last time, to obtain a final image
+										<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_final_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="J1848+3219_calibrated.ms/",
+	imagename="J1848+3219_final_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[512,512],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="J1848+3219_calibrated.ms/",
+	model="J1848+3219_final_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li>
+										You can inspect your final image with <code class="language-bash">imview</code> and it will likely look similar to this
+										<div class="row">
+											<div class="col-1"></div>
+											<div class="col-5"><span class="image fit"><img src="plots/vlbi/J1848_final_image.png"/></span></div>
+											<div class="col-6"></div>
+										</div>
+									</li>
+
+								</ul>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="target_image"></a>5. Apply solutions to target and image</h2>
+							</section>
+
+							<p>After finalizing the self-calibration of the phase calibrator, we can easily apply the same solutions
+							to the science target (3C395), and image it.
+
+							<ul>
+
+							<li>Apply amplitude and phase calibration to science target
+						<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="3C395_calibrated.ms/",
+	gaintable=["J1848+3219-sc-p1","J1848+3219-sc-p2","J1848+3219-sc-ap"],
+	interp=["linear","linear","linear"]
+	)</code></pre></p></li>
+
+							<li>
+								Image science target
+								<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="3C395_calibrated.ms/",
+	imagename="3C395_final_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="3C395_calibrated.ms/",
+	imagename="3C395_final_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.3mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="3C395_calibrated.ms/",
+	model="3C395_final_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+							</li>
+
+							<li>
+								And again, you can plot the final image of the science target with <code class="language-bash">imview</code>
+								<div class="col-12"><span class="image fit"><img src="plots/vlbi/3C395_final_image.png" alt="" /></span></div>
+							</li>
+
+							</ul>
+
+						</div>
+					</section>
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
+
+	</body>
+</html>
