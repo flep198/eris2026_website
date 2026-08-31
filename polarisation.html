@@ -34,6 +34,15 @@ onload = function(){
 				<nav>
 					<ul>
 						<li><a href="index.html#five">Home</a></li>
+						<li><a href="polarisation.html" class="active">Polarimetry</a></li>
+						<li class="has-submenu">
+							<a href="spectral_lines.html">Spectral lines</a>
+							<ul class="submenu">
+								<li><a href="twhya.html">TW Hya</a></li>
+								<li><a href="ngc660.html">NGC 660</a></li>
+								<li><a href="ic485.html">IC 485</a></li>
+							</ul>
+						</li>
 					</ul>
 				</nav>
 			</header>
@@ -44,15 +53,24 @@ onload = function(){
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-							<h1 class="major">Advanced Tutorial - Polarisation</h1>
-							<!-- Text -->
-							<section>
-								<h2 class="alt"><a name=""></a>Goals of the tutorial</h2>
+<h1 class="major">Polarisation</h1>
+
+<section>
+
+<h2 class="alt"><a name="goals"></a>Goals of the tutorial</h2>
+
 								<p>
 									This tutorial is divided in two parts. First, we will produce and explore different sets of simulated full-polarization visibilities, in order to learn to recognize the different kinds of polarization signals (i.e., source-intrinsic versus instrumental). Then, we will work on a set of real VLBI full-polarization observations, to calibrate the instrumental effects, deconvolve polarized images and perform a basic analysis of the results.
 								</p><br>
 
-								<h2 class="alt"><a name=""></a>Getting the software and data</h2>
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="software_and_data"></a>Getting the software and data</h2>
+
 								<p>
 The tutorial makes use of the CASA-based software called $\texttt{casa-poltools}$, which can be downloaded from:<br><br>
 
@@ -111,61 +129,55 @@ Beware of not adding spaces in that line! And that's it! Now, you can run the $\
 								<p>
                                 You can find a complete guide to display polarization information in CARTA here: <a href="carta_display_polarisation.pdf" target="_blank">Displaying polarization in CARTA</a>
 								</p>
-							</section>
-							<hr/>
-							<section>
-			<h2><a name="TOC">Table of contents</h2>
 
-			<h3>Part 0. Software and Scripts</h2>
-				<ul>
-					<li><a href="polarisation.html#polsimulate">Description of PolSimulate and simulation scripts.</a></li>
-					<li><a href="polarisation.html#polsolve">Description of PolSolve and calibration scripts.</a></li>
-				</ul><br>
-
-
-			<h3>Part I. Simulations</h2>
-				<ul>
-					<li><a href="polarisation.html#pointUnpol">Unpolarized point source (no Dterms).</a></li>
-					<li><a href="polarisation.html#pointUnpol2">Unpolarized point source (with Dterms).</a></li>
-					<li><a href="polarisation.html#pointPol">Polarized point source (no Dterms).</a></li>
-					<li><a href="polarisation.html#pointPol2">Polarized point source (with Dterms).</a></li>
-					<li><a href="polarisation.html#double">Double polarized source (no Dterms).</a></li>
-					<li><a href="polarisation.html#double2">Double polarized source (with Dterms).</a></li>
-					<li><a href="polarisation.html#double3">Double polarized source (with cross-delay).</a></li>
-				</ul><br>
-
-			<h3>Part II. Real Data</h2>
-				<ul>
-					<li><a href="polarisation.html#M87EHT">EHT Observations of M87* in 2017.</a></li>
-					<li><a href="polarisation.html#VLBA7mm">VLBA Observations of 3C279 and OJ287 at 7mm.</a></li>
-				</ul><br>
-
-			<h3>Additional Material</h2>
-				<ul>
-					<li><a href="polarisation.html#additional">Additional Material.</a></li>
-					<li><a href="polarisation.html#definitions">Summary, definitions and symbols.</a></li>
-				</ul><br>
-
-
-							</section>
-							<hr/>
-
-
+</section>
 
 <hr/>
 
+<section>
 
-<h1 class="alt">Part 0: Software and Scripts</h1>
+<h2>Table of contents</h2>
+
+<ol start='1'>
+	<li><a href="polarisation.html#software_scripts">Software and scripts</a></li>
+	<ol class="alt">
+		<li><a href="polarisation.html#polsimulate">Description of PolSimulate</a></li>
+		<li><a href="polarisation.html#polsolve">Description of PolSolve</a></li>
+	</ol>
+	<li><a href="polarisation.html#simulations">Simulations</a></li>
+	<ol class="alt">
+		<li><a href="polarisation.html#pointUnpol">CASE=0. Unpolarized point source (no D-terms)</a></li>
+		<li><a href="polarisation.html#pointUnpol2">CASE=1. Unpolarized point source (with D-terms)</a></li>
+		<li><a href="polarisation.html#pointPol">CASE=2. Polarized point source (no D-terms)</a></li>
+		<li><a href="polarisation.html#pointPol2">CASE=3. Polarized point source (with D-terms)</a></li>
+		<li><a href="polarisation.html#double">CASE=4. Polarized double source (no D-terms)</a></li>
+		<li><a href="polarisation.html#double2">CASE=5. Polarized double source (with D-terms)</a></li>
+		<li><a href="polarisation.html#double3">CASE=6. Polarized point source (with cross-delay)</a></li>
+	</ol>
+	<li><a href="polarisation.html#real_data">Real data</a></li>
+	<ol class="alt">
+		<li><a href="polarisation.html#M87EHT">EHT Observations of M87* in 2017</a></li>
+		<li><a href="polarisation.html#VLBA7mm">VLBA Observations of 3C279 and OJ287 at 7mm</a></li>
+	</ol>
+	<li><a href="polarisation.html#additional">Additional activities</a></li>
+	<li><a href="polarisation.html#definitions">Summary, definitions and symbols</a></li>
+	<ol class="alt">
+		<li><a href="polarisation.html#summary_of_polarisation_calibration_for_">Summary of polarisation calibration for circular feeds</a></li>
+		<li><a href="polarisation.html#symbols">Definitions and symbols</a></li>
+	</ol>
+</ol>
+
+</section>
 
 <hr/>
 
+<section>
 
+<h2 class="alt"><a name="software_scripts"></a>1. Software and scripts</h2>
+<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
 
+<h3 class="alt"><a name="polsimulate"></a>1A. Description of PolSimulate</h3>
 
-
-	<section>
-	<h2 class="alt"><a name="polsimulate"></a>Description of PolSimulate</h2>
-	<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
 	<p>
 	For the first part of the tutorial, we will make use of the $\texttt{casa-poltools}$ program $\texttt{polsimulate}$, as well as $\texttt{plotms}$, $\texttt{iclean/tclean}$, $\texttt{polcal}$ and $\texttt{CARTA}$. We will also use some other auxiliary functions provided in $\texttt{casa-poltools}$, like $\texttt{plotPolImage}$ and $\texttt{plotPolTraces}$. Here we describe the main arguments of $\texttt{polsimulate}$, which will allow us to generate realistic full-polarization synthetic datasets under different instrumental conditions: 
 	</p>
@@ -235,20 +247,15 @@ Regarding the radiotelescopes, we will use the array configuration of the Event 
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
-
-
-
-
 <section>
 
+<h3 class="alt"><a name="polsolve"></a>1B. Description of PolSolve</h3>
 
-
-	<h2 class="alt"><a name="polsolve"></a>Description of PolSolve</h2>
-	<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
 	<p>
 	For the second part of the tutorial (and some exercises of the first part), we will make use of $\texttt{polsolve}$, a program that estimates the instrumental polarization and applies it to the data, allowing us to deconvolve full-polarization images. The most important parameters of $\texttt{polsolve}$ (at least, the ones that we will use here) are:
 	</p>
@@ -311,21 +318,17 @@ The D-terms estimated by $\texttt{polsolve}$ will be stored in binary files ende
 
 
 <p></p>
+
 </section>
 
-
 <hr/>
-
-
-<h1 class="alt">Part I: Simulations</h1>
-
-<hr/>
-
 
 <section>
 
-<h2 class="alt"><a name="pointUnpol"></a>CASE=0. Unpolarized point source (no D-terms)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h2 class="alt"><a name="simulations"></a>2. Simulations</h2>
+<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
+
+<h3 class="alt"><a name="pointUnpol"></a>2A. CASE=0. Unpolarized point source (no D-terms)</h3>
 
 <p class="alt"> We will set $\texttt{CASE = 0}$ in the simulation script, <code class="language-bash">running_polsimulate.py</code>, and run it from CASA. If the installation of $\texttt{casa-poltools}$ was OK, it should soon generate a measurement set called <code class="language-bash">POLSIM_CASE_0.ms</code>, corresponding to an unpolarized point source located in the same coordinates as SgrA* (i.e., we have replaced SgrA* by a synthetic point source), and observed with the EHT in its exact configuration of April 7, 2017.<br> Explore the visibilities with $\texttt{plotms}$. The interesting quantities are amplitude (and phase) vs. time (and UV-distance) for all four correlation products, $\texttt{RR}$, $\texttt{RL}$, $\texttt{LR}$, and $\texttt{LL}$.<br>
 
@@ -355,14 +358,14 @@ plotPolTraces(vis=["POLSIM_CASE-0.ms"],antennas=["AA","AP","LM","AZ"])</code><br
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt"><a name="pointUnpol2"></a>CASE=1. Unpolarized point source (with D-terms)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="pointUnpol2"></a>2B. CASE=1. Unpolarized point source (with D-terms)</h3>
 
 <p class="alt"> By setting $\texttt{CASE = 1}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_1.ms</code>, corresponding to a source with no polarization, but observed with an imperfect interferometer (i.e., affected by instrumental polarization). <br>
 
@@ -396,14 +399,14 @@ plotPolTraces(vis=["POLSIM_CASE-0.ms"],antennas=["AA","AP","LM","AZ"])</code><br
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt"><a name="pointPol"></a>CASE=2. Polarized point source (no D-terms)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="pointPol"></a>2C. CASE=2. Polarized point source (no D-terms)</h3>
 
 <p class="alt"> By setting $\texttt{CASE = 2}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_2.ms</code>, corresponding to a source with Stokes parameters $\texttt{I=1.0}$Jy, $\texttt{Q=0.1/I}$, $\texttt{U=0.0/I}$, $\texttt{V=0.0/I}$. Explore, again, the visibilities with $\texttt{plotms}$, as you did with the previous cases.
 
@@ -444,14 +447,14 @@ plotPolImage(img='CASE-2_IMG.image', mSigmaCut=2.0, SigmaCut=2.0,
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt"><a name="pointPol2"></a>CASE=3. Polarized point source (with D-terms)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="pointPol2"></a>2D. CASE=3. Polarized point source (with D-terms)</h3>
 
 <p class="alt"> By setting $\texttt{CASE = 3}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_3.ms</code>, corresponding to a source with the same Stokes parameters as in $\texttt{CASE = 2}$, but with instrumental polarization added to the signal. Explore the visibilities with $\texttt{plotms}$ and compare the results to those in the previous cases.<br><br>
 
@@ -473,7 +476,7 @@ plotPolImage(img='CASE-2_IMG.image', mSigmaCut=2.0, SigmaCut=2.0,
 </p><br>
 
 
-<h3 class="alt"> Solving for the source polarization simultaneously </h3>
+<h4 class="alt"><a name="solving_for_the_source_polarization_simu"></a>Solving for the source polarization simultaneously</h4>
 <br>
 
 <p class="alt"> The procedure followed in $\texttt{running_polsolve.py}$ is qualitatively similar to <em>hybrid mapping</em> (i.e., the process of self-calibration coupled to deconvolution). In this process, the source model is kept fixed when the D-terms are estimated.<br> 
@@ -508,7 +511,7 @@ This function will generate a plot of the correlation between the true D-terms a
 
 
 
-<h3 class="alt">Using CASA's $\texttt{polcal}$ task</h3>
+<h4 class="alt"><a name="using_casa_s_texttt_polcal_task"></a>Using CASA's $\texttt{polcal}$ task</h4>
 <br>
 
 <p class="alt"> CASA has a built-in task called $\texttt{polcal}$, able to estimate the instrumental polarization (D-terms) and their possible frequency dependence. As in the fitting above, $\texttt{polcal}$ can also fit for the source polarization at the same time as the D-terms. Even though the use of this task is very simple, it has some limitations. Mainly:<br><br>
@@ -571,17 +574,14 @@ compareDterms(dt1='POLSIM_CASE-3.true-dterms',dt2='CASE-3_ALTAZ.POLCAL.Dt')  </c
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
 <section>
 
-
-
-
-<h2 class="alt"><a name="double"></a>CASE=4. Polarized double source (no D-terms)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="double"></a>2E. CASE=4. Polarized double source (no D-terms)</h3>
 
 <p class="alt"> By setting $\texttt{CASE = 4}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_4.ms</code>, corresponding to a double source (oriented with a position angle of about 45 degrees) with different Stokes parameters for each component. In this case, the instrumental polarization is assumed perfect.<br>
 
@@ -603,16 +603,14 @@ Run $\texttt{plotms}$ and generate plots of visibility amplitudes and phases for
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
 <section>
 
-
-
-<h2 class="alt"><a name="double2"></a>CASE=5. Polarized double source (with D-terms)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="double2"></a>2F. CASE=5. Polarized double source (with D-terms)</h3>
 
 <p class="alt"> By setting $\texttt{CASE = 5}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_5.ms</code>, corresponding to the same double source as in $\texttt{CASE = 4}$, but observed with an interferometer with imperfect instrumental polarization.<br>
 
@@ -630,16 +628,14 @@ Run $\texttt{plotms}$ and generate plots of visibility amplitudes and phases for
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
 <section>
 
-
-
-<h2 class="alt"><a name="double3"></a>CASE=6. Polarized point source (with cross-delay)</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="double3"></a>2G. CASE=6. Polarized point source (with cross-delay)</h3>
 
 <p class="alt"> By setting $\texttt{CASE = 6}$ in the simulation script, we will generate the measurement set <code class="language-bash">POLSIM_CASE_6.ms</code>, corresponding to a polarized point source observed by an interferometer with instrumental polarization and non-zero cross-polarization delay. In this case, we will have to estimate the delay and apply it to the data, before attempting to calibrate the D-terms:<br><br>
 
@@ -672,26 +668,17 @@ Run $\texttt{plotms}$ and generate plots of visibility amplitudes and phases for
 
 
 <p></p>
+
 </section>
 
 <hr/>
 
-
-<h1 class="alt">Part II: Real Data</h1>
-
-<hr/>
-
-
-
 <section>
 
+<h2 class="alt"><a name="real_data"></a>3. Real data</h2>
+<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
 
-
-
-
-
-<h2 class="alt"><a name="M87EHT"></a>EHT Observations of M87* in 2017</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
+<h3 class="alt"><a name="M87EHT"></a>3A. EHT Observations of M87* in 2017</h3>
 
 <p class="alt"> Let us run $\texttt{listobs}$ on the measurement set $\texttt{EHT-11Apr17_M87.ms}$, to check its contents:<br>
 </p>
@@ -762,17 +749,13 @@ The residuals after proper D-term calibration are basically thermal noise, as yo
 
 </p><br>
 
-
-
-
+</section>
 
 <hr/>
 
+<section>
 
-
-<h2 class="alt"><a name="VLBA7mm"></a>VLBA Observations of 3C279 and OJ287 at 7mm</h2>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p><br>
-
+<h3 class="alt"><a name="VLBA7mm"></a>3B. VLBA Observations of 3C279 and OJ287 at 7mm</h3>
 
 <p class="alt"> 
 
@@ -910,8 +893,7 @@ The $\texttt{VLBA_ERIS2026_polsolve.py}$ script will estimate the D-terms in the
 </p>
 
 
-<hr/>
-<h3 class="alt">Using 3C279 as Polarization Calibrator</h3>
+<h4 class="alt"><a name="using_3c279_as_polarization_calibrator"></a>Using 3C279 as Polarization Calibrator</h4>
 
 <p class="alt"> 
 
@@ -935,8 +917,7 @@ Take a look at the plots of visibility residuals in phasor space (for all the ba
 
 
 
-<hr/>
-<h3 class="alt">Using OJ287 as Polarization Calibrator</h3>
+<h4 class="alt"><a name="using_oj287_as_polarization_calibrator"></a>Using OJ287 as Polarization Calibrator</h4>
 
 <p class="alt"> 
 
@@ -959,8 +940,7 @@ There is definitely a correlation between the D-terms estimated using 3C279 and 
 </p>
 
 
-<hr/>
-<h3 class="alt">Using 3C84 as Polarization Calibrator</h3>
+<h4 class="alt"><a name="using_3c84_as_polarization_calibrator"></a>Using 3C84 as Polarization Calibrator</h4>
 
 <p class="alt"> 
 
@@ -987,9 +967,8 @@ Now, it doesn't look that bad!
 </p>
 
 
-<hr/>
 
-<h3 class="alt">Using M84 as Polarization Calibrator</h3>
+<h4 class="alt"><a name="using_m84_as_polarization_calibrator"></a>Using M84 as Polarization Calibrator</h4>
 
 <p class="alt"> 
 
@@ -999,9 +978,8 @@ If you plot some visibilities of M84, you will see that the SNR is quite low, co
 
 
 
-<hr/>
 
-<h3 class="alt">Using 3C279 and OJ287 simultaneously</h3>
+<h4 class="alt"><a name="using_3c279_and_oj287_simultaneously"></a>Using 3C279 and OJ287 simultaneously</h4>
 
 <p class="alt"> 
 By setting $\texttt{field='3C279,OJ287'}$ in the calibration script, we will use both calibrator sources simultaneously, in a self-consistent D-term fitting. Run the script in this mode and compare the D-terms to those estimated above.<br>
@@ -1018,9 +996,8 @@ By setting $\texttt{field='3C279,OJ287'}$ in the calibration script, we will use
 
 
 
-<hr/>
 
-<h3 class="alt">Absolute EVPA calibration</h3>
+<h4 class="alt"><a name="absolute_evpa_calibration"></a>Absolute EVPA calibration</h4>
 
 <p class="alt"> 
 
@@ -1066,31 +1043,15 @@ In any case, you should get images quite similar to these ones:
 
 </p>
 
-
-
-	</section>
-	<hr/>
-
+</section>
 
 <hr/>
 
+<section>
 
-<h1 class="alt">Additional Material</h1>
+<h2 class="alt"><a name="additional"></a>4. Additional activities</h2>
+<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
 
-<hr/>
-
-
-
-
-
-
-
-
-
-							<hr/>
-							<section>
-								<h1 class="alt"><a name="additional"></a>Additional Activities</h1>
-								<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
 								<p>
 									Suggestions for further work:
 								</p>
@@ -1109,23 +1070,18 @@ In any case, you should get images quite similar to these ones:
 										<li><a href="https://casaguides.nrao.edu/index.php?title=3C286_Polarization" target="_blank">ALMA (linearly polarised feeds)</a></li>
 									</ol>
 								</p>
-							</section>
-						</div>
-					</section>
-			</div>
-		<hr/>
 
+</section>
 
+<hr/>
 
+<section>
 
+<h2 class="alt"><a name="definitions"></a>5. Summary, definitions and symbols</h2>
+<p class="alt"><a href="polarisation.html#"><font size="-5">&larr; back to top</font></a></p>
 
+<h3 class="alt"><a name="summary_of_polarisation_calibration_for_"></a>5A. Summary of polarisation calibration for circular feeds</h3>
 
-
-		<section>
-<h1 class="alt"><a name="definitions"></a>Summary, definitions and symbols</h1>
-<p class="alt"><a href="polarisation.html#TOC"><font size="-5">&larr; back to ToC</font></a></p>
-
-<h3> Summary of polarisation calibration for circular feeds</h3>
 <h4>Cross-hand delay</h4>
 <p>
   Each antenna receives $R$ and $L$, and the correlator makes products $RR$, $RL$, $LR$, $LL$.<br/> 
@@ -1148,6 +1104,15 @@ and similarly for $L$, and for amplitudes. The simplest way to correct this is b
 <p>
 The image plane polarisation angle is half the visibility $R-L$ phase difference. But previous calibration takes the origin of phase independently for $R$ and $L$, as the initial (instrumental) phases of the reference antenna, with a random offset.  Luckily at cm wavelengths 3C286 has a stable polarisation angle so the $R-L$ phase difference is corrected to make this 66$^{\circ}$ in the visibilities, and 33$^{\circ}$ in its image.
   </p>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h3 class="alt"><a name="symbols"></a>5B. Definitions and symbols</h3>
+
 <p>
 									The symbols used in papers and textbooks and talks may differ from those used in code (e.g. avoiding subscripts) but also between different authors. 
 								</p>
@@ -1183,7 +1148,14 @@ The image plane polarisation angle is half the visibility $R-L$ phase difference
 	<tr><td>$V$</td><td>($RR-LL$)/2</td><td>$i$($XY-YX$)/2</td></tr>
 </table>	
 	<p> Note that in some papers the factor "/2" is omitted and as another souce of  confusion in older papers $V$ may be defined as ($LL-RR$)/2. </p>
-		</section>
+
+</section>
+
+
+						</div>
+					</section>
+			</div>
+
 		<!-- Footer -->
 			<footer id="footer" class="wrapper alt">
 				<div class="inner">

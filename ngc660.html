@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>ERIS2026 - Spectral lines</title>
+		<title>ERIS2026 - NGC 660</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -34,6 +34,15 @@ onload = function(){
 				<nav>
 					<ul>
 						<li><a href="index.html#five">Home</a></li>
+						<li><a href="polarisation.html">Polarimetry</a></li>
+						<li class="has-submenu">
+							<a href="spectral_lines.html" class="active">Spectral lines</a>
+							<ul class="submenu">
+								<li><a href="twhya.html">TW Hya</a></li>
+								<li><a href="ngc660.html" class="active">NGC 660</a></li>
+								<li><a href="ic485.html">IC 485</a></li>
+							</ul>
+						</li>
 					</ul>
 				</nav>
 			</header>
@@ -44,12 +53,12 @@ onload = function(){
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-
 <h1 class="major">NGC 660: HI Absorption Imaging</h1>
 
 <section>
 
-<h2 class="alt">Data</h2>
+<h2 class="alt"><a name="data_required"></a>Data required</h2>
+
 
 <p>
 In this tutorial we will image absorption from the central region of a nearby starburst galaxy NGC 660.
@@ -64,8 +73,17 @@ One difference to keep in mind while making continuum images using spectral-line
 </p>
 
 <p>
-The calibrated measurement set and the continuum image can be downloaded <a href="https://eris2026.ira.inaf.it/index.html#two">here</a>.
+The calibrated measurement set and the continuum image can be downloaded using the link below:
 </p>
+
+<ul class="actions"><li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ngc660.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_sp_line_ngc660.tar.gz</a></li></ul>
+
+<p>
+Alternatively, you can download and un-tar the data from the command line:
+</p>
+
+<pre><code class="language-bash">wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ngc660.tar.gz
+tar -zxvf ERIS26_sp_line_ngc660.tar.gz</code></pre>
 
 <p>
 After downloading the data, verify that the measurement set is available in your working directory before proceeding.
@@ -77,7 +95,35 @@ After downloading the data, verify that the measurement set is available in your
 
 <section>
 
-<h2 class="alt">Absorption Lines</h2>
+<h2>Table of contents</h2>
+
+<ol start='1'>
+	<li><a href="ngc660.html#absorption_lines">Absorption Lines</a></li>
+	<li><a href="ngc660.html#hi_21_cm_line">HI 21-cm Line</a></li>
+	<li><a href="ngc660.html#ngc_660">NGC 660</a></li>
+	<li><a href="ngc660.html#inspect_the_data">Inspect the data</a></li>
+	<li><a href="ngc660.html#determine_the_channels_containing_the_li">Determine the channels containing the line feature</a></li>
+	<li><a href="ngc660.html#continuum_subtraction">Continuum Subtraction</a></li>
+	<li><a href="ngc660.html#rest_frequency_reference_frame_and_veloc">Rest frequency, reference frame and velocity type</a></li>
+	<li><a href="ngc660.html#creating_a_dirty_cube">Creating a Dirty Cube</a></li>
+	<li><a href="ngc660.html#inspecting_the_cube">Inspecting the cube</a></li>
+	<li><a href="ngc660.html#mask_creation">Mask creation</a></li>
+	<li><a href="ngc660.html#producing_the_final_cube">Producing the Final Cube</a></li>
+	<li><a href="ngc660.html#analysing_the_final_cube">Analysing the Final Cube</a></li>
+	<li><a href="ngc660.html#moment_maps">Moment Maps</a></li>
+	<li><a href="ngc660.html#position_velocity_pv_diagrams">Position-Velocity (PV) diagrams</a></li>
+	<li><a href="ngc660.html#exporting_the_results">Exporting the Results</a></li>
+</ol>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="absorption_lines"></a>1. Absorption Lines</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Unlike TW Hya, this dataset contains a spectral line observed in absorption rather than emission.
@@ -86,14 +132,15 @@ Unlike TW Hya, this dataset contains a spectral line observed in absorption rath
 <p>
 Observing an absorption line requires the presence of a bright background continuum source. Continuum imaging is therefore often an essential first step in absorption-line studies. The foreground gas absorbs a fraction of the background continuum emission at frequencies corresponding to the spectral transition, producing the absorption feature. In extragalactic radio astronomy, the continuum source is often a radio source associated with AGN activity (jets, lobes or the core). </p>
 
-
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt">HI 21-cm Line</h2>
+<h2 class="alt"><a name="hi_21_cm_line"></a>2. HI 21-cm Line</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Neutral atomic hydrogen (HI) is the most abundant element in galaxies and serves as one of the most important tracers of the interstellar medium. The HI 21-cm line is produced when the spins of the proton and electron flip from a parallel to an anti-parallel configuration. Although the transition is intrinsically very rare, the enormous abundance of hydrogen in galaxies makes the line readily observable with radio telescopes.
@@ -117,10 +164,15 @@ Absorption-line observations are particularly powerful because they allow us to 
 In active galaxies, HI absorption studies have become an important tool for investigating gas in the immediate vicinity of the central supermassive black hole. Such observations can reveal inflowing gas that may be feeding the active galactic nucleus (AGN), as well as outflowing gas being driven by jets or accretion activity.
 </p>
 
+</section>
+
 <hr/>
 
 <section>
-<h2 class="alt">NGC 660</h2>
+
+<h2 class="alt"><a name="ngc_660"></a>3. NGC 660</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <img src="plots/spectral_line/ngc660_image.jpg"
      alt="IC485"
@@ -138,7 +190,9 @@ NGC 660, the target we will work on, is a very rare polar-ring galaxy located in
 
 <section>
 
-<h2 class="alt">Inspect the data</h2>
+<h2 class="alt"><a name="inspect_the_data"></a>4. Inspect the data</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before imaging any spectral-line dataset it is important to understand the data. The first step is therefore to inspect the measurement set and determine:
@@ -169,7 +223,9 @@ vis='ngc660.ms',
 
 <section>
 
-<h2 class="alt">Determine the channels containing the line feature</h2>
+<h2 class="alt"><a name="determine_the_channels_containing_the_li"></a>5. Determine the channels containing the line feature</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before producing a spectral cube we must determine which channels contain the absorption line. We also need to identify channels that are free of line absorption because these will later be used to fit and subtract the continuum.
@@ -241,7 +297,9 @@ Also, note that the continuum emission in this case is a first order polynomial 
 
 <section>
 
-<h2 class="alt">Continuum Subtraction</h2>
+<h2 class="alt"><a name="continuum_subtraction"></a>6. Continuum Subtraction</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 As earlier, to study the absorption line, we first need to subtract the continuum emission from the data.
@@ -299,7 +357,9 @@ Here we plot the Real component of the visibility rather than the amplitude. Try
 
 <section>
 
-<h2 class="alt">Rest frequency, reference frame and velocity type</h2>
+<h2 class="alt"><a name="rest_frequency_reference_frame_and_veloc"></a>7. Rest frequency, reference frame and velocity type</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The rest frequency of the HI-21cm line is 1420.405751768 MHz. Although CASA parameter in tclean is called <code>restfreq</code>, for HI absorption studies of such sources, the standard practice is to input the redshifted line frequency. In our case, NGC 660 has z=0.002842 and the corresponding redshifted HI-21cm frequency is <code>1420.40575/(1+z)= 1416.380396911976 MHz</code>. After this choice, 0 km/s in the spectrum/cube represents the systemic velocity of the galaxy. If we are to choose the laboratory transition frequency, the velocities we obtain will include the recession velocity (we will do that in the next tutorial).
@@ -327,7 +387,9 @@ Check the introduction page for an explanation.
 
 <section>
 
-<h2 class="alt">Creating a Dirty Cube</h2>
+<h2 class="alt"><a name="creating_a_dirty_cube"></a>8. Creating a Dirty Cube</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Now we are ready to image the cube. Many of the parameters used for creating a cube are similar to what you used while creating a continuum image. The main difference is, while creating the continuum image you averaged all the channels together. However, here you are going to make an image of each channel (or a few channels averaged together) to obtain a three dimensional data product where the third dimension is the velocity axis.
@@ -415,7 +477,9 @@ tclean(
 
 <section>
 
-<h2 class="alt">Inspecting the cube</h2>
+<h2 class="alt"><a name="inspecting_the_cube"></a>9. Inspecting the cube</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 First we would like to check the beam size, velocity resolution etc of the cube.
@@ -472,7 +536,7 @@ A common approach, when the spectral line is strong, is to clean to approximatel
 <p>
 Since the line is strong, in this tutorial we adopt:
 <br>
-<code>threshold = 3 × RMS = 1.8 mJy</code>
+$\mathrm{threshold} = 3\times\mathrm{RMS} = 1.8\,\mathrm{mJy}$
 </p>
 
 <h3>In CASA</h3>
@@ -486,7 +550,9 @@ Since the line is strong, in this tutorial we adopt:
 
 <section>
 
-<h2 class="alt">Mask creation</h2>
+<h2 class="alt"><a name="mask_creation"></a>10. Mask creation</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 One last step before producing the final cube is to create a mask to define the region to be cleaned. As mentioned earlier, absorption happens only against a continuum source. So in this case, we use CARTA to create a 'region' file defining the boundaries of the continuum source and use that as a mask for cleaning.
@@ -510,7 +576,9 @@ You have the continuum image of NGC660: <code>ngc660.cont.image</code>. Load tha
 
 <section>
 
-<h2 class="alt">Producing the Final Cube</h2>
+<h2 class="alt"><a name="producing_the_final_cube"></a>11. Producing the Final Cube</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Having inspected the dirty cube, estimated the noise level and identified the absorption channels, we can now perform a full deconvolution.
@@ -571,7 +639,9 @@ tclean(
 
 <section>
 
-<h2 class="alt">Analysing the Final Cube</h2>
+<h2 class="alt"><a name="analysing_the_final_cube"></a>12. Analysing the Final Cube</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The final science product is the primary-beam-corrected cube:
@@ -616,7 +686,9 @@ These simple exploratory analyses will already yield the first scientific insigh
 
 <section>
 
-<h2 class="alt">Moment Maps</h2>
+<h2 class="alt"><a name="moment_maps"></a>13. Moment Maps</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Let us now create moment maps. For TW Hya, we used the CASA task immoments. To demonstrate another approach, let us use CARTA for this case.
@@ -646,7 +718,9 @@ Also see the <a href="https://carta.readthedocs.io/en/latest/moment_generator.ht
 
 <section>
 
-<h2 class="alt">Position-Velocity (PV) diagrams</h2>
+<h2 class="alt"><a name="position_velocity_pv_diagrams"></a>14. Position-Velocity (PV) diagrams</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 PV diagrams are powerful tools to determine gas kinematics when the gas is spatially resolved. These plot the velocity of gas measured along any axis we define. To generate a PV diagram in CASA, first load the cube and then draw the axis along which you want to extract the diagram. Then use the PV option on the menu bar and generate the diagram.
@@ -665,14 +739,15 @@ NOTE: It is a bug in CARTA that you see the velocity labelled as 'radio' even wh
     </video>
 </div>
 
-
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt">Exporting the Results</h2>
+<h2 class="alt"><a name="exporting_the_results"></a>15. Exporting the Results</h2>
+<p class="alt"><a href="ngc660.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Although CASA stores images in its own native format, the FITS format remains the most widely used standard for astronomical data exchange.
@@ -705,75 +780,67 @@ Exporting the continuum image, spectral cube and moment maps to FITS allows the 
 Similarly export the moment maps and the PV diagrams.
 </p>
 
+</section>
 
 <hr/>
 
 <section>
 
+<h2 class="alt"><a name="other_related_pages"></a>Other Related Pages</h2>
 
-<h2 class="alt">Other Related Pages</h2>
 
 <br>
 
 <div class="row">
 
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="spectral_lines.html" class="button primary fit">Spectral lines</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        Introduction page.
-    </p>
+    <p>Introduction page.</p>
 </div>
 
 
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="twhya.html" class="button primary fit">TW Hya</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        ALMA data on N₂H⁺ emission from a protoplanetary disc.
-    </p>
+    <p>ALMA data on N₂H⁺ emission from a protoplanetary disc.</p>
 </div>
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="ic485.html" class="button primary fit">IC 485</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        VLBA data on H₂O maser emission.
-    </p>
+    <p>VLBA data on H₂O maser emission.</p>
+</div>
 </div>
 
-
 </section>
+						</div>
+					</section>
+			</div>
 
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
 
-<p id="lastModified"></p>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
 
-								
 	</body>
 </html>

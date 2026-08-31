@@ -34,6 +34,15 @@ onload = function(){
 				<nav>
 					<ul>
 						<li><a href="index.html#five">Home</a></li>
+						<li><a href="polarisation.html">Polarimetry</a></li>
+						<li class="has-submenu">
+							<a href="spectral_lines.html" class="active">Spectral lines</a>
+							<ul class="submenu">
+								<li><a href="twhya.html">TW Hya</a></li>
+								<li><a href="ngc660.html">NGC 660</a></li>
+								<li><a href="ic485.html">IC 485</a></li>
+							</ul>
+						</li>
 					</ul>
 				</nav>
 			</header>
@@ -44,12 +53,33 @@ onload = function(){
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-
-<h1 class="major">Advanced Tutorial - Spectral lines</h1>
+<h1 class="major">Spectral lines</h1>
 
 <section>
 
-<h2 class="alt">Introduction</h2>
+<h2>Table of contents</h2>
+
+<ol start='1'>
+	<li><a href="spectral_lines.html#introduction">Introduction</a></li>
+	<li><a href="spectral_lines.html#spectral_line_data_reduction">Spectral-Line Data Reduction</a></li>
+	<li><a href="spectral_lines.html#a_note_on_rest_frequency_reference_frame">A note on rest frequency, reference frames and velocity types</a></li>
+	<ol class="alt">
+		<li><a href="spectral_lines.html#rest_frequency">Rest Frequency</a></li>
+		<li><a href="spectral_lines.html#reference_frame_outframe_in_casa">Reference frame (outframe in CASA)</a></li>
+		<li><a href="spectral_lines.html#velocity_type">Velocity type</a></li>
+	</ol>
+	<li><a href="spectral_lines.html#tutorials">Tutorials</a></li>
+</ol>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="introduction"></a>1. Introduction</h2>
+<p class="alt"><a href="spectral_lines.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Radio interferometers are capable of observing not only the continuum emission, but also emission and absorption from individual spectral lines. Spectral-line observations allow us to probe the physical and chemical properties of gas, including their composition, density, temperature and kinematics.
@@ -79,7 +109,9 @@ Although these datasets probe very different astrophysical environments, the fun
 
 <section>
 
-<h2 class="alt">Spectral-Line Data Reduction</h2>
+<h2 class="alt"><a name="spectral_line_data_reduction"></a>2. Spectral-Line Data Reduction</h2>
+<p class="alt"><a href="spectral_lines.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The steps that are specific to spectral-line data reduction begin after the standard calibration of the visibility data and, where appropriate, self-calibration of the target source (which you learnt in the previous tutorials!). The typical workflow is:
@@ -157,18 +189,19 @@ Final images and cubes are often exported to FITS format for further analysis, p
 
 </section>
 
-
 <hr/>
 
 <section>
 
-<h2 class="alt">A note on rest frequency, reference frames and velocity types</h2>
+<h2 class="alt"><a name="a_note_on_rest_frequency_reference_frame"></a>3. A note on rest frequency, reference frames and velocity types</h2>
+<p class="alt"><a href="spectral_lines.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The interpretation of the results greatly depends on the choice of these three parameters. In CASA, you will find these parameters as <code>restfreq</code>, <code>outframe</code> and <code>veltype</code> respectively. Let us first discuss them before proceeding further with the tutorials.
 </p>
 
-<h3>Rest Frequency</h3>
+<h3 class="alt"><a name="rest_frequency"></a>3A. Rest Frequency</h3>
 
 <p>
 For Galactic sources, <code>restfreq</code> is simply the laboratory frequency of the spectral transition under study.
@@ -179,7 +212,7 @@ For extragalactic sources, the choice of <code>restfreq</code> deserves more car
 </p>
 
 
-<h3>Reference frame (outframe in CASA)</h3>
+<h3 class="alt"><a name="reference_frame_outframe_in_casa"></a>3B. Reference frame (outframe in CASA)</h3>
 
 
 <p>
@@ -202,7 +235,7 @@ For extragalactic sources, it is common to use the barycentric (BARY) frame. The
 In both cases, the choice of outframe affects only the spectral coordinate system of the output cube; it does not alter the underlying data. The purpose is to place all observations in a consistent velocity reference frame so that measured line frequencies and velocities can be interpreted and compared reliably.
 </p>
 
-<h3>Velocity type</h3>
+<h3 class="alt"><a name="velocity_type"></a>3C. Velocity type</h3>
 
 <p>
 Radio spectral-line observations can express velocity using either the radio velocity convention or the optical velocity convention.
@@ -213,11 +246,11 @@ The radio velocity convention is defined as
 </p>
 
 <p>
-v<sub>radio</sub> = c (ν₀ - ν) / ν₀
+\[ v_\mathrm{radio} = c\,\frac{\nu_0 - \nu}{\nu_0} \]
 </p>
 
 <p>
-where ν₀ is the rest frequency and ν is the observed frequency.
+where $\nu_0$ is the rest frequency and $\nu$ is the observed frequency.
 </p>
 
 <p>
@@ -225,11 +258,11 @@ The optical velocity convention is defined as
 </p>
 
 <p>
-v<sub>opt</sub> = c (λ - λ₀) / λ₀
+\[ v_\mathrm{opt} = c\,\frac{\lambda - \lambda_0}{\lambda_0} \]
 </p>
 
 <p>
-where λ₀ is the rest wavelength and λ is the observed wavelength.
+where $\lambda_0$ is the rest wavelength and $\lambda$ is the observed wavelength.
 </p>
 
 <p>
@@ -237,11 +270,11 @@ Expressed in terms of frequency, the optical velocity can be written as
 </p>
 
 <p>
-v<sub>opt</sub> = c (ν₀ - ν) / ν
+\[ v_\mathrm{opt} = c\,\frac{\nu_0 - \nu}{\nu} \]
 </p>
 
 <p>
-where ν₀ is the rest frequency and ν is the observed frequency.
+where $\nu_0$ is the rest frequency and $\nu$ is the observed frequency.
 </p>
 
 <p>
@@ -258,70 +291,81 @@ Throughout these tutorials, the choice of rest frequency, reference frame and ve
 
 </section>
 
-
 <hr/>
 
 <section>
 
-<h2 class="alt">Tutorials</h2>
+<h2 class="alt"><a name="tutorials"></a>4. Tutorials</h2>
+<p class="alt"><a href="spectral_lines.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
-Choose one of the following spectral-line tutorials.
+Choose one of the following spectral-line tutorials. The data for each one can be downloaded
+using the links below, or from the corresponding tutorial page.
 </p>
+
+<ul class="actions stacked compact">
+	<li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_twhya.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_sp_line_twhya.tar.gz</a></li>
+	<li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ngc660.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_sp_line_ngc660.tar.gz</a></li>
+	<li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ic485.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_sp_line_ic485.tar.gz</a></li>
+</ul>
+
+<p>
+Alternatively, you can download them from the command line:
+</p>
+
+<pre><code class="language-bash">wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_twhya.tar.gz
+wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ngc660.tar.gz
+wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ic485.tar.gz</code></pre>
  <br>
 
 <div class="row">
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="twhya.html" class="button primary fit">TW Hya</a></li>
     </ul>
-    <p style="
-        text-align:center;
-	color:#0b2e3c;
-	font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        margin-top:-0.5em;
-    ">
-        ALMA data on N₂H⁺ emission from a protoplanetary disc.
-    </p>
+    <p>ALMA data on N₂H⁺ emission from a protoplanetary disc.</p>
 </div>
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="ngc660.html" class="button primary fit">NGC 660</a></li>
     </ul>
-    <p style="
-        text-align:center;
-	color:#0b2e3c;
-	font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        margin-top:-0.5em;
-    ">
-        EVN data on HI absorption against a compact radio source.
-    </p>
-
+    <p>EVN data on HI absorption against a compact radio source.</p>
 </div>
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="ic485.html" class="button primary fit">IC 485</a></li>
     </ul>
-    <p style="
-        text-align:center;
-	color:#0b2e3c;
-	font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        margin-top:-0.5em;
-    ">
-        VLBA data on H₂O maser emission.
-    </p>
+    <p>VLBA data on H₂O maser emission.</p>
+</div>
 </div>
 
-
 </section>
+						</div>
+					</section>
+			</div>
 
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
 
-<p id="lastModified"></p>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
 
+	</body>
 </html>

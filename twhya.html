@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>ERIS2026 - Spectral lines</title>
+		<title>ERIS2026 - TW Hya</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -34,6 +34,15 @@ onload = function(){
 				<nav>
 					<ul>
 						<li><a href="index.html#five">Home</a></li>
+						<li><a href="polarisation.html">Polarimetry</a></li>
+						<li class="has-submenu">
+							<a href="spectral_lines.html" class="active">Spectral lines</a>
+							<ul class="submenu">
+								<li><a href="twhya.html" class="active">TW Hya</a></li>
+								<li><a href="ngc660.html">NGC 660</a></li>
+								<li><a href="ic485.html">IC 485</a></li>
+							</ul>
+						</li>
 					</ul>
 				</nav>
 			</header>
@@ -44,15 +53,15 @@ onload = function(){
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-
 <h1 class="major">TW Hya: N₂H⁺ Spectral Line Imaging</h1>
 
 <section>
 
-<h2 class="alt">Data</h2>
+<h2 class="alt"><a name="data_required"></a>Data required</h2>
+
 
 <p>
-In this tutorial we will image emission from the N₂H⁺ (J=4-3) transition in the protoplanetary disc surrounding TW Hya. TW Hya is one of the nearest and best-studied planet-forming discs and has therefore become an important benchmark for studies of disc chemistry and structure.
+In this tutorial we will image emission from the N₂H⁺ ($J=4-3$) transition in the protoplanetary disc surrounding TW Hya. TW Hya is one of the nearest and best-studied planet-forming discs and has therefore become an important benchmark for studies of disc chemistry and structure.
 </p>
 
 <p>
@@ -60,8 +69,17 @@ We shall use self-calibrated ALMA observations from Project 2011.0.00340.S, "Sea
 </p>
 
 <p>
-The calibrated measurement set and the continuum image can be downloaded <a href="https://eris2026.ira.inaf.it/index.html#two">here</a>.
+The calibrated measurement set and the continuum image can be downloaded using the link below:
 </p>
+
+<ul class="actions"><li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_twhya.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_sp_line_twhya.tar.gz</a></li></ul>
+
+<p>
+Alternatively, you can download and un-tar the data from the command line:
+</p>
+
+<pre><code class="language-bash">wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_twhya.tar.gz
+tar -zxvf ERIS26_sp_line_twhya.tar.gz</code></pre>
 
 <p>
 After downloading the data, verify that the measurement set is available in your working directory before proceeding.
@@ -73,7 +91,29 @@ After downloading the data, verify that the measurement set is available in your
 
 <section>
 
-<h2 class="alt">Inspect the data</h2>
+<h2>Table of contents</h2>
+
+<ol start='1'>
+	<li><a href="twhya.html#inspect_the_data">Inspect the data</a></li>
+	<li><a href="twhya.html#determine_the_channels_containing_the_li">Determine the channels containing the line feature</a></li>
+	<li><a href="twhya.html#continuum_subtraction">Continuum Subtraction</a></li>
+	<li><a href="twhya.html#creating_a_dirty_cube">Creating a Dirty Cube</a></li>
+	<li><a href="twhya.html#inspecting_the_cube">Inspecting the cube</a></li>
+	<li><a href="twhya.html#producing_the_final_cube">Producing the Final Cube</a></li>
+	<li><a href="twhya.html#channel_by_channel_cleaning">Channel-by-channel CLEANing</a></li>
+	<li><a href="twhya.html#moment_maps">Moment Maps</a></li>
+	<li><a href="twhya.html#exporting_the_results">Exporting the Results</a></li>
+</ol>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="inspect_the_data"></a>1. Inspect the data</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before imaging any spectral-line dataset it is important to understand the data. The first step is therefore to inspect the measurement set and determine:
@@ -118,7 +158,9 @@ These quantities will be needed throughout the reduction process.
 
 <section>
 
-<h2 class="alt">Determine the channels containing the line feature</h2>
+<h2 class="alt"><a name="determine_the_channels_containing_the_li"></a>2. Determine the channels containing the line feature</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before producing a spectral cube we must determine which channels contain spectral-line emission. We also need to identify channels that are free of line emission because these will later be used to fit and subtract the continuum.
@@ -173,7 +215,9 @@ These line-free channels will form the basis for continuum subtraction done next
 
 <section>
 
-<h2 class="alt">Continuum Subtraction</h2>
+<h2 class="alt"><a name="continuum_subtraction"></a>3. Continuum Subtraction</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The measured visibilities contain contributions from both continuum emission and line emission.
@@ -221,7 +265,9 @@ The continuum-subtracted data should now have an average amplitude close to zero
 
 <section>
 
-<h2 class="alt">Creating a Dirty Cube</h2>
+<h2 class="alt"><a name="creating_a_dirty_cube"></a>4. Creating a Dirty Cube</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before performing any deconvolution it is often useful to examine the dirty cube.
@@ -297,7 +343,9 @@ pbcor=True
 
 <section>
 
-<h2 class="alt">Inspecting the cube</h2>
+<h2 class="alt"><a name="inspecting_the_cube"></a>5. Inspecting the cube</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Check the spatial resolution of the cube, the number of channels, velocity resolution etc.
@@ -370,7 +418,7 @@ When the line is strong, a common approach is to clean to approximately three ti
 <p>
 For this tutorial we adopt:
 <br>
-threshold = 3 × RMS
+$\mathrm{threshold} = 3\times\mathrm{RMS}$
 </p>
 
 <h3>In CASA</h3>
@@ -380,12 +428,13 @@ threshold = 3 × RMS
 
 </section>
 
-
 <hr/>
 
 <section>
 
-<h2 class="alt">Producing the Final Cube</h2>
+<h2 class="alt"><a name="producing_the_final_cube"></a>6. Producing the Final Cube</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Having inspected the dirty cube, estimated the noise level and identified the emission channels, we can now perform a full deconvolution. The dirty cube already showed us that the emission is extended and is different in different channels. In such cases it is best to provide tclean with a mask to guide the deconvolution algorithm and prevent CLEAN components from being placed on noise peaks. For Linux users this can be accomplished by setting interactive=True in tclean and then setting the mask by hand. However, this is not possible in MacOS anymore. Therefore, for uniformity, we shall create a mask in CARTA, save it as a region file and use it in CASA. The next section demonstrates how to create channel-wise masks while cleaning when CASA is run on a Linux machine.
@@ -438,7 +487,9 @@ pbcor=True
 
 <section>
 
-<h2 class="alt">Channel-by-channel CLEANing</h2>
+<h2 class="alt"><a name="channel_by_channel_cleaning"></a>7. Channel-by-channel CLEANing</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Although we do not use this approach in the tutorials for uniformity, below is a demonstration of how to add channel-wise masks while cleaning. This can only be done while running CASA on Linux systems. To do this, you will have to set <code>interactive=True</code> in <code>tclean</code>. 
@@ -452,14 +503,15 @@ Although we do not use this approach in the tutorials for uniformity, below is a
     </video>
 </div>
 
-
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt">Moment Maps</h2>
+<h2 class="alt"><a name="moment_maps"></a>8. Moment Maps</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Moment maps provide a compact way of summarising information contained within a spectral cube.
@@ -564,7 +616,9 @@ Next, check the spectral line profile, extract spectra from different regions an
 
 <section>
 
-<h2 class="alt">Exporting the Results</h2>
+<h2 class="alt"><a name="exporting_the_results"></a>9. Exporting the Results</h2>
+<p class="alt"><a href="twhya.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Although CASA stores images in its own native format, the FITS format remains the most widely used standard in astronomy.
@@ -588,77 +642,67 @@ overwrite=True,
 Similarly export the moment maps.
 </p>
 
+</section>
 
 <hr/>
 
-</section>
-
-
 <section>
 
-<h2 class="alt">Other Related Pages</h2>
+<h2 class="alt"><a name="other_related_pages"></a>Other Related Pages</h2>
+
 
 <br>
 
 <div class="row">
 
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="spectral_lines.html" class="button primary fit">Spectral lines</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        Introduction page.
-    </p>
+    <p>Introduction page.</p>
 </div>
 
 
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="ngc660.html" class="button primary fit">NGC 660</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        EVN data on HI absorption against a compact radio source.
-    </p>
+    <p>EVN data on HI absorption against a compact radio source.</p>
 </div>
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="ic485.html" class="button primary fit">IC 485</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        VLBA data on H₂O maser emission.
-    </p>
+    <p>VLBA data on H₂O maser emission.</p>
+</div>
 </div>
 
-
 </section>
+						</div>
+					</section>
+			</div>
 
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
 
-<p id="lastModified"></p>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
 
-								
 	</body>
 </html>

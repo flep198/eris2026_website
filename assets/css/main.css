@@ -4223,3 +4223,106 @@ input, select, textarea {
 		body.home-light .button2:after {
 			background: #0e7c8a;
 		}
+
+/* Header nav submenu (sub-tutorials) */
+
+	#header {
+		position: relative;
+		z-index: 100;
+	}
+
+		#header > nav > ul > li.has-submenu {
+			position: relative;
+		}
+
+			#header > nav > ul > li.has-submenu > a:after {
+				content: ' \25be';
+				letter-spacing: 0;
+			}
+
+			#header > nav > ul > li .submenu {
+				background-color: #0e7c8a;
+				border-radius: 0 0 0.25em 0.25em;
+				box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.25);
+				display: none;
+				left: auto;
+				list-style: none;
+				margin: 0;
+				padding: 1em 1.5em 0.5em 1.5em;
+				position: absolute;
+				right: 0;
+				text-align: left;
+				top: 100%;
+				white-space: nowrap;
+				z-index: 100;
+			}
+
+			#header > nav > ul > li.has-submenu:hover .submenu,
+			#header > nav > ul > li.has-submenu:focus-within .submenu {
+				display: block;
+			}
+
+				#header > nav > ul > li .submenu li {
+					display: block;
+					margin: 0 0 0.75em 0;
+					padding: 0;
+				}
+
+					#header > nav > ul > li .submenu a {
+						display: block;
+						height: auto;
+						line-height: 1.5;
+					}
+
+		@media screen and (max-width: 736px) {
+
+			/* no hover on touch devices: show the sub-tutorials as a second row */
+			#header > nav > ul > li .submenu {
+				background-color: transparent;
+				box-shadow: none;
+				display: block;
+				padding: 0;
+				position: static;
+				text-align: inherit;
+			}
+
+				#header > nav > ul > li .submenu li {
+					display: inline-block;
+					margin: 0 0 0 1.5em;
+				}
+
+					#header > nav > ul > li .submenu li:first-child {
+						margin-left: 0;
+					}
+
+			#header > nav > ul > li.has-submenu > a:after {
+				content: '';
+			}
+
+		}
+
+/* Tutorial cards: caption sits directly under its button */
+
+	.tutorial-card ul.actions {
+		margin-bottom: 0.5em;
+	}
+
+		.tutorial-card p {
+			color: #0b2e3c;
+			font-family: "Space Grotesk", Arial, Helvetica, sans-serif;
+			font-size: 0.9em;
+			font-style: italic;
+			line-height: 1.5;
+			margin: 0 0 1.5em 0;
+			text-align: center;
+		}
+
+/* Compact stacked actions, e.g. a set of download buttons */
+
+	ul.actions.stacked.compact {
+		margin-bottom: 1em;
+	}
+
+		ul.actions.stacked.compact li {
+			padding-top: 0.5em;
+		}

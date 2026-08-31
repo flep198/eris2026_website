@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>ERIS2026 - Spectral lines</title>
+		<title>ERIS2026 - IC 485</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -34,6 +34,15 @@ onload = function(){
 				<nav>
 					<ul>
 						<li><a href="index.html#five">Home</a></li>
+						<li><a href="polarisation.html">Polarimetry</a></li>
+						<li class="has-submenu">
+							<a href="spectral_lines.html" class="active">Spectral lines</a>
+							<ul class="submenu">
+								<li><a href="twhya.html">TW Hya</a></li>
+								<li><a href="ngc660.html">NGC 660</a></li>
+								<li><a href="ic485.html" class="active">IC 485</a></li>
+							</ul>
+						</li>
 					</ul>
 				</nav>
 			</header>
@@ -44,20 +53,29 @@ onload = function(){
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-
 <h1 class="major">IC 485: H₂O Maser Imaging</h1>
 
 <section>
 
-<h2 class="alt">Data</h2>
+<h2 class="alt"><a name="data_required"></a>Data required</h2>
+
 
 <p>
 In this final tutorial, we will work on yet another kind of source: an H₂O maser, IC 485. The data were obtained using the Very Long Baseline Array (VLBA) at K-band under the project code BT142 and are published in Ladu et al. (2024). These are the highest spatial resolution data of the three data sets we have used.  The data are calibrated with AIPS (another software for processing radio astronomical data). This calibration process is similar (although not exact) to what you learnt in the imaging tutorials. We will import the uvfits file in CASA for imaging and analysis.
 </p>
 
 <p>
-The calibrated dataset can be downloaded <a href="https://eris2026.ira.inaf.it/index.html#two">here</a>.
+The calibrated dataset can be downloaded using the link below:
 </p>
+
+<ul class="actions"><li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ic485.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_sp_line_ic485.tar.gz</a></li></ul>
+
+<p>
+Alternatively, you can download and un-tar the data from the command line:
+</p>
+
+<pre><code class="language-bash">wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_sp_line_ic485.tar.gz
+tar -zxvf ERIS26_sp_line_ic485.tar.gz</code></pre>
 
 <p>
 After downloading the data, verify that the measurement set is available in your working directory before proceeding.
@@ -69,7 +87,40 @@ After downloading the data, verify that the measurement set is available in your
 
 <section>
 
-<h2 class="alt">Maser Lines</h2>
+<h2>Table of contents</h2>
+
+<ol start='1'>
+	<li><a href="ic485.html#maser_lines">Maser Lines</a></li>
+	<li><a href="ic485.html#ic_485_water_maser">IC 485: Water Maser</a></li>
+	<li><a href="ic485.html#importing_into_casa">Importing into CASA</a></li>
+	<li><a href="ic485.html#inspect_the_data">Inspect the data</a></li>
+	<li><a href="ic485.html#determine_the_channels_containing_the_li">Determine the channels containing the line feature</a></li>
+	<li><a href="ic485.html#phase_shift_the_data">Phase shift the data</a></li>
+	<li><a href="ic485.html#inspect_the_phase_shifted_data">Inspect the phase-shifted data</a></li>
+	<li><a href="ic485.html#average_the_channels">Average the channels</a></li>
+	<li><a href="ic485.html#parameters_related_to_velocity_and_refer">Parameters related to velocity and reference frames</a></li>
+	<li><a href="ic485.html#creating_a_dirty_cube">Creating a Dirty Cube</a></li>
+	<li><a href="ic485.html#inspecting_the_cube">Inspecting the cube</a></li>
+	<li><a href="ic485.html#mask_creation">Mask creation</a></li>
+	<li><a href="ic485.html#producing_the_final_cube">Producing the Final Cube</a></li>
+	<li><a href="ic485.html#analysing_the_final_cube">Analysing the Final Cube</a></li>
+	<li><a href="ic485.html#moment_maps">Moment Maps</a></li>
+	<li><a href="ic485.html#analysis_using_the_cube">Analysis using the cube</a></li>
+	<ol class="alt">
+		<li><a href="ic485.html#estimating_physical_properties">Estimating Physical Properties</a></li>
+	</ol>
+	<li><a href="ic485.html#exporting_the_results">Exporting the Results</a></li>
+</ol>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt"><a name="maser_lines"></a>1. Maser Lines</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Maser emission is produced when radiation is amplified through stimulated emission in molecular gas. Unlike ordinary thermal spectral-line emission, masers can reach extremely high brightness temperatures and are among the brightest radio spectral-line sources known.
@@ -87,33 +138,35 @@ In this tutorial we study H₂O maser emission from IC 485. Unlike the absorptio
 
 <hr/>
 
-
-<hr/>
-
 <section>
 
-<h2 class="alt">IC 485: Water Maser</h2>
+<h2 class="alt"><a name="ic_485_water_maser"></a>2. IC 485: Water Maser</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <img src="plots/spectral_line/ic485_image.png"
      alt="IC485"
      style="float:right; width:20%; margin-left:20px; margin-bottom:10px;" />
 
 <p>
-Located at a distance of 122 Mpc (the linear scale is ∼600 pc/"), IC 485 is a spiral galaxy  showing a triple-peak profile (Pesce et al. 2015; the image on the right).
+Located at a distance of 122 Mpc (the linear scale is $\sim600\,\mathrm{pc\,arcsec^{-1}}$), IC 485 is a spiral galaxy  showing a triple-peak profile (Pesce et al. 2015; the image on the right).
 </p>
 
 <p>
-The sensitive single-dish spectrum together with the accurate position of the maser spots determined through 22 GHz VLBI observations indicate that the maser emission might be produced (at least in part) in an edge-on accretion disk oriented north-south, with a radius of ∼0.24 pc (Ladu et al. 2024).
+The sensitive single-dish spectrum together with the accurate position of the maser spots determined through 22 GHz VLBI observations indicate that the maser emission might be produced (at least in part) in an edge-on accretion disk oriented north-south, with a radius of $\sim0.24\,\mathrm{pc}$ (Ladu et al. 2024).
 </p>
 
 <div style="clear:both;"></div>
 
 </section>
 
+<hr/>
 
 <section>
 
-<h2 class="alt">Importing into CASA</h2>
+<h2 class="alt"><a name="importing_into_casa"></a>3. Importing into CASA</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The data were calibrated in another software called AIPS. So first we shall import the data into CASA.
@@ -133,7 +186,9 @@ vis='ic485.ms'
 
 <section>
 
-<h2 class="alt">Inspect the data</h2>
+<h2 class="alt"><a name="inspect_the_data"></a>4. Inspect the data</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before imaging any spectral-line dataset it is important to understand the data. The first step is therefore to inspect the measurement set and determine:
@@ -168,7 +223,9 @@ Did you notice the FRAME in listobs output? It is already set to BARY. This is b
 
 <section>
 
-<h2 class="alt">Determine the channels containing the line feature</h2>
+<h2 class="alt"><a name="determine_the_channels_containing_the_li"></a>5. Determine the channels containing the line feature</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Before producing a spectral cube we must determine which channels contain the emission line. In addition, we must determine if there is continuum emission and if yes, we need to identify channels that are free of line emission to be used later to fit and subtract the continuum.
@@ -203,7 +260,9 @@ What do you see? The spectral line is evidently too weak to show up in a plot li
 
 <section>
 
-<h2 class="alt">Phase shift the data</h2>
+<h2 class="alt"><a name="phase_shift_the_data"></a>6. Phase shift the data</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The line is not visible in plotms because the coordinates of the source used for observations were based on not-so-precise optical observations.
@@ -242,7 +301,9 @@ phasecenter='J2000 08h00m19.75249s +26d42m05.053s'
 
 <section>
 
-<h2 class="alt">Inspect the phase-shifted data</h2>
+<h2 class="alt"><a name="inspect_the_phase_shifted_data"></a>7. Inspect the phase-shifted data</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Let us now check if the emission lines are visible in the phase-shifted data:
@@ -274,7 +335,7 @@ Zoom-in to see the actual width of the line. It is about 200 channels wide!
     <img src="plots/spectral_line/ic485_plotms.jpeg"
          alt="IC485 spectrum"
 	 style="width:100%; height:auto;" />
-</p>
+</div>
 
 <p>
 listobs showed us that the dataset has over 2000 channels. Since the line is wide, we could average by 4 channels to reduce computation time.
@@ -290,7 +351,9 @@ Before proceeding, did you notice that there is no continuum emission in this da
 
 <section>
 
-<h2 class="alt">Average the channels</h2>
+<h2 class="alt"><a name="average_the_channels"></a>8. Average the channels</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <h3>In CASA</h3>
 
@@ -315,7 +378,9 @@ We shall use this dataset for further reduction.
 
 <section>
 
-<h2 class="alt">Parameters related to velocity and reference frames</h2>
+<h2 class="alt"><a name="parameters_related_to_velocity_and_refer"></a>9. Parameters related to velocity and reference frames</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Just like NGC 660, IC 485 is an extragalactic source, and we therefore use
@@ -337,7 +402,9 @@ For NGC 660, we chose to set the systemic velocity to 0 km/s by using the redshi
 
 <section>
 
-<h2 class="alt">Creating a Dirty Cube</h2>
+<h2 class="alt"><a name="creating_a_dirty_cube"></a>10. Creating a Dirty Cube</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Now we are ready to image the cube. Many of the parameters used for creating a cube are similar to what you used while creating a continuum image. The main difference is, while creating the continuum image you averaged all the channels together. However, here you are going to make an image of each channel (or a few channels averaged together) to obtain a three dimensional data product where the third dimension is the velocity axis. In the previous step we have already averaged the channels to produce an averaged visibility dataset. So we don't have to do that now.
@@ -397,7 +464,9 @@ interactive=False
 
 <section>
 
-<h2 class="alt">Inspecting the cube</h2>
+<h2 class="alt"><a name="inspecting_the_cube"></a>11. Inspecting the cube</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 First we would like to check the beam size, velocity resolution and other parameters of the cube.
@@ -433,7 +502,7 @@ Measure the RMS noise in several more channels or channel ranges that appear fre
 
 <h3>In CARTA</h3>
 
-</p>
+<p>
 Open the dirty cube in CARTA and examine the emission channel by channel just like you did for TW Hya in the previous exercise.
 </p>
 
@@ -458,7 +527,7 @@ A common approach, when the spectral line is strong, is to clean to approximatel
 <p>
 Since the line is very strong, in this tutorial we adopt:
 <br>
-<code>threshold = 3 × RMS = 8.4 mJy (for an RMS of 2.8 mJy/beam)</code>
+$\mathrm{threshold} = 3\times\mathrm{RMS} = 8.4\,\mathrm{mJy}$ (for an RMS of $2.8\,\mathrm{mJy\,beam^{-1}}$)
 </p>
 
 <h3>In CASA</h3>
@@ -472,7 +541,9 @@ Since the line is very strong, in this tutorial we adopt:
 
 <section>
 
-<h2 class="alt">Mask creation</h2>
+<h2 class="alt"><a name="mask_creation"></a>12. Mask creation</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 One last step before producing the final cube is to create a mask to define the region to be cleaned. This is similar to how we created the mask for TW Hya. With the dirty cube open in CARTA, draw a small region around the emission region. Be careful to exclude the sidelobes. Save this region file as: ic485.clean.mask.
@@ -491,7 +562,9 @@ One last step before producing the final cube is to create a mask to define the 
 
 <section>
 
-<h2 class="alt">Producing the Final Cube</h2>
+<h2 class="alt"><a name="producing_the_final_cube"></a>13. Producing the Final Cube</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Having inspected the dirty cube, estimated the noise level and identified the emission channels, we can now perform a full deconvolution.
@@ -548,7 +621,9 @@ interactive=False
 
 <section>
 
-<h2 class="alt">Analysing the Final Cube</h2>
+<h2 class="alt"><a name="analysing_the_final_cube"></a>14. Analysing the Final Cube</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 The final science product is the primary-beam-corrected cube:
@@ -589,7 +664,9 @@ Next, inspect the cube in CARTA. Explore the data both spatially and spectrally:
 
 <section>
 
-<h2 class="alt">Moment Maps</h2>
+<h2 class="alt"><a name="moment_maps"></a>15. Moment Maps</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 You have already learnt to generate moments using the CASA task <code>immoments</code> (TW Hya) and using CARTA. Generate the moment maps using the method of your preference (or both!).
@@ -636,14 +713,15 @@ View the moment maps in CARTA.
          style="width:70%;">
 </div>
 
-
 </section>
 
 <hr/>
 
 <section>
 
-<h2 class="alt">Analysis using the cube</h2>
+<h2 class="alt"><a name="analysis_using_the_cube"></a>16. Analysis using the cube</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 Let us do some analysis using the final cube we have generated.
@@ -687,27 +765,24 @@ Let us do some analysis using the final cube we have generated.
 <li>Extract the integrated spectrum.</li>
 </ul>
 
-<h3>Estimating Physical Properties</h3>
+<h3 class="alt"><a name="estimating_physical_properties"></a>16A. Estimating Physical Properties</h3>
 
-<p>
-
-</ul>
+<ul>
 <li>Estimate the integrated intensity of the source.</li>
 <li>Calculate the isotropic luminosity of the source.</li>
 <li>Calculate the brightness temperature.</li>
 </ul>
 
 <p>
-The integrated intensity (\(\int S\,dv)\) is simply the area under the Gaussian profile
-fitted to the spectrum in units of Jy km/s.
+The integrated intensity ($\int S\,dv$) is simply the area under the Gaussian profile
+fitted to the spectrum in units of $\mathrm{Jy\,km\,s^{-1}}$.
 </p>
 
 <p>
-The isotropic H<sub>2</sub>O maser luminosity can be estimated using
+The isotropic H₂O maser luminosity can be estimated using
 (Castangia et al. 2008):
 </p>
 
-<p>
 <p>
 \[
 L_{\rm H_2O} =
@@ -722,9 +797,9 @@ where:
 </p>
 
 <ul>
-<li><b>L<sub>H2O</sub></b> is the isotropic maser luminosity in units of L<sub>☉</sub>.</li>
-<li><b>\(\int S\,dv\)</b> is the integrated intensity in Jy km/s.</li>
-<li><b>D</b> is the distance to the source in Mpc.</li>
+<li>$L_\mathrm{H_2O}$ is the isotropic maser luminosity in units of $L_\odot$.</li>
+<li>$\int S\,dv$ is the integrated intensity in $\mathrm{Jy\,km\,s^{-1}}$.</li>
+<li>$D$ is the distance to the source in $\mathrm{Mpc}$.</li>
 </ul>
 
 <p>
@@ -732,7 +807,7 @@ The brightness temperature can be estimated using:
 </p>
 
 <p>
-T = 1.36 × λ² / (θ<sub>min</sub> × θ<sub>max</sub>) × S<sub>peak</sub>
+\[ T = 1.36\,\frac{\lambda^{2}}{\theta_\mathrm{min}\,\theta_\mathrm{max}}\,S_\mathrm{peak} \]
 </p>
 
 <p>
@@ -740,10 +815,10 @@ where:
 </p>
 
 <ul>
-<li><b>T</b> is the brightness temperature in K.</li>
-<li><b>λ</b> is the wavelength of the line in cm.</li>
-<li><b>θ<sub>min</sub></b> and <b>θ<sub>max</sub></b> are the FWHM major and FWHM minor axes of the 2D gaussian fit to the source structure.</li>
-<li><b>S<sub>peak</sub></b> is the peak flux density in mJy beam<sup>−1</sup>.</li>
+<li>$T$ is the brightness temperature in $\mathrm{K}$.</li>
+<li>$\lambda$ is the wavelength of the line in $\mathrm{cm}$.</li>
+<li>$\theta_\mathrm{min}$ and $\theta_\mathrm{max}$ are the FWHM major and FWHM minor axes of the 2D gaussian fit to the source structure.</li>
+<li>$S_\mathrm{peak}$ is the peak flux density in $\mathrm{mJy\,beam^{-1}}$.</li>
 </ul>
 
 <p>
@@ -751,18 +826,19 @@ Using the measurements from this tutorial, you should find (your estimates may d
 </p>
 
 <ul>
-<li><b>L<sub>H2O</sub> ≈ 550 L<sub>☉</sub></b></li>
-<li><b>T ≈ 3 × 10<sup>9</sup> K</b></li>
+<li>$L_\mathrm{H_2O} \approx 550\,L_\odot$</li>
+<li>$T \approx 3\times10^{9}\,\mathrm{K}$</li>
 </ul>
 
 </section>
 
 <hr/>
 
-
 <section>
 
-<h2 class="alt">Exporting the Results</h2>
+<h2 class="alt"><a name="exporting_the_results"></a>17. Exporting the Results</h2>
+<p class="alt"><a href="ic485.html#"><font size="-5">&larr; back to top</font></a></p>
+
 
 <p>
 As with the previous tutorials, export the final data products to FITS format.
@@ -782,75 +858,67 @@ overwrite=True,
 Similarly export the moment maps and any other data products you created using CASA or CARTA.
 </p>
 
+</section>
 
 <hr/>
 
-</section>
-
 <section>
 
-<h2 class="alt">Other Related Pages</h2>
+<h2 class="alt"><a name="other_related_pages"></a>Other Related Pages</h2>
+
 
 <br>
 
 <div class="row">
 
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="spectral_lines.html" class="button primary fit">Spectral lines</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        Introduction page.
-    </p>
+    <p>Introduction page.</p>
 </div>
 
 
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="twhya.html" class="button primary fit">TW Hya</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        ALMA data on N₂H⁺ emission from a protoplanetary disc.
-    </p>
+    <p>ALMA data on N₂H⁺ emission from a protoplanetary disc.</p>
 </div>
 
-<div class="col-4 col-12-medium">
+<div class="col-4 col-12-medium tutorial-card">
     <ul class="actions stacked">
         <li><a href="ngc660.html" class="button primary fit">NGC 660</a></li>
     </ul>
-    <p style="
-        text-align:center;
-        color:#0b2e3c;
-        font-family:'Space Grotesk', sans-serif;
-        font-style:italic;
-        font-size:0.9em;
-        margin-top:-1em;
-    ">
-        EVN data on HI absorption against a compact radio source.
-    </p>
+    <p>EVN data on HI absorption against a compact radio source.</p>
+</div>
 </div>
 
-
 </section>
+						</div>
+					</section>
+			</div>
 
-<p id="lastModified"></p>
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
+					</ul>
+				</div>
+			</footer>
 
-								
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/prism.js"></script>
+
 	</body>
 </html>
