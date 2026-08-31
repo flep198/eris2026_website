@@ -211,6 +211,8 @@ Before imaging any spectral-line dataset it is important to understand the data.
 Some of this information will be useful for the subsequent steps.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">listobs(
@@ -236,6 +238,8 @@ Before producing a spectral cube we must determine which channels contain the ab
 A convenient way to do this is to average the visibilities and plot amplitude as a function of channel number/frequency/velocity (i.e. a spectrum).
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">plotms(
@@ -259,6 +263,8 @@ The spectral line appears as a dip with respect to the continuum level. Note the
 To zoom-in and look at the absorption better:
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">tget plotms
@@ -278,6 +284,8 @@ Furthermore, notice that the edge channels show non-linear behaviour. Since we a
 	 style="width:70%; height:auto;" />
 </div>
 
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -314,6 +322,8 @@ We therefore fit a continuum model using the line-free channels identified in th
 Note, here we use <code>fitorder=1</code> to accommodate a non-zero slope in the fitting.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">os.system('rm -rf ngc660.contsub*')
@@ -327,6 +337,8 @@ fitorder=1,
 writemodel=False,
 )
 </code></pre>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -365,6 +377,8 @@ Here we plot the Real component of the visibility rather than the amplitude. Try
 <p>
 The rest frequency of the HI-21cm line is 1420.405751768 MHz. Although CASA parameter in tclean is called <code>restfreq</code>, for HI absorption studies of such sources, the standard practice is to input the redshifted line frequency. In our case, NGC 660 has z=0.002842 and the corresponding redshifted HI-21cm frequency is <code>1420.40575/(1+z)= 1416.380396911976 MHz</code>. After this choice, 0 km/s in the spectrum/cube represents the systemic velocity of the galaxy. If we are to choose the laboratory transition frequency, the velocities we obtain will include the recession velocity (we will do that in the next tutorial).
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -427,6 +441,8 @@ The logic behind choosing a few parameters used below such as the <code>imsize</
 Finally, when we study the absorption profile, we always do it with respect to the background continuum emission. This is because absorption happens only when there is a background bright source. Since in radio astronomy we can vary the resolution of the final data products by tweaking the imaging parameters, we need to be sure we make the cube at the same spatial resolution as the continuum image.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">imhead(
@@ -438,10 +454,14 @@ Finally, when we study the absorption profile, we always do it with respect to t
 Take a note of the restoring beam. We will use the same for the cube.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">beam=['0.0285065arcsec','0.0159238arcsec','-25.9153deg']
 </code></pre>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -486,6 +506,8 @@ tclean(
 First we would like to check the beam size, velocity resolution etc of the cube.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">imhead(
@@ -501,6 +523,8 @@ Next we check the RMS noise in the line free channels. This provides a quantitat
 The <code>imstat</code> task calculates basic statistical properties of an image, including the mean, maximum value and RMS noise.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">imstat('ngc660.dirty.cube.image', chans='1~20')
@@ -509,6 +533,8 @@ The <code>imstat</code> task calculates basic statistical properties of an image
 <p>
 Measure the RMS noise in several more channels or channel ranges that appear free of absorption. The values should be broadly consistent from channel to channel.
 </p>
+
+<hr/>
 
 <h3>In CARTA</h3>
 
@@ -539,6 +565,8 @@ Since the line is strong, in this tutorial we adopt:
 <br>
 $\mathrm{threshold} = 3\times\mathrm{RMS} = 1.8\,\mathrm{mJy}$
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -604,6 +632,8 @@ in tclean and draw the masks specifically around the regions of absorption in th
 Unfortunately, this feature is no longer available for MacOS users. It is possible to generate more sophisticated masks for CLEANing on MacOS as well as Linux using other software packages and then use it in such cases. Ask the tutors if you want to know more!
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">os.system('rm -rf ngc660.final.cube.*')
@@ -653,6 +683,8 @@ The final science product is the primary-beam-corrected cube:
 <p>
 Once again check that the properties of the cube are as desired. Use imhead to inspect the basic properties of the cube (resolution, velocity resolution, number of channels, velocity type, etc).
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -758,6 +790,8 @@ Although CASA stores images in its own native format, the FITS format remains th
 Exporting the continuum image, spectral cube and moment maps to FITS allows the data to be analysed using external software packages, archived and shared with collaborators.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">exportfits(
@@ -766,6 +800,8 @@ Exporting the continuum image, spectral cube and moment maps to FITS allows the 
     overwrite=True,
 )
 </code></pre>
+
+<hr/>
 
 <h3>In CASA</h3>
 

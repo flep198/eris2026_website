@@ -202,6 +202,8 @@ Final images and cubes are often exported to FITS format for further analysis, p
 The interpretation of the results greatly depends on the choice of these three parameters. In CASA, you will find these parameters as <code>restfreq</code>, <code>outframe</code> and <code>veltype</code> respectively. Let us first discuss them before proceeding further with the tutorials.
 </p>
 
+<hr/>
+
 <h3 class="alt"><a name="rest_frequency"></a>3A. Rest Frequency</h3>
 
 <p>
@@ -212,6 +214,8 @@ For Galactic sources, <code>restfreq</code> is simply the laboratory frequency o
 For extragalactic sources, the choice of <code>restfreq</code> deserves more care. If you want the final velocities to include the recession velocity of the source, then simply use the laboratory frequency of the spectral transition. In some cases it is more convenient to have the velocities in the rest frame of the target (i.e. the systemic velocity is 0 km/s). In those cases, use the redshifted frequency of the spectral line. 
 </p>
 
+
+<hr/>
 
 <h3 class="alt"><a name="reference_frame_outframe_in_casa"></a>3B. Reference frame (outframe in CASA)</h3>
 
@@ -235,6 +239,8 @@ For extragalactic sources, it is common to use the barycentric (BARY) frame. The
 <p>
 In both cases, the choice of outframe affects only the spectral coordinate system of the output cube; it does not alter the underlying data. The purpose is to place all observations in a consistent velocity reference frame so that measured line frequencies and velocities can be interpreted and compared reliably.
 </p>
+
+<hr/>
 
 <h3 class="alt"><a name="velocity_type"></a>3C. Velocity type</h3>
 

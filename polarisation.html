@@ -184,7 +184,9 @@ Beware of not adding spaces in that line! And that's it! Now, you can run the $\
 	</p>
 	<p></p>
 
-	<h4 class="alt">Parameters related to the data and the instrument:</h4><br>
+	<hr/>
+
+	<h4 class="alt">Parameters related to the data and the instrument:</h4>
 
 
 <ol start="1">
@@ -205,7 +207,9 @@ Beware of not adding spaces in that line! And that's it! Now, you can run the $\
 </ol>
 
 
-		<h4 class="alt">Parameters related to the source:</h4><br>
+		<hr/>
+
+		<h4 class="alt">Parameters related to the source:</h4>
 
 <p class="alt">The source structure (in full polarization) can be given either from a CASA (model) image or as a set of polarized point sources (which is the option that we will use here). In this case, the parameters for the point sources are:</p><br>
 
@@ -222,7 +226,9 @@ Beware of not adding spaces in that line! And that's it! Now, you can run the $\
 <p class="alt">For example, setting $\texttt{RAoffset=[0.0]}$; $\texttt{Decoffset=[0.0]}$; $\texttt{I=[1.0]}$; and $\texttt{Q_frac=U_frac=V_frac=[0.0]}$ will simulate a single unpolarized point source at the phase center.</p><br>
 
 
-		<h4 class="alt">Simulation script:</h4><br>
+		<hr/>
+
+		<h4 class="alt">Simulation script:</h4>
 
 
 <p class="alt">  The script <code class="language-bash">running_polsimulate.py</code> runs $\texttt{polsimulate}$ programatically and can be configured by setting a few parameters at its header. The most important one is $\texttt{CASE}$, an integer that sets the different sources (and D-terms) depending on its value. In particular, the cases included in the script are:
@@ -278,7 +284,9 @@ Regarding the radiotelescopes, we will use the array configuration of the Event 
 
 
 
-		<h4 class="alt">Calibration script:</h4><br>
+		<hr/>
+
+		<h4 class="alt">Calibration script:</h4>
 
 
 <p class="alt">  The script <code class="language-bash">running_polsolve.py</code> estimates the D-terms of a measurement set using $\texttt{polsolve}$. The strategy followed is similar to a self-calibration, but in polarization. The idea is to iterate the following steps:
@@ -477,6 +485,8 @@ plotPolImage(img='CASE-2_IMG.image', mSigmaCut=2.0, SigmaCut=2.0,
 </p><br>
 
 
+<hr/>
+
 <h4 class="alt"><a name="solving_for_the_source_polarization_simu"></a>Solving for the source polarization simultaneously</h4>
 <br>
 
@@ -511,6 +521,8 @@ This function will generate a plot of the correlation between the true D-terms a
 
 
 
+
+<hr/>
 
 <h4 class="alt"><a name="using_casa_s_texttt_polcal_task"></a>Using CASA's $\texttt{polcal}$ task</h4>
 <br>
@@ -894,6 +906,8 @@ The $\texttt{VLBA_ERIS2026_polsolve.py}$ script will estimate the D-terms in the
 </p>
 
 
+<hr/>
+
 <h4 class="alt"><a name="using_3c279_as_polarization_calibrator"></a>Using 3C279 as Polarization Calibrator</h4>
 
 <p class="alt"> 
@@ -918,6 +932,8 @@ Take a look at the plots of visibility residuals in phasor space (for all the ba
 
 
 
+<hr/>
+
 <h4 class="alt"><a name="using_oj287_as_polarization_calibrator"></a>Using OJ287 as Polarization Calibrator</h4>
 
 <p class="alt"> 
@@ -940,6 +956,8 @@ There is definitely a correlation between the D-terms estimated using 3C279 and 
 
 </p>
 
+
+<hr/>
 
 <h4 class="alt"><a name="using_3c84_as_polarization_calibrator"></a>Using 3C84 as Polarization Calibrator</h4>
 
@@ -969,6 +987,8 @@ Now, it doesn't look that bad!
 
 
 
+<hr/>
+
 <h4 class="alt"><a name="using_m84_as_polarization_calibrator"></a>Using M84 as Polarization Calibrator</h4>
 
 <p class="alt"> 
@@ -979,6 +999,8 @@ If you plot some visibilities of M84, you will see that the SNR is quite low, co
 
 
 
+
+<hr/>
 
 <h4 class="alt"><a name="using_3c279_and_oj287_simultaneously"></a>Using 3C279 and OJ287 simultaneously</h4>
 
@@ -997,6 +1019,8 @@ By setting $\texttt{field='3C279,OJ287'}$ in the calibration script, we will use
 
 
 
+
+<hr/>
 
 <h4 class="alt"><a name="absolute_evpa_calibration"></a>Absolute EVPA calibration</h4>
 
@@ -1056,6 +1080,9 @@ In any case, you should get images quite similar to these ones:
 								<p>
 									Suggestions for further work:
 								</p>
+
+								<hr/>
+
 								<h4>A. These data:</h4>
 								<p class="alt">
 									<ol>
@@ -1064,6 +1091,9 @@ In any case, you should get images quite similar to these ones:
 										
 									</ol>
 								</p>
+
+								<hr/>
+
 								<h4>B. Look at the polarisation CASA guides:</h4>
 								<p class="alt">
 									<ol>
@@ -1095,12 +1125,18 @@ In any case, you should get images quite similar to these ones:
   Thus, $\phi_{RR} = \phi_{LL} =0$<br/>
   However,   $\phi^{\mathrm{refant}}_R(\nu)-\phi^{\mathrm{refant}}_L(\nu)$ is unknown and this leaves an arbitrary, frequency-dependent phase error in $\phi_{RL}$ and $\phi_{LR}$, the cross hand delay (KCROSS). This should be a single value for all baselines as long as the same reference antenna was used.
 </p>
+
+<hr/>
+
 <h4> Leakage</h4>
 <p>
 In reality receivers do not separate polarisations perfectly and <br/>
 $ \phi^{1, \mathrm{obs}}_R(\nu) =  \phi^1_R(\nu) + \delta^1_L(\nu)$<br/>
 and similarly for $L$, and for amplitudes. The simplest way to correct this is by comparing the visibilities for an unpolarised source with a model of pure $LL$ and $RR$, here, 3C84. If a (linearly) polarised calibrator has to be used, if this is observed over enough hour angles (typically more than 3 hr) the feed parallactic angle rotation changes the source polarisation relative to the leakage by enough to solve simultaneously for source polarisation and leakage.
 </p>
+
+<hr/>
+
 <h4> Polarisation angle</h4>
 <p>
 The image plane polarisation angle is half the visibility $R-L$ phase difference. But previous calibration takes the origin of phase independently for $R$ and $L$, as the initial (instrumental) phases of the reference antenna, with a random offset.  Luckily at cm wavelengths 3C286 has a stable polarisation angle so the $R-L$ phase difference is corrected to make this 66$^{\circ}$ in the visibilities, and 33$^{\circ}$ in its image.
@@ -1117,6 +1153,9 @@ The image plane polarisation angle is half the visibility $R-L$ phase difference
 <p>
 									The symbols used in papers and textbooks and talks may differ from those used in code (e.g. avoiding subscripts) but also between different authors. 
 								</p>
+
+<hr/>
+
 <h4>Stokes parameters and related quantities</h4>
 <table>
 <tr><th>Symbol</th><th>Definition</th></tr>
@@ -1132,6 +1171,9 @@ The image plane polarisation angle is half the visibility $R-L$ phase difference
 	$^*$ Use atan2 in calculations to get the sign right. Other Greek letters sometimes used.
 
 	<p/>
+
+<hr/>
+
 <h4>Calibration terms</h4>
 <table>
 	<tr><td>$\psi$</td><td>Parallactic angle</td></tr>
@@ -1139,6 +1181,9 @@ The image plane polarisation angle is half the visibility $R-L$ phase difference
 	<tr><td>$K_{\mathrm C}$ or $K_{\mathrm {cross}}$</td><td>Cross-hand delay</td></tr>
 </table>
 	<p/>
+
+	<hr/>
+
 	<h4>Observational parameters</h4>
 	The correlated visibilities made from right hand circular polarised signals (RCP or RHC) from two antennas 1, 2  may be represented as $V_{RR}^{1,2}$  or $\langle R_1 R_2^{*}\rangle$ (denoting complex conjugation) or simply $RR$, and so on for the other hands of polarisation. $RR$, $LL$ are the parallel hands and  $RL$, $LR$ the cross hands, or $XX$, $YY$ and $XY$, $YX$ for linearly polarised feeds. These are related to the Stokes parameters (simplified, perfectly calibrated) as: 
 <table>

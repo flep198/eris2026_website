@@ -173,6 +173,8 @@ The sensitive single-dish spectrum together with the accurate position of the ma
 The data were calibrated in another software called AIPS. So first we shall import the data into CASA.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">importuvfits(
@@ -207,6 +209,8 @@ Before imaging any spectral-line dataset it is important to understand the data.
 Some of this information will be useful for the subsequent steps.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">listobs(
@@ -235,6 +239,8 @@ Before producing a spectral cube we must determine which channels contain the em
 <p>
 A convenient way to do this is to average the visibilities and plot amplitude as a function of channel number/frequency/velocity (i.e. a spectrum).
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -285,6 +291,8 @@ RA 08:00:19.75249       Dec. +26.42.05.053
 Thus, the maser is offset by  ~ -0.10" (RA) and ~ -0.05" (Dec.) from the phase centre. We will first shift the phase centre to the maser centroid and then proceed with the next steps.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485shift.ms')
@@ -309,6 +317,8 @@ phasecenter='J2000 08h00m19.75249s +26d42m05.053s'
 <p>
 Let us now check if the emission lines are visible in the phase-shifted data:
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -392,6 +402,8 @@ Just like NGC 660, IC 485 is an extragalactic source, and we therefore use
 For NGC 660, we chose to set the systemic velocity to 0 km/s by using the redshifted line frequency. For IC 485, we will instead recover the galaxy's recession velocity by using the laboratory transition frequency of the water maser line, following standard practice in maser studies.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">rstfrq='22.2350798GHz'
@@ -434,6 +446,8 @@ This allows us to:
 The logic behind choosing a few parameters used below such as the 'imsize' and 'cell' are the same as what you learnt in continuum imaging. Can you tell us why we have chosen <code>cell=0.00015arcsec</code>? What about the choice of <code>imsize</code>?
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485.dirty.cube.*')
@@ -473,6 +487,8 @@ interactive=False
 First we would like to check the beam size, velocity resolution and other parameters of the cube.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">imhead(
@@ -492,6 +508,8 @@ Next we check the RMS noise in the line free channels. This provides a quantitat
 The imstat task calculates basic statistical properties of an image, including the mean, maximum value and RMS noise.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">imstat('ic485.dirty.cube.image', chans='1~200')
@@ -500,6 +518,8 @@ The imstat task calculates basic statistical properties of an image, including t
 <p>
 Measure the RMS noise in several more channels or channel ranges that appear free of emission. The values should be broadly consistent from channel to channel.
 </p>
+
+<hr/>
 
 <h3>In CARTA</h3>
 
@@ -530,6 +550,8 @@ Since the line is very strong, in this tutorial we adopt:
 <br>
 $\mathrm{threshold} = 3\times\mathrm{RMS} = 8.4\,\mathrm{mJy}$ (for an RMS of $2.8\,\mathrm{mJy\,beam^{-1}}$)
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -587,6 +609,8 @@ Unfortunately, this feature is no longer available for MacOS users. It is possib
 You may have noticed in the dirty cube that the emission is only in the very centre of the cube. So we could try to reduce the imsize for the final cube. Furthermore, the emission is seen in channels 400 to 500 and the total number of channels are ~900. Therefore, we could also try to exclude more edge channels and image only channels 250 to 650. This gives us enough line-free channels to characterise the emission itself while also reducing the computation time. We shall do that by setting <code>start = 250</code>, <code>nchan=400</code>.
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">os.system('rm -rf ic485.final.cube.*')
@@ -636,6 +660,8 @@ The final science product is the primary-beam-corrected cube:
 Once again check that the properties of the cube are as desired. Use imhead to inspect the basic properties of the cube (resolution, velocity resolution, number of channels, velocity type, etc).
 </p>
 
+<hr/>
+
 <h3>In CASA</h3>
 
 <pre class="line-numbers"><code class="language-python">imhead(
@@ -680,6 +706,8 @@ Also see the <a href="https://carta.readthedocs.io/en/latest/moment_generator.ht
 <p>
 If you choose to use CASA, you could do this:
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 
@@ -766,6 +794,8 @@ Let us do some analysis using the final cube we have generated.
 <li>Extract the integrated spectrum.</li>
 </ul>
 
+<hr/>
+
 <h3 class="alt"><a name="estimating_physical_properties"></a>16A. Estimating Physical Properties</h3>
 
 <ul>
@@ -844,6 +874,8 @@ Using the measurements from this tutorial, you should find (your estimates may d
 <p>
 As with the previous tutorials, export the final data products to FITS format.
 </p>
+
+<hr/>
 
 <h3>In CASA</h3>
 

@@ -124,6 +124,8 @@ print(f"EVN + AVN loaded: {len(array_comb.tarr)} stations")</code></pre>
 </div>
                                 <p><em>Figure 1: Jet sky model (total flux = 1.00 Jy) displayed with afmhot colormap.</em></p>
 
+                                <hr/>
+
                                 <h3 class="alt"><a name="observing_parameters_c_band_5_ghz"></a>2A. Observing parameters (C-band, 5 GHz)</h3>
                                 <p>We choose 5 GHz because it's a standard, realistic band for the EVN (C-band). We simulate the jet first under <strong>ideal</strong> conditions (no errors), our error-free reference for everything that follows.</p>
 
@@ -154,6 +156,8 @@ obs_jet_ideal = im_jet.observe(
 obs_jet_ideal.rf = nu
 obs_jet_ideal.add_all(avg_time=avg_time)</code></pre>
 
+                                <hr/>
+
                                 <h3 class="alt"><a name="visualizing_the_uv_coverage"></a>2B. Visualizing the uv-coverage</h3>
                                 <p>To see what the AVN actually contributes, we also simulate the same ideal jet observation on EVN alone, purely for this comparison plot.</p>
                                 
@@ -180,11 +184,15 @@ obs_jet_err = im_jet.observe(
     phasecal=False                                                # phase errors
 )</code></pre>
 
+                                <hr/>
+
                                 <h3 class="alt"><a name="self_calibration"></a>3A. Self-calibration</h3>
                                 <p>Self-calibration uses a model of the source to solve for the per-antenna gains that best explain the observed data, and applies them to correct the visibilities.</p>
 
 								<pre class="line-numbers"><code class="language-python">obs_jet_err.add_scans()   # essential for scan_solutions to group correctly
 cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, processes=1)</code></pre>
+
+                                <hr/>
 
                                 <h3 class="alt"><a name="visualizing_the_degradation_visibility_a"></a>3B. Visualizing the degradation: visibility amplitude vs. uv-distance</h3>
                                 <p>This is the single most-used diagnostic plot in the entire VLBI workflow. For a source with extended structure (like our jet), the amplitude falls off and oscillates in a pattern set by the source's morphology.</p>
@@ -203,6 +211,8 @@ cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, pr
                                 <p>$$r_{ij} = \gamma_i \, \gamma_j^{*} \, V_{ij}$$</p>
                                 <p><strong>Closure quantities</strong> are special combinations of visibilities where every $\gamma_i$ term cancels out exactly. For example, the <em>bispectrum</em> ($V_{ijk} = V_{ij}V_{jk}V_{ki}$) and its argument, the <em>closure phase</em> ($\psi_{ijk} = \phi_{ij} + \phi_{jk} + \phi_{ki}$), are immune to per-antenna phase errors.</p>
 
+                                <hr/>
+
                                 <h3 class="alt"><a name="the_imaging_pipeline"></a>4B. The imaging pipeline</h3>
                                 <p>For an extended source, we progressively refine the image using a multi-round strategy:</p>
                                 <ul>
@@ -211,11 +221,15 @@ cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, pr
                                     <li><strong>Round 3:</strong> <code>vis</code> (cal.). Switch to self-calibrated visibilities + closures for final absolute amplitude constraints.</li>
                                 </ul>
 
+                                <hr/>
+
                                 <h3 class="alt"><a name="final_visual_comparison"></a>4C. Final visual comparison</h3>
                                 <p>We compare the ideal reconstruction, the closure-based reconstruction on corrupted data, and the raw-visibility reconstruction on corrupted data using the <strong>NRMSE</strong> (Normalized Root-Mean-Square Error).</p>
 
                                 <div class="col-12"><span class="image fit"><img src="results/final_visual_comparison.png" alt="Reconstruction Comparison" /></span></div>
                                 <p><em>Figure 4: The closures-based reconstruction strongly outperforms the raw-visibility approach when systematic errors are present.</em></p>
+
+                                <hr/>
 
                                 <h3 class="alt"><a name="dirty_beam_clean_beam_and_array_resoluti"></a>4D. Dirty beam, clean beam, and array resolution</h3>
                                 <p>The array's response to a point source (dirty beam) and the Gaussian fit to its main lobe (clean beam) tell us the true angular resolution limits of our observation.</p>
@@ -223,11 +237,15 @@ cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, pr
                                 <div class="col-12"><span class="image fit"><img src="results/beams_and_reconstruction.png" alt="Beams and Reconstruction" /></span></div>
                                 <p><em>Figure 5: The Dirty Beam, Fitted Clean Beam, and the Final Reconstruction (with the clean beam overlaid) side-by-side.</em></p>
 
+                                <hr/>
+
                                 <h3 class="alt"><a name="comparing_regularizers_simple_vs_tv_vs_t"></a>4E. Comparing regularizers: <code>simple</code> vs. <code>tv</code> vs. <code>tv2</code></h3>
                                 <p>Every RML round mixes a data term with a regularizer term. The choice between <code>simple</code> (diffuse), <code>tv</code> (sharp edges), or <code>tv2</code> (softer edge preservation) dictates the morphology of the final image.</p>
                                 
                                 <div class="col-12"><span class="image fit"><img src="results/regularizer_comparison.png" alt="Regularizer Comparison" /></span></div>
                                 <p><em>Figure 6: Reconstructions varying only the reg_term. Notice how 'tv' provides crisp boundaries ideal for jets.</em></p>
+
+                                <hr/>
 
                                 <h3 class="alt"><a name="the_effect_of_thermal_noise_snr"></a>4F. The effect of thermal-noise SNR</h3>
                                 <p>Even with perfect calibration, thermal noise limits image fidelity. Shorter integration times (`tint`) leave the reconstruction visibly noisier.</p>
