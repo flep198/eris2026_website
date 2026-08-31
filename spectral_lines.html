@@ -44,10 +44,284 @@ onload = function(){
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-							<h1 class="major">Advanced Tutorial - Spectral lines</h1>
-							<!-- Text -->
-							<section>
-								<h2 class="alt"><a name=""></a>Data required</h2>
-								
-	</body>
+
+<h1 class="major">Advanced Tutorial - Spectral lines</h1>
+
+<section>
+
+<h2 class="alt">Introduction</h2>
+
+<p>
+Radio interferometers are capable of observing not only the continuum emission, but also emission and absorption from individual spectral lines. Spectral-line observations allow us to probe the physical and chemical properties of gas, including their composition, density, temperature and kinematics.
+</p>
+
+<p>
+Unlike continuum observations, spectral-line datasets contain an additional dimension: frequency (or velocity). The final data product is therefore a three-dimensional data cube consisting of two spatial dimensions and one spectral dimension. Each slice through the cube represents the sky brightness at a particular frequency or velocity, enabling us to study the kinematics of the source.
+</p>
+
+<p>
+In this tutorial we will work through the process of reducing and analysing spectral-line interferometric data in CASA and CARTA. We will explore three different science cases that illustrate the diversity of spectral-line observations:
+</p>
+
+<ul>
+<li>N₂H⁺ emission from TW Hya: a nearby protoplanetary disc around a young pre-main-sequence star.</li>
+<li>HI absorption in NGC 660: a starburst galaxy with a polar ring and a compact radio continuum source.</li>
+<li>H₂O megamaser emission from IC 485: bright compact line emission from an AGN.</li>
+</ul>
+
+<p>
+Although these datasets probe very different astrophysical environments, the fundamental data-reduction workflow remains largely the same. We will work through all three datasets. However, any of them can be completed independently.
+</p>
+
+</section>
+
+<hr/>
+
+<section>
+
+<h2 class="alt">Spectral-Line Data Reduction</h2>
+
+<p>
+The steps that are specific to spectral-line data reduction begin after the standard calibration of the visibility data and, where appropriate, self-calibration of the target source (which you learnt in the previous tutorials!). The typical workflow is:
+</p>
+
+<ul>
+
+<br>
+
+<li>
+Determine which channels contain line emission or absorption and identify line-free channels that can be used to characterise the continuum emission.
+</li>
+
+<br>
+
+<li>
+Determine the rest frequency and velocity setup.
+<ul>
+<li>
+The rest frequency of the spectral transition allows us to convert between frequency and velocity and to interpret the observed line profile in a physically meaningful way.
+</li>
+</ul>
+</li>
+
+<li>
+Subtract the continuum emission.
+<ul>
+<li>
+Most spectral-line targets also exhibit continuum emission. To isolate the spectral line, a model of the continuum is fitted to the line-free channels and subtracted directly from the visibilities. This process is known as continuum subtraction.
+</li>
+</ul>
+</li>
+
+<li>
+Image the spectral cube.
+<ul>
+<li>
+The continuum-subtracted visibilities are imaged channel-by-channel to produce a spectral cube. Each channel image represents a narrow frequency or velocity interval. Together these images form a three-dimensional representation of the line emission or absorption.
+</li>
+</ul>
+</li>
+
+<li>
+Create moment maps.
+<ul>
+<li>Moment 0: Integrated intensity map. Shows the total line emission.</li>
+<li>Moment 1: Intensity-weighted velocity field. Shows large-scale kinematic structure.</li>
+<li>Moment 2: Velocity dispersion map. Shows the spread of velocities within the gas.</li>
+</ul>
+</li>
+
+<li>
+Analyse the spectral cube.
+<ul>
+<li>
+The cube can be inspected interactively in CARTA to investigate the morphology and kinematics of the gas.
+</li>
+<li>Extracting spectra from selected regions.</li>
+<li>Extracting the integrated line profiles.</li>
+<li>Smoothing the spectra and fitting different components.</li>
+<li>Making position velocity diagrams.</li>
+</ul>
+</li>
+
+<li>
+Export data products.
+<ul>
+<li>
+Final images and cubes are often exported to FITS format for further analysis, publication and archiving.
+</li>
+</ul>
+</li>
+
+</ul>
+
+</section>
+
+
+<hr/>
+
+<section>
+
+<h2 class="alt">A note on rest frequency, reference frames and velocity types</h2>
+
+<p>
+The interpretation of the results greatly depends on the choice of these three parameters. In CASA, you will find these parameters as <code>restfreq</code>, <code>outframe</code> and <code>veltype</code> respectively. Let us first discuss them before proceeding further with the tutorials.
+</p>
+
+<h3>Rest Frequency</h3>
+
+<p>
+For Galactic sources, <code>restfreq</code> is simply the laboratory frequency of the spectral transition under study.
+</p>
+
+<p>
+For extragalactic sources, the choice of <code>restfreq</code> deserves more care. If you want the final velocities to include the recession velocity of the source, then simply use the laboratory frequency of the spectral transition. In some cases it is more convenient to have the velocities in the rest frame of the target (i.e. the systemic velocity is 0 km/s). In those cases, use the redshifted frequency of the spectral line. 
+</p>
+
+
+<h3>Reference frame (outframe in CASA)</h3>
+
+
+<p>
+When measuring spectral-line velocities, it is necessary to specify the reference frame against which those velocities are measured. In CASA, this is controlled by the <code>outframe</code> parameter when imaging spectral cubes.
+</p>
+
+<p>
+Two commonly used velocity reference frames are the Local Standard of Rest Kinematic (LSRK) frame and the barycentric (BARY) frame.
+</p>
+
+<p>
+For Galactic sources, it is common to use the Local Standard of Rest Kinematic (LSRK) frame. During an observation, the apparent frequency of a spectral line is affected by the Earth's rotation and orbital motion. Imaging with outframe='LSRK' regrids the spectral axis to a standard Galactic reference frame, removing these observer-dependent effects and approximately accounting for the Sun's motion relative to nearby stars. As a result, the derived velocities correspond to the standard vLSR values widely used in Galactic astronomy, allowing direct comparison with other studies and with Milky Way kinematic models.
+</p>
+
+<p>
+For extragalactic sources, it is common to use the barycentric (BARY) frame. The barycentric frame removes the effect of the Earth's orbital motion by referencing measurements to the centre of mass of the Solar System. Since the dominant velocity for external galaxies is their cosmological recession velocity rather than their motion within the Milky Way, the barycentric frame provides a natural and widely used reference for comparing observations obtained at different times and with different telescopes.
+</p>
+
+<p>
+In both cases, the choice of outframe affects only the spectral coordinate system of the output cube; it does not alter the underlying data. The purpose is to place all observations in a consistent velocity reference frame so that measured line frequencies and velocities can be interpreted and compared reliably.
+</p>
+
+<h3>Velocity type</h3>
+
+<p>
+Radio spectral-line observations can express velocity using either the radio velocity convention or the optical velocity convention.
+</p>
+
+<p>
+The radio velocity convention is defined as
+</p>
+
+<p>
+v<sub>radio</sub> = c (ν₀ - ν) / ν₀
+</p>
+
+<p>
+where ν₀ is the rest frequency and ν is the observed frequency.
+</p>
+
+<p>
+The optical velocity convention is defined as
+</p>
+
+<p>
+v<sub>opt</sub> = c (λ - λ₀) / λ₀
+</p>
+
+<p>
+where λ₀ is the rest wavelength and λ is the observed wavelength.
+</p>
+
+<p>
+Expressed in terms of frequency, the optical velocity can be written as
+</p>
+
+<p>
+v<sub>opt</sub> = c (ν₀ - ν) / ν
+</p>
+
+<p>
+where ν₀ is the rest frequency and ν is the observed frequency.
+</p>
+
+<p>
+For nearby Galactic objects, where velocities are generally much smaller than the speed of light (where line-of-sight velocities are typically only a few to a few tens of km/s), the difference between these conventions is often negligible. In spectral line studies of Galactic sources, velocities are traditionally reported using the radio velocity convention, and radio velocities are therefore commonly adopted for imaging and analysis.
+</p>
+
+<p>
+For extragalactic sources, however, recession velocities can reach thousands of km/s, making the difference between the two conventions significant. Historically, galaxy redshifts and systemic velocities have been reported using the optical velocity convention, and many galaxy catalogues and published spectral-line studies continue to follow this practice. Therefore, to easily compare between different observations at different wavelengths, extragalactic spectral-line studies generally use the optical velocity convention.
+</p>
+
+<p>
+Throughout these tutorials, the choice of rest frequency, reference frame and velocity convention follows standard practice in each field. For Galactic sources, we use the laboratory transition frequency, the LSRK reference frame and the radio velocity convention. For extragalactic sources, we use the barycentric (BARY) reference frame and the optical velocity convention. However, for these sources, the rest frequency may be either the laboratory transition frequency or the redshifted frequency of the spectral line depending on the science case. In the case of NGC 660, we shall use the redshifted frequency and for IC 485 we shall use the laboratory frequency following standard practice in the fields of AGN feedback and Maser studies. 
+</p>
+
+</section>
+
+
+<hr/>
+
+<section>
+
+<h2 class="alt">Tutorials</h2>
+
+<p>
+Choose one of the following spectral-line tutorials.
+</p>
+ <br>
+
+<div class="row">
+
+<div class="col-4 col-12-medium">
+    <ul class="actions stacked">
+        <li><a href="twhya.html" class="button primary fit">TW Hya</a></li>
+    </ul>
+    <p style="
+        text-align:center;
+	color:#0b2e3c;
+	font-family:'Space Grotesk', sans-serif;
+        font-style:italic;
+        margin-top:-0.5em;
+    ">
+        ALMA data on N₂H⁺ emission from a protoplanetary disc.
+    </p>
+</div>
+
+<div class="col-4 col-12-medium">
+    <ul class="actions stacked">
+        <li><a href="ngc660.html" class="button primary fit">NGC 660</a></li>
+    </ul>
+    <p style="
+        text-align:center;
+	color:#0b2e3c;
+	font-family:'Space Grotesk', sans-serif;
+        font-style:italic;
+        margin-top:-0.5em;
+    ">
+        EVN data on HI absorption against a compact radio source.
+    </p>
+
+</div>
+
+<div class="col-4 col-12-medium">
+    <ul class="actions stacked">
+        <li><a href="ic485.html" class="button primary fit">IC 485</a></li>
+    </ul>
+    <p style="
+        text-align:center;
+	color:#0b2e3c;
+	font-family:'Space Grotesk', sans-serif;
+        font-style:italic;
+        margin-top:-0.5em;
+    ">
+        VLBA data on H₂O maser emission.
+    </p>
+</div>
+
+
+</section>
+
+
+<p id="lastModified"></p>
+
 </html>
