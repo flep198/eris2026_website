@@ -54,8 +54,11 @@ onload = function(){
 
 							<h1 class="major">VLBI Self-calibration & Imaging</h1>
 							<section>
-								<p>For this section, we will work with a dataset from the European VLBI Network (EVN),
-									observed under project code RSM07 on 16 September 2025 at L-band (1.67 GHz).
+								<p>For this section, we will work with two dataset from the European VLBI Network (EVN).
+									The first dataset is from the blazar Mrk 501, observed at X-band (8 GHz) with the
+									EVN in October 2025 (project code EE010).
+									The second dataset is a phase-referencing project (project code RSM07)
+									observed on 16 September 2025 at L-band (1.67 GHz).
 									The general calibration and imaging steps required for VLBI data are similar to
 									what was covered in the previous tutorial about
 									<a href="calibration.html">calibration</a>,
@@ -71,14 +74,14 @@ onload = function(){
 										in the details of VLBI calibration, please have a look at this
 										<a href="https://evlbi.org/evn-data-reduction-and-imaging-tutorial">EVN tutorial</a>,
 										where all required calibration steps are explained. One important difference to the
-										previous calibration tutorial is that fringe-fitting is an integral part of VLBI
+										previous calibration tutorial presented at this ERIS is that fringe-fitting is an integral part of VLBI
 										phase calibration, as independent clocks from antennas that are thousands of kilometers
-										apart from each other have to be aligned. If you are interested in performing the
-										calibration yourself, you can simply download the raw data for RSM07 from the
-										<a href="https://archive.jive.nl/scripts/arch.php?exp=RSM07">EVN archive</a>
+										apart from each other have to be aligned.
+										If you are interested in trying out the calibration yourself, you can download the raw data
+										for RSM07 from the <a href="https://archive.jive.nl/scripts/arch.php?exp=RSM07">EVN archive</a>
 										(under "Fitsfiles") and execute the
 										<a href="plots/vlbi/calibrate.py" download>calibration script</a>
-										that we have prepared for you in CASA.
+										that we have prepared for you in CASA (you will also need this <a href="plots/vlbi/rsm07.casa.flag">flag file</a> in your working directory).
 									</p>
 										<pre class="line-numbers" data-start="1">
 										<code class="language-python">execfile('calibrate.py')</code></pre></li>
@@ -90,18 +93,29 @@ onload = function(){
 							<section>
 								<h2 class="alt"><a name=""></a>Data required</h2>
 									<p>
-										For this tutorial, you require the following files,
+										For this tutorial, we have already prepared and calibrated two datasets for you. You will require the following files,
 										downloadable directly <a href="plots/vlbi/VLBI_Imaging_Selfcal.zip" download>here</a> as one zip-archive.
-										Alternatively, you can also
 										<ol>
-											<li><code class="language-bash">J1848+3219_calibrated.ms</code> - measurement set containing the calibrated visibilities of the phase reference calibrator (J1848+3219).</li>
-											<li><code class="language-bash">3C395_calibrated.ms</code> - measurement set containing just the calibrated visibilities of the phase reference target (3C395).</li>
+
+											<li><code class="language-bash">MRK501_calibrated.ms</code> - measurement set containing the calibrated visibilities of Mrk 501 (from EE010)</li>
+											<li><code class="language-bash">J1848+3219_calibrated.ms</code> - measurement set containing the calibrated visibilities of the RSM07 phase reference calibrator (J1848+3219).</li>
+											<li><code class="language-bash">3C395_calibrated.ms</code> - measurement set containing the calibrated visibilities of the RSM07 phase reference target (3C395).</li>
 										</ol>
 									</p>
 							</section>
 							<hr/>
 							<section>
 								<h2>Table of contents</h2>
+								<h3>Part 1: Imaging and self-calibration of Mrk 501 (EE010)</h3>
+								<ol start="1">
+									<li><a href="vlbi_selfcal_imaging.html#inspect_mrk">Inspect the data</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#phase_cal_image_mrk">Imaging the source</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#phase_cal_selfcal_mrk">Phase-Self Calibration</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#phase_cal_image2_mrk">Imaging the source again</a></li>
+									<li><a href="vlbi_selfcal_imaging.html#target_image_mrk">Amplitude Self-Calibration and Final Imaging</a></li>
+								</ol>
+
+								<h3>Part 2: Imaging and self-calibration of a phase referencing observation (RSM07)</h3>
 								<ol start="1">
 									<li><a href="vlbi_selfcal_imaging.html#inspect">Inspect the data</a></li>
 									<li><a href="vlbi_selfcal_imaging.html#phase_cal_image">Imaging the phase calibrator</a></li>
@@ -111,10 +125,432 @@ onload = function(){
 								</ol>
 							</section>
 							<hr/>
+							<h2>Part 1: Imaging and self-calibration of Mrk 501 (EE010)</h2>
+							<section>
+								<h2 class="alt"><a name="inspect_mrk"></a>1. Inspect the data</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>In order to familiarize yourself with the data it is a good idea to execute some of the standard
+								procedures shown in the <a href="intro_data.html">introduction tutorial</a>. We will not replicate all steps here,
+								but let's at least have a look at the uv-coverages of both sources and the amplitudes and phases vs. uv-distance.</p>
+
+
+
+								<ul>
+									<li>First let's have a look at the uv-coverage, using <code class="language-bash">plotms()</code>
+									<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="MRK501_calibrated.ms/",
+	xaxis="uwave",
+	yaxis="vwave",
+	coloraxis="spw"
+	)</code></pre>
+									</li>
+									<div class="row">
+										<div class="col-3"></div>
+										<div class="col-6"><span class="image fit"><img src="plots/vlbi/MRK501_uv.png"/></span></div>
+										<div class="col-3"></div>
+									</div>
+
+									<li>Then let us check the visibility amplitudes and phases vs. uv-distance
+									<div class="row">
+										<div class="col-6">
+										<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="3C395_calibrated.ms/",
+	xaxis="uvdist",
+	yaxis="amp",
+	correlation="rr,ll"
+	)</code></pre>
+
+
+										<span class="image fit"><img src="plots/vlbi/MRK501_amp_uvdist.png"/></span></div>
+										<div class="col-6">
+											<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="3C395_calibrated.ms/",
+	xaxis="uvdist",
+	yaxis="phase",
+	correlation="rr,ll"
+	)</code></pre>
+
+
+											<span class="image fit"><img src="plots/vlbi/MRK501_phase_uvdist.png"/></span></div>
+									</div>
+									</li>
+								</ul>
+
+								<p>You can clearly see that the scatter in phase and amplitudes is still quite high,
+								which we will try to improve through self-calibration in the following steps.</p>
+
+								<p><strong>Note:</strong> For typical VLBI data, you will likely have to go through some additional flagging.
+								We have already taken care of flagging the data provided here, so you can skip the flagging process.</p>
+
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="phase_cal_image_mrk"></a>2. Imaging the source</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+
+								<p>Before we can perform any kind of self-calibration, we first need to obtain an initial image.
+								Since the observed source is bright enough, we can directly start with imaging it and later use it
+								to derive the self-calibration solutions.</p>
+
+								<p>
+								<ul>
+									<li> Let's recall the <code class="language-bash">tclean</code> task from the previous tutorials
+										(or <code class="language-bash">iclean</code> for MacOS), to create a first image.
+
+										<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_first_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_first_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="MRK501_calibrated.ms/",
+	model="MRK501_first_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li><p>Let's start with a first clean mask similar to this</p>
+										<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/MRK501_first_tclean.png" alt="" /></span></div>
+									</p></li>
+
+									<li><p>Keep cleaning and adjusting the mask (if required) until your residual map looks
+									similar to this:</p>
+									<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/MRK501_first_tclean_end.png"/></span></div></p></li>
+
+									<li>Now you can close the <code class="language-bash">tclean</code> window by clicking on the large <b>X</b>.
+									It may take some time as CASA is loading your model into the measurement set. Once this process has finished
+									it is a good idea to check that the CLEAN model that was created describes the data reasonably well.
+									Unfortunately, there is no built-in CASA plot function to do this, but we have created a short
+									<a href="plots/vlbi/compare_model_data.py" download>plotting script</a>
+									that you may run on your measurement set to compare its model and data visibilities.
+
+									<pre class="line-numbers" data-start="1"><code class="language-python">execfile("compare_model_data.py")</code></pre>
+										<p>The output should look something like this and the CLEAN model should describe the data reasonably well.
+										<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/MRK501_data_model_check.png"/></span></div></p>
+										</p>
+									</li>
+
+								</ul>
+
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="phase_cal_selfcal_mrk"></a>3. Phase Self-Calibration</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									Once you are satisfied with your initial CLEAN image and the
+									model visibilities describe the data as good as possible, we can start with deriving
+									self-calibration solutions.
+								</p>
+
+								<ul>
+									<li>
+										First, we will start with a phase self-calibration and use a long solution interval
+										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
+	vis="MRK501_calibrated.ms/",
+	calmode="p", #use "p" to calibrate phases only or "ap" for amplitude and phase
+	caltable="MRK501-sc-p1",
+	field="1653+3945",
+	solint="10min",
+	refant="EF",
+	minblperant=3,
+	minsnr=5
+	)</code></pre>
+									</li>
+
+									<li>
+										Now that we created a first phase self-calibration table, we can plot it
+										and look at the suggested corrections
+										<pre class="line-numbers" data-start="1"><code class="language-python">plotms(
+	vis="MRK501-sc-p1",
+	gridcols=2,
+	gridrows=3,
+	xaxis="time",
+	yaxis="phase",
+	iteraxis="antenna",
+	coloraxis="spw",
+	plotrange=[-1,-1,-180,180]
+	)</code></pre>
+
+									<p>The plot should look similar to the one shown below. Note that the corrections are typically small.
+										Additionally, for some antennas the solution is missing because they have no data or were already flagged.
+										This is fine and you do not have to worry about it.</p>
+									<p><div class="col-12"><span class="image fit"><img src="plots/vlbi/MRK501_first_phase_selfcal_solution.png"/></span></div></p>
+									</li>
+
+									<li>
+										<p>Finally, the self-calibration needs to be applied to the measurement set, using the <code class="language-bash">applycal</code> task
+										<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="MRK501_calibrated.ms/",
+	gaintable=["MRK501-sc-p1"],
+	)</code></pre>
+									</p></li>
+
+								</ul>
+							</section>
+							<hr/>
+							<section>
+								<h2 class="alt"><a name="phase_cal_image2_mrk"></a>4. Iterative self-cal and imaging (hybrid imaging)</h2>
+								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
+								<p>
+									After applying the first phase self-calibration, you should go back to <a href="vlbi_selfcal_imaging.html#phase_cal_image">step 2</a>
+									and create a new image of the phase calibrator (ideally, use a different <code class="language-bash">imagename</code>
+									value for <code class="language-bash">tclean</code>, otherwise you will run into an error).
+									Once this is done, you can perform self calibration in phase again, but with a shortened solution interval
+									(2min, as you do not expect faster changes due to the atmosphere).
+									After another imaging round, if the solutions (in plots) seem to converge to just small improvements,
+									one can run the self-calibration in amplitude and phase (using <code class="language-bash">calmode="ap"</code> in
+									<code class="language-bash">gaincal</code>).
+									For amplitude self-calibration, the fastest changes you expect are probably on the order of a few minutes for this dataset.
+									Therefore, a solution interval of a few minutes is sufficient. You can consider calibrating with a longer solution interval first,
+									and then lower the solution interval gradually. Below, we provide a short summary of these steps
+								</p>
+
+								<ul>
+									<li>
+										<p>Image Mrk 501 again</p>
+<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_second_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_second_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="MRK501_calibrated.ms/",
+	model="MRK501_second_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li>
+										Compare model with data
+										<pre class="line-numbers" data-start="1"><code class="language-python">execfile("compare_model_data.py")</code></pre>
+									</li>
+
+									<li>
+										Generate phase calibration table with shorter solution interval of 2 minutes.
+										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
+	vis="MRK501_calibrated.ms/",
+	calmode="p", #use "p" to calibrate phases only or "ap" for amplitude and phase
+	caltable="MRK501-sc-p2",
+	field="J1653+3945",
+	solint="2min",
+	gaintable="MRK501-sc-p1",
+	interp=["linear"],
+	refant="EF",
+	minblperant=3,
+	minsnr=5
+	)</code></pre>
+									</li>
+
+									<li>
+										Apply both phase calibration tables to the data
+										<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="MRK501_calibrated.ms/",
+	gaintable=["MRK501-sc-p1","MRK501-sc-p2"]
+	)</code></pre>
+									</li>
+
+																		<li>
+										<p>Image Mrk 501 again</p>
+<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="MRK_calibrated.ms/",
+	imagename="MRK501_third_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_third_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="MRK501_calibrated.ms/",
+	model="MRK501_third_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li>
+										Compare model with data
+										<pre class="line-numbers" data-start="1"><code class="language-python">execfile("compare_model_data.py")</code></pre>
+									</li>
+
+									<li>
+										Generate calibration table for amplitude and phase self-calibration.
+										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
+	vis="MRK501_calibrated.ms/",
+	calmode="ap", #use "p" to calibrate phases only or "ap" for amplitude and phase
+	caltable="MRK501-sc-ap",
+	field="1653+3945",
+	solint="30min",
+	gaintable=["MRK501-sc-p1","MRK501-sc-p2"],
+	interp=["linear","linear"],
+	refant="EF",
+	minblperant=3,
+	minsnr=5
+	)</code></pre>
+									</li>
+
+									<li>
+										Apply all self-calibration tables to the data
+										<pre class="line-numbers" data-start="1"><code class="language-python">applycal(
+	vis="MRK501_calibrated.ms/",
+	gaintable=["MRK501-sc-p1","MRK501-sc-p2","MRK501-sc-ap"],
+	)</code></pre>
+									</li>
+
+									<li>
+										Finally, you can image the phase calibrator one last time, to obtain a final image
+										<div class="row">
+											<div class="column">
+												<strong>Linux</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">tclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_final_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn",
+	interactive=True
+	)</code></pre>
+											</div>
+
+											<div class="column">
+												<strong>MacOS</strong>
+												<pre class="line-numbers" data-start="1"><code class="language-python">from casagui.apps import run_iclean
+run_iclean(
+	vis="MRK501_calibrated.ms/",
+	imagename="MRK501_final_image",
+	specmode="mfs",
+	niter=1500,
+	cycleniter=300,
+	threshold=0,
+	imsize=[1024,1024],
+	cell="0.1mas",
+	weighting="natural",
+	deconvolver="hogbom",
+	savemodel="modelcolumn"
+	)
+ft(vis="MRK501_calibrated.ms/",
+	model="MRK501_final_image.model",
+	usescratch=True
+	)</code></pre>
+
+											</div>
+										</div>
+									</li>
+
+									<li>
+										You can inspect your final image with <code class="language-bash">imview</code> and it will likely look similar to this
+										<div class="row">
+											<div class="col-1"></div>
+											<div class="col-5"><span class="image fit"><img src="plots/vlbi/MRK501_final_image.png"/></span></div>
+											<div class="col-6"></div>
+										</div>
+									</li>
+
+								</ul>
+							</section>
+							<hr/>
+							<h2>Part 2: Imaging and self-calibration of a phase referencing observation</h2>
 							<section>
 								<h2 class="alt"><a name="inspect"></a>1. Inspect the data</h2>
 								<p class="alt"><a href="vlbi_selfcal_imaging.html#"><font size="-5">&larr; back to top</font></a></p>
-								<p><strong>ADD SOME PLOT HERE SHOWING THE PHASE REF OBS STRATEGY!!</strong></p>
 								<p>In order to familiarize yourself with the data it is a good idea to execute some of the standard
 								procedures shown in the <a href="intro_data.html">introduction tutorial</a>. We will not replicate all steps here,
 								but let's at least have a look at the uv-coverages of both sources and the amplitudes and phases vs. uv-distance.</p>
@@ -454,7 +890,7 @@ ft(vis="J1848+3219_calibrated.ms/",
 									</li>
 
 									<li>
-										Generate phase calibration table with shorter solution interval of 2 minutes.
+										Generate calibration table for amplitude and phase calibration.
 										<pre class="line-numbers" data-start="1"><code class="language-python">gaincal(
 	vis="J1848+3219_calibrated.ms/",
 	calmode="ap", #use "p" to calibrate phases only or "ap" for amplitude and phase
@@ -537,7 +973,6 @@ ft(vis="J1848+3219_calibrated.ms/",
 							<hr/>
 							<section>
 								<h2 class="alt"><a name="target_image"></a>5. Apply solutions to target and image</h2>
-							</section>
 
 							<p>After finalizing the self-calibration of the phase calibrator, we can easily apply the same solutions
 							to the science target (3C395), and image it.
@@ -599,13 +1034,17 @@ ft(vis="3C395_calibrated.ms/",
 
 							<li>
 								And again, you can plot the final image of the science target with <code class="language-bash">imview</code>
-								<div class="col-12"><span class="image fit"><img src="plots/vlbi/3C395_final_image.png" alt="" /></span></div>
+								<div class="row">
+								<div class="col-1"></div>
+								<div class="col-6"><span class="image fit"><img src="plots/vlbi/3C395_final_image.png" alt="" /></span></div>
+								</div>
 							</li>
 
 							</ul>
 
-						</div>
+								</section>
 					</section>
+				</div>
 			</div>
 
 		<!-- Footer -->
