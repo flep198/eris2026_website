@@ -64,6 +64,19 @@ onload = function(){
 									<li><code>jet_model.txt</code> — jet sky model in ehtim text format. Without this file the tutorial falls back to a point source.</li>
 									<li><code>ehtim 1.2.10</code> installed in your Python environment.</li>
 								</ol>
+                                <p>
+                                	The files needed for this tutorial are bundled in the tar file below:
+                                </p>
+
+                                <ul class="actions"><li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_new_imaging_algorithms.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_new_imaging_algorithms.tar.gz</a></li></ul>
+
+                                <p>
+                                	Alternatively, you can download and un-tar the data from the command line:
+                                </p>
+
+                                <pre><code class="language-bash">wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_new_imaging_algorithms.tar.gz
+tar -zxvf ERIS26_new_imaging_algorithms.tar.gz</code></pre>
+
                                 <blockquote><b>Important note on the Fourier engine (ttype):</b> Throughout this tutorial we explicitly set <code>ttype='fast'</code> or <code>'direct'</code> in every call to <code>.observe()</code> and to the Imager, avoiding any dependency on NFFT.</blockquote>
 							</section>
 							<hr/>
