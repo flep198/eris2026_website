@@ -1,4 +1,4 @@
-<!<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <!--
 	Hyperspace by HTML5 UP
 	html5up.net | @ajlkn
@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>ERIS 2026 - New generation imaging algorithms Hands-On with eht-imaging</title>
+		<title>ERIS2026 - Imaging algorithms</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -30,14 +30,20 @@ onload = function(){
 
 		<!-- Header -->
 			<header id="header">
-				<a href="index.html" class="title">ERIS 2026 - Tutorials</a>
+				<a href="index.html" class="title">ERIS 2026 - Advanced tutorials</a>
 				<nav>
 					<ul>
-						<li><a href="index.html#four">Home</a></li>
-						<li><a href="intro_data.html">Intro. to data</a></li>
-						<li><a href="calibration.html">Calibration</a></li>
-						<li><a href="imaging.html">Imaging</a></li>
-						<li><a href="selfcalibration.html">Self calibration</a></li>
+						<li><a href="index.html#five">Home</a></li>
+						<li><a href="polarisation.html">Polarimetry</a></li>
+						<li class="has-submenu">
+							<a href="spectral_lines.html">Spectral lines</a>
+							<ul class="submenu">
+								<li><a href="twhya.html">TW Hya</a></li>
+								<li><a href="ngc660.html">NGC 660</a></li>
+								<li><a href="ic485.html">IC 485</a></li>
+							</ul>
+						</li>
+						<li><a href="imagingalgorithms.html" class="active">Imaging algorithms</a></li>
 					</ul>
 				</nav>
 			</header>
@@ -52,12 +58,25 @@ onload = function(){
                             <p>EVN + AVN: simulation, calibration, and imaging in Very Long Baseline Interferometry. This tutorial covers a single, end-to-end case study: a realistic relativistic jet, observed with the EVN and with EVN+AVN.</p>
 
 							<section>
-								<h2 class="alt"><a name="requirements"></a>0. Environment setup & Requirements</h2>
+								<h2 class="alt"><a name="requirements"></a>Data and software required</h2>
 								<p>Before simulating anything, we install/load <code>ehtim</code> and the standard libraries.</p>
 								<ol>
 									<li><code>jet_model.txt</code> — jet sky model in ehtim text format. Without this file the tutorial falls back to a point source.</li>
 									<li><code>ehtim 1.2.10</code> installed in your Python environment.</li>
 								</ol>
+                                <p>
+                                	The files needed for this tutorial are bundled in the tar file below:
+                                </p>
+
+                                <ul class="actions"><li><a href="https://www.jb.man.ac.uk/ERIS26/data/ERIS26_new_imaging_algorithms.tar.gz" target="_blank" class="button primary icon solid fa-download">ERIS26_new_imaging_algorithms.tar.gz</a></li></ul>
+
+                                <p>
+                                	Alternatively, you can download and un-tar the data from the command line:
+                                </p>
+
+                                <pre><code class="language-bash">wget https://www.jb.man.ac.uk/ERIS26/data/ERIS26_new_imaging_algorithms.tar.gz
+tar -zxvf ERIS26_new_imaging_algorithms.tar.gz</code></pre>
+
                                 <blockquote><b>Important note on the Fourier engine (ttype):</b> Throughout this tutorial we explicitly set <code>ttype='fast'</code> or <code>'direct'</code> in every call to <code>.observe()</code> and to the Imager, avoiding any dependency on NFFT.</blockquote>
 							</section>
 							<hr/>
@@ -65,19 +84,35 @@ onload = function(){
                             <section>
 								<h2>Table of contents</h2>
 								<ol start="1">
-									<li><a href="#sec1">Array configuration: EVN vs. EVN+AVN</a></li>
-									<li><a href="#sec2">Sky model and the ideal observation</a></li>
-									<li><a href="#sec3">Realistic errors, self-calibration, and visibility corruption</a></li>
-									<li><a href="#sec4">RML imaging: closures vs. raw visibilities</a></li>
-									<li><a href="#sec5">From this notebook to a real observation proposal</a></li>
-									<li><a href="#extra">Extra: bring your own FITS source</a></li>
+									<li><a href="imagingalgorithms.html#sec1">Array configuration: EVN vs. EVN+AVN</a></li>
+									<li><a href="imagingalgorithms.html#sec2">Sky model and the ideal observation</a></li>
+									<ol class="alt">
+										<li><a href="imagingalgorithms.html#observing_parameters_c_band_5_ghz">Observing parameters (C-band, 5 GHz)</a></li>
+										<li><a href="imagingalgorithms.html#visualizing_the_uv_coverage">Visualizing the uv-coverage</a></li>
+									</ol>
+									<li><a href="imagingalgorithms.html#sec3">Realistic errors, self-calibration, and visibility corruption</a></li>
+									<ol class="alt">
+										<li><a href="imagingalgorithms.html#self_calibration">Self-calibration</a></li>
+										<li><a href="imagingalgorithms.html#visualizing_the_degradation_visibility_a">Visualizing the degradation: visibility amplitude vs. uv-distance</a></li>
+									</ol>
+									<li><a href="imagingalgorithms.html#sec4">RML imaging: closures vs. raw visibilities</a></li>
+									<ol class="alt">
+										<li><a href="imagingalgorithms.html#what_is_a_closure_quantity">What is a "closure quantity"?</a></li>
+										<li><a href="imagingalgorithms.html#the_imaging_pipeline">The imaging pipeline</a></li>
+										<li><a href="imagingalgorithms.html#final_visual_comparison">Final visual comparison</a></li>
+										<li><a href="imagingalgorithms.html#dirty_beam_clean_beam_and_array_resoluti">Dirty beam, clean beam, and array resolution</a></li>
+										<li><a href="imagingalgorithms.html#comparing_regularizers_simple_vs_tv_vs_t">Comparing regularizers: <code>simple</code> vs. <code>tv</code> vs. <code>tv2</code></a></li>
+										<li><a href="imagingalgorithms.html#the_effect_of_thermal_noise_snr">The effect of thermal-noise SNR</a></li>
+									</ol>
+									<li><a href="imagingalgorithms.html#sec5">From this notebook to a real observation proposal</a></li>
+									<li><a href="imagingalgorithms.html#extra">Extra: bring your own FITS source</a></li>
 								</ol>
 							</section>
 							<hr/>
 
 							<section>
 								<h2 class="alt"><a name="sec1"></a>1. Array configuration: EVN vs. EVN+AVN</h2>
-								<p class="alt"><a href="#wrapper"><font size="-5">&larr; back to top</font></a></p>
+								<p class="alt"><a href="imagingalgorithms.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>We define two antenna arrays:</p>
 								<ul>
 									<li><strong>EVN:</strong> 11 real European/Asian stations, with their geocentric coordinates and their SEFD (System Equivalent Flux Density).</li>
@@ -94,7 +129,7 @@ print(f"EVN + AVN loaded: {len(array_comb.tarr)} stations")</code></pre>
 
 							<section>
 								<h2 class="alt"><a name="sec2"></a>2. Sky model and the ideal observation</h2>
-								<p class="alt"><a href="#wrapper"><font size="-5">&larr; back to top</font></a></p>
+								<p class="alt"><a href="imagingalgorithms.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>Our science case for this whole notebook is a realistic relativistic jet. We load it from a text-format model (<code>jet_model.txt</code>).</p>
                                 
                                 <div style="text-align: center; margin-bottom: 2em;">
@@ -102,7 +137,9 @@ print(f"EVN + AVN loaded: {len(array_comb.tarr)} stations")</code></pre>
 </div>
                                 <p><em>Figure 1: Jet sky model (total flux = 1.00 Jy) displayed with afmhot colormap.</em></p>
 
-                                <h3>Observing parameters (C-band, 5 GHz)</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="observing_parameters_c_band_5_ghz"></a>2A. Observing parameters (C-band, 5 GHz)</h3>
                                 <p>We choose 5 GHz because it's a standard, realistic band for the EVN (C-band). We simulate the jet first under <strong>ideal</strong> conditions (no errors), our error-free reference for everything that follows.</p>
 
                                 <div class="table-wrapper">
@@ -132,7 +169,9 @@ obs_jet_ideal = im_jet.observe(
 obs_jet_ideal.rf = nu
 obs_jet_ideal.add_all(avg_time=avg_time)</code></pre>
 
-                                <h3>Visualizing the uv-coverage</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="visualizing_the_uv_coverage"></a>2B. Visualizing the uv-coverage</h3>
                                 <p>To see what the AVN actually contributes, we also simulate the same ideal jet observation on EVN alone, purely for this comparison plot.</p>
                                 
                                 <div class="col-12"><span class="image fit"><img src="results/uv_coverage_comparison.png" alt="UV Coverage EVN vs AVN" /></span></div>
@@ -142,7 +181,7 @@ obs_jet_ideal.add_all(avg_time=avg_time)</code></pre>
 
 							<section>
 								<h2 class="alt"><a name="sec3"></a>3. Realistic errors, self-calibration, and visibility corruption</h2>
-								<p class="alt"><a href="#wrapper"><font size="-5">&larr; back to top</font></a></p>
+								<p class="alt"><a href="imagingalgorithms.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>Real observations are affected by thermal noise, gain errors, phase drifts, etc. We inject these errors into our jet simulation and quantify the resulting degradation.</p>
 
 								<pre class="line-numbers"><code class="language-python"># CONTROLS TO EXPERIMENT WITH
@@ -158,13 +197,17 @@ obs_jet_err = im_jet.observe(
     phasecal=False                                                # phase errors
 )</code></pre>
 
-                                <h3>Self-calibration</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="self_calibration"></a>3A. Self-calibration</h3>
                                 <p>Self-calibration uses a model of the source to solve for the per-antenna gains that best explain the observed data, and applies them to correct the visibilities.</p>
 
 								<pre class="line-numbers"><code class="language-python">obs_jet_err.add_scans()   # essential for scan_solutions to group correctly
 cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, processes=1)</code></pre>
 
-                                <h3>Visualizing the degradation: visibility amplitude vs. uv-distance</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="visualizing_the_degradation_visibility_a"></a>3B. Visualizing the degradation: visibility amplitude vs. uv-distance</h3>
                                 <p>This is the single most-used diagnostic plot in the entire VLBI workflow. For a source with extended structure (like our jet), the amplitude falls off and oscillates in a pattern set by the source's morphology.</p>
                                 
                                 <div class="col-12"><span class="image fit"><img src="results/visibility_amplitude_uv.png" alt="Visibility amplitude vs UV distance" /></span></div>
@@ -174,14 +217,16 @@ cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, pr
 
 							<section>
 								<h2 class="alt"><a name="sec4"></a>4. RML imaging: closures vs. raw visibilities</h2>
-								<p class="alt"><a href="#wrapper"><font size="-5">&larr; back to top</font></a></p>
+								<p class="alt"><a href="imagingalgorithms.html#"><font size="-5">&larr; back to top</font></a></p>
 
-                                <h3>What is a "closure quantity"?</h3>
+                                <h3 class="alt"><a name="what_is_a_closure_quantity"></a>4A. What is a "closure quantity"?</h3>
                                 <p>In real VLBI, every antenna has its own clock and atmosphere, introducing phase and amplitude errors. The visibility you actually measure on baseline $i$–$j$ is:</p>
                                 <p>$$r_{ij} = \gamma_i \, \gamma_j^{*} \, V_{ij}$$</p>
                                 <p><strong>Closure quantities</strong> are special combinations of visibilities where every $\gamma_i$ term cancels out exactly. For example, the <em>bispectrum</em> ($V_{ijk} = V_{ij}V_{jk}V_{ki}$) and its argument, the <em>closure phase</em> ($\psi_{ijk} = \phi_{ij} + \phi_{jk} + \phi_{ki}$), are immune to per-antenna phase errors.</p>
 
-                                <h3>The imaging pipeline</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="the_imaging_pipeline"></a>4B. The imaging pipeline</h3>
                                 <p>For an extended source, we progressively refine the image using a multi-round strategy:</p>
                                 <ul>
                                     <li><strong>Round 1:</strong> Bispectrum (<code>bs</code>). Most robust to any kind of error.</li>
@@ -189,25 +234,33 @@ cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, pr
                                     <li><strong>Round 3:</strong> <code>vis</code> (cal.). Switch to self-calibrated visibilities + closures for final absolute amplitude constraints.</li>
                                 </ul>
 
-                                <h3>Final visual comparison</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="final_visual_comparison"></a>4C. Final visual comparison</h3>
                                 <p>We compare the ideal reconstruction, the closure-based reconstruction on corrupted data, and the raw-visibility reconstruction on corrupted data using the <strong>NRMSE</strong> (Normalized Root-Mean-Square Error).</p>
 
                                 <div class="col-12"><span class="image fit"><img src="results/final_visual_comparison.png" alt="Reconstruction Comparison" /></span></div>
                                 <p><em>Figure 4: The closures-based reconstruction strongly outperforms the raw-visibility approach when systematic errors are present.</em></p>
 
-                                <h3>Dirty beam, clean beam, and array resolution</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="dirty_beam_clean_beam_and_array_resoluti"></a>4D. Dirty beam, clean beam, and array resolution</h3>
                                 <p>The array's response to a point source (dirty beam) and the Gaussian fit to its main lobe (clean beam) tell us the true angular resolution limits of our observation.</p>
 
                                 <div class="col-12"><span class="image fit"><img src="results/beams_and_reconstruction.png" alt="Beams and Reconstruction" /></span></div>
                                 <p><em>Figure 5: The Dirty Beam, Fitted Clean Beam, and the Final Reconstruction (with the clean beam overlaid) side-by-side.</em></p>
 
-                                <h3>Comparing regularizers: <code>simple</code> vs. <code>tv</code> vs. <code>tv2</code></h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="comparing_regularizers_simple_vs_tv_vs_t"></a>4E. Comparing regularizers: <code>simple</code> vs. <code>tv</code> vs. <code>tv2</code></h3>
                                 <p>Every RML round mixes a data term with a regularizer term. The choice between <code>simple</code> (diffuse), <code>tv</code> (sharp edges), or <code>tv2</code> (softer edge preservation) dictates the morphology of the final image.</p>
                                 
                                 <div class="col-12"><span class="image fit"><img src="results/regularizer_comparison.png" alt="Regularizer Comparison" /></span></div>
                                 <p><em>Figure 6: Reconstructions varying only the reg_term. Notice how 'tv' provides crisp boundaries ideal for jets.</em></p>
 
-                                <h3>The effect of thermal-noise SNR</h3>
+                                <hr/>
+
+                                <h3 class="alt"><a name="the_effect_of_thermal_noise_snr"></a>4F. The effect of thermal-noise SNR</h3>
                                 <p>Even with perfect calibration, thermal noise limits image fidelity. Shorter integration times (`tint`) leave the reconstruction visibly noisier.</p>
 
                                 <div class="col-12"><span class="image fit"><img src="results/snr_comparison.png" alt="SNR Comparison by Integration Time" /></span></div>
@@ -217,7 +270,7 @@ cal_jet = sc.self_cal(obs_jet_err, im_jet, ttype='fast', scan_solutions=True, pr
 
 							<section>
 								<h2 class="alt"><a name="sec5"></a>5. From this notebook to a real observation proposal</h2>
-								<p class="alt"><a href="#wrapper"><font size="-5">&larr; back to top</font></a></p>
+								<p class="alt"><a href="imagingalgorithms.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>Everything you've produced here is a miniature feasibility study. A Time Allocation Committee will look for expected uv-coverage, expected sensitivity (NRMSE), and the simulated image reconstruction.</p>
                                 <p>Export your outputs for papers or proposals using ehtim's built-in functions:</p>
 								<pre class="line-numbers"><code class="language-python"># Reconstructed image
@@ -234,7 +287,7 @@ fig.savefig('results/jet_reconstruction_closures.png', dpi=200, bbox_inches='tig
 
 							<section>
 								<h2 class="alt"><a name="extra"></a>6. Extra: bring your own FITS source</h2>
-								<p class="alt"><a href="#wrapper"><font size="-5">&larr; back to top</font></a></p>
+								<p class="alt"><a href="imagingalgorithms.html#"><font size="-5">&larr; back to top</font></a></p>
 								<p>You can convert any 2D FITS image into an ehtim text model using the provided <code>fits_to_ehtim_txt()</code> function. The script will crop it to a square, normalize the flux, and run the entire simulation, self-calibration, and RML imaging pipeline automatically.</p>
 							</section>
 
@@ -246,7 +299,7 @@ fig.savefig('results/jet_reconstruction_closures.png', dpi=200, bbox_inches='tig
 			<footer id="footer" class="wrapper alt">
 				<div class="inner">
 					<ul class="menu">
-						<li>&copy; ERIS 2026 </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a></li><li><span id="lastModified"></span></li>
+						<li>&copy; Jack Radcliffe </li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a> and <a href="https://www.jb.man.ac.uk/~radcliff" target="_blank">Jack Radcliffe</a></li><li><span id="lastModified"></span></li>
 					</ul>
 				</div>
 			</footer>
