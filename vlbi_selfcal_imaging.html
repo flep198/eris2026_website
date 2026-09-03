@@ -33,13 +33,13 @@ onload = function(){
 				<a href="index.html" class="title">ERIS 2026 - Tutorials</a>
 				<nav>
 					<ul>
-						<li><a href="index.html#four">Home</a></li>
+						<li><a href="index.html#five">Home</a></li>
 						<li><a href="intro_data.html">Intro. to data</a></li>
 						<li><a href="calibration.html">Calibration</a></li>
 						<li><a href="imaging.html" >Imaging</a></li>
 						<li><a href="selfcalibration.html">Self calibration</a></li>
-						<li><a href="adv_imaging.html">Advanced imaging</a></li>
 						<li><a href="vlbi_selfcal_imaging.html" class="active">VLBI</a></li>
+						<li><a href="adv_imaging.html">Advanced imaging (optional)</a></li>
 						<li><a href="3C277_full.html">Full tutorial</a></li>
 					</ul>
 				</nav>
@@ -84,7 +84,7 @@ onload = function(){
 										that we have prepared for you in CASA (you will also need this <a href="plots/vlbi/rsm07.casa.flag">flag file</a> in your working directory).
 									</p>
 										<pre class="line-numbers" data-start="1">
-										<code class="language-python">execfile('calibrate.py')</code></pre></li>
+										<code class="language-python">execfile('calibrate.py')</code></pre>
 
 
 							</section>
@@ -94,15 +94,22 @@ onload = function(){
 								<h2 class="alt"><a name=""></a>Data required</h2>
 									<p>
 										For this tutorial, we have already prepared and calibrated two datasets for you. You will require the following files,
-										downloadable directly <a href="https://cloud.jive.eu/s/HTBsXxxmkQsfEqC" download>here</a> as one zip-archive.
+										which are bundled together in the archive linked below.
 										<ol>
 
 								<li><a href="plots/vlbi/MRK501_calibrated.ms.tar.gz"><code class="language-bash">MRK501_calibrated.ms</code></a> - measurement set containing the calibrated visibilities of Mrk 501 (from EE010)</li>
 								<li><a href="plots/vlbi/J1848+3219_calibrated.ms.tar.gz"><code class="language-bash">J1848+3219_calibrated.ms</code></a> - measurement set containing the calibrated visibilities of the RSM07 phase reference calibrator (J1848+3219).</li>
 								<li><a href="plots/vlbi/3C395_calibrated.ms.tar.gz"><code class="language-bash">3C395_calibrated.ms</code></a> - measurement set containing the calibrated visibilities of the RSM07 phase reference target (3C395).</li>
 										</ol>
-								We also provide an archive with the full solution (incl. images and self-calibration tables), available <a href="https://cloud.jive.eu/s/jqZCJEBXwAYMgFq">here</a>, in case you get stuck somewhere.
 									</p>
+
+									<ul class="actions"><li><a href="https://cloud.jive.eu/s/HTBsXxxmkQsfEqC" target="_blank" class="button primary icon solid fa-download">vlbi-tutorial.tar.gz</a></li></ul>
+
+									<p>
+										We also provide an archive with the full solution (incl. images and self-calibration tables), in case you get stuck somewhere.
+									</p>
+
+									<ul class="actions"><li><a href="https://cloud.jive.eu/s/jqZCJEBXwAYMgFq" target="_blank" class="button primary icon solid fa-download">vlbi-tutorial-solutions</a></li></ul>
 							</section>
 							<hr/>
 							<section>
@@ -1044,8 +1051,9 @@ ft(vis="3C395_calibrated.ms/",
 							</ul>
 
 								</section>
+
+						</div>
 					</section>
-				</div>
 			</div>
 
 		<!-- Footer -->
